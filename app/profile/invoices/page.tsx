@@ -6,11 +6,76 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { invoiceService } from '@/lib/invoice-service';
 
+interface UserSession {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
+interface InvoiceData {
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate?: string;
+  order: {
+    id: string;
+    orderNumber: string;
+    orderDate: string;
+    status: string;
+    paymentStatus: string;
+  };
+  seller: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+    email: string;
+    website?: string;
+    taxId?: string;
+  };
+  buyer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  items: Array<{
+    id: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  summary: {
+    subtotal: number;
+    tax: number;
+    taxRate: number;
+    shipping: number;
+    discount: number;
+    total: number;
+  };
+  notes?: string;
+  branding?: {
+    logo?: string;
+    primaryColor?: string;
+    secondaryColor?: string;
+    footer?: string;
+  };
+}
+
 export default function UserInvoicesPage() {
   const router = useRouter();
-  const [userSession, setUserSession] = useState(null);
-  const [invoices, setInvoices] = useState([]);
-  const [filteredInvoices, setFilteredInvoices] = useState([]);
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
+  const [invoices, setInvoices] = useState<InvoiceData[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<InvoiceData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');

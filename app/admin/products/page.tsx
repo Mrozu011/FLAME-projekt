@@ -5,9 +5,43 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { activityLogger } from '@/lib/activity-logger';
 
+interface Product {
+  id: number;
+  name: string;
+  sku: string;
+  price: number;
+  stock: number;
+  type: string;
+  status: string;
+  category: string;
+  images: string[];
+  createdAt: string;
+  updatedAt: string;
+  description?: string;
+  variants?: Array<{
+    id: number;
+    name: string;
+    price: number;
+    stock: number;
+  }>;
+  tags?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  metaKeywords?: string[];
+  is3DEnabled?: boolean;
+  threeDModelUrl?: string;
+  qualityScore?: number;
+}
+
+interface UploadingProduct {
+  id: number;
+  name: string;
+  progress: number;
+}
+
 export default function ProductManagement() {
-  const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStock, setFilterStock] = useState('all');
@@ -15,9 +49,9 @@ export default function ProductManagement() {
   const [sortBy, setSortBy] = useState('name');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [productToDelete, setProductToDelete] = useState(null);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [showUploadModal, setShowUploadModal] = useState(false);
-  const [uploadingProduct, setUploadingProduct] = useState(null);
+  const [uploadingProduct, setUploadingProduct] = useState<UploadingProduct | null>(null);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const itemsPerPage = 12;

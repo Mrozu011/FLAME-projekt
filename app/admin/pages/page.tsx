@@ -4,12 +4,26 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useTranslation } from '@/hooks/useTranslation';
 
+interface PageSection {
+  id: string;
+  title: string;
+  content: string;
+  type: 'text' | 'image' | 'video' | 'gallery' | 'form';
+  order: number;
+  isVisible: boolean;
+  metadata?: {
+    seoTitle?: string;
+    seoDescription?: string;
+    keywords?: string[];
+  };
+}
+
 export default function PagesManagement() {
   const { t, language, changeLanguage } = useTranslation();
   const [activeLanguage, setActiveLanguage] = useState('en');
   const [activePage, setActivePage] = useState('about');
   const [showPageEditor, setShowPageEditor] = useState(false);
-  const [editingSection, setEditingSection] = useState(null);
+  const [editingSection, setEditingSection] = useState<PageSection | null>(null);
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
 
   const supportedLanguages = [
@@ -224,12 +238,12 @@ export default function PagesManagement() {
     }
   ]);
 
-  const handleLanguageChange = (langCode) => {
+  const handleLanguageChange = (langCode: string) => {
     setActiveLanguage(langCode);
     changeLanguage(langCode);
   };
 
-  const handlePageContentChange = (section, field, value) => {
+  const handlePageContentChange = (section: string, field: string, value: string) => {
     setPageContent(prev => ({
       ...prev,
       [activePage]: {
@@ -245,7 +259,7 @@ export default function PagesManagement() {
     }));
   };
 
-  const handleVisibilityToggle = (pageId) => {
+  const handleVisibilityToggle = (pageId: string) => {
     setPageContent(prev => ({
       ...prev,
       [pageId]: {

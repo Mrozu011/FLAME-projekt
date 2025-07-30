@@ -4,8 +4,30 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { invoiceService } from '@/lib/invoice-service';
 
+interface InvoiceSettings {
+  companyName: string;
+  companyAddress: string;
+  companyCity: string;
+  companyState: string;
+  companyZipCode: string;
+  companyCountry: string;
+  companyPhone: string;
+  companyEmail: string;
+  companyWebsite?: string;
+  companyTaxId?: string;
+  logo?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  footer: string;
+  invoicePrefix: string;
+  invoiceNumberLength: number;
+  defaultNotes?: string;
+  autoGenerate: boolean;
+  emailToCustomer: boolean;
+}
+
 export default function InvoiceSettingsPage() {
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState<InvoiceSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
@@ -25,13 +47,14 @@ export default function InvoiceSettingsPage() {
     }
   };
 
-  const handleSave = async (e) => {
-    e.preventDefault();
+  const handleSave = async () => {
     setSaving(true);
 
     try {
-      invoiceService.updateSettings(settings);
-      alert('Settings saved successfully!');
+      if (settings) {
+        (invoiceService as any).updateSettings(settings);
+        alert('Settings saved successfully!');
+      }
     } catch (error) {
       console.error('Error saving settings:', error);
       alert('Failed to save settings. Please try again.');
@@ -40,22 +63,23 @@ export default function InvoiceSettingsPage() {
     }
   };
 
-  const handleInputChange = (field, value) => {
-    setSettings(prev => ({
+  const handleInputChange = (field: keyof InvoiceSettings, value: string | number | boolean) => {
+    setSettings(prev => prev ? ({
       ...prev,
       [field]: value
-    }));
+    }) : null);
   };
 
-  const handleLogoUpload = (e) => {
-    const file = e.target.files[0];
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setSettings(prev => ({
+        const result = e.target?.result as string;
+        setSettings(prev => prev ? ({
           ...prev,
-          logo: e.target.result
-        }));
+          logo: result
+        }) : null);
       };
       reader.readAsDataURL(file);
     }
@@ -186,7 +210,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Company Name</label>
                 <input
                   type="text"
-                  value={settings.companyName}
+                  value={settings?.companyName}
                   onChange={(e) => handleInputChange('companyName', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -196,7 +220,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Email</label>
                 <input
                   type="email"
-                  value={settings.companyEmail}
+                  value={settings?.companyEmail}
                   onChange={(e) => handleInputChange('companyEmail', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -206,7 +230,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Phone</label>
                 <input
                   type="tel"
-                  value={settings.companyPhone}
+                  value={settings?.companyPhone}
                   onChange={(e) => handleInputChange('companyPhone', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -216,7 +240,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Website</label>
                 <input
                   type="url"
-                  value={settings.companyWebsite}
+                  value={settings?.companyWebsite}
                   onChange={(e) => handleInputChange('companyWebsite', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -225,7 +249,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                 <input
                   type="text"
-                  value={settings.companyAddress}
+                  value={settings?.companyAddress}
                   onChange={(e) => handleInputChange('companyAddress', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -235,7 +259,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">City</label>
                 <input
                   type="text"
-                  value={settings.companyCity}
+                  value={settings?.companyCity}
                   onChange={(e) => handleInputChange('companyCity', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -245,7 +269,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">State</label>
                 <input
                   type="text"
-                  value={settings.companyState}
+                  value={settings?.companyState}
                   onChange={(e) => handleInputChange('companyState', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -255,7 +279,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code</label>
                 <input
                   type="text"
-                  value={settings.companyZipCode}
+                  value={settings?.companyZipCode}
                   onChange={(e) => handleInputChange('companyZipCode', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -265,7 +289,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Country</label>
                 <input
                   type="text"
-                  value={settings.companyCountry}
+                  value={settings?.companyCountry}
                   onChange={(e) => handleInputChange('companyCountry', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   required
@@ -275,7 +299,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Tax ID (Optional)</label>
                 <input
                   type="text"
-                  value={settings.companyTaxId}
+                  value={settings?.companyTaxId}
                   onChange={(e) => handleInputChange('companyTaxId', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -290,7 +314,7 @@ export default function InvoiceSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Company Logo</label>
                 <div className="flex items-center space-x-4">
-                  {settings.logo && (
+                  {settings?.logo && (
                     <img
                       src={settings.logo}
                       alt="Company Logo"
@@ -323,13 +347,13 @@ export default function InvoiceSettingsPage() {
                   <div className="flex items-center space-x-3">
                     <input
                       type="color"
-                      value={settings.primaryColor}
+                      value={settings?.primaryColor}
                       onChange={(e) => handleInputChange('primaryColor', e.target.value)}
                       className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
                     />
                     <input
                       type="text"
-                      value={settings.primaryColor}
+                      value={settings?.primaryColor}
                       onChange={(e) => handleInputChange('primaryColor', e.target.value)}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="#000000"
@@ -341,13 +365,13 @@ export default function InvoiceSettingsPage() {
                   <div className="flex items-center space-x-3">
                     <input
                       type="color"
-                      value={settings.secondaryColor}
+                      value={settings?.secondaryColor}
                       onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
                       className="w-12 h-10 border border-gray-300 rounded cursor-pointer"
                     />
                     <input
                       type="text"
-                      value={settings.secondaryColor}
+                      value={settings?.secondaryColor}
                       onChange={(e) => handleInputChange('secondaryColor', e.target.value)}
                       className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="#666666"
@@ -359,7 +383,7 @@ export default function InvoiceSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Footer Text</label>
                 <textarea
-                  value={settings.footer}
+                  value={settings?.footer}
                   onChange={(e) => handleInputChange('footer', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -377,7 +401,7 @@ export default function InvoiceSettingsPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">Invoice Prefix</label>
                 <input
                   type="text"
-                  value={settings.invoicePrefix}
+                  value={settings?.invoicePrefix}
                   onChange={(e) => handleInputChange('invoicePrefix', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="INV"
@@ -386,7 +410,7 @@ export default function InvoiceSettingsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Number Length</label>
                 <select
-                  value={settings.invoiceNumberLength}
+                  value={settings?.invoiceNumberLength}
                   onChange={(e) => handleInputChange('invoiceNumberLength', parseInt(e.target.value))}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
                 >
@@ -399,7 +423,7 @@ export default function InvoiceSettingsPage() {
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Default Notes</label>
                 <textarea
-                  value={settings.defaultNotes}
+                  value={settings?.defaultNotes}
                   onChange={(e) => handleInputChange('defaultNotes', e.target.value)}
                   rows={3}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -416,7 +440,7 @@ export default function InvoiceSettingsPage() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={settings.autoGenerate}
+                  checked={settings?.autoGenerate}
                   onChange={(e) => handleInputChange('autoGenerate', e.target.checked)}
                   className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />
@@ -425,7 +449,7 @@ export default function InvoiceSettingsPage() {
               <label className="flex items-center">
                 <input
                   type="checkbox"
-                  checked={settings.emailToCustomer}
+                  checked={settings?.emailToCustomer}
                   onChange={(e) => handleInputChange('emailToCustomer', e.target.checked)}
                   className="mr-3 w-4 h-4 text-blue-600 rounded focus:ring-blue-500"
                 />

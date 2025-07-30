@@ -5,6 +5,13 @@ import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
+interface UserSession {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 interface Order {
   id: string;
   orderNumber: string;
@@ -31,14 +38,23 @@ interface ReturnRequest {
   refundAmount?: number;
 }
 
+interface OrderItem {
+  id: string;
+  name: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
+
 export default function UserReturnsPage() {
   const router = useRouter();
-  const [userSession, setUserSession] = useState(null);
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [orders, setOrders] = useState<Order[]>([]);
   const [returns, setReturns] = useState<ReturnRequest[]>([]);
   const [activeTab, setActiveTab] = useState('request');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+  const [selectedItem, setSelectedItem] = useState<OrderItem | null>(null);
   const [showReturnModal, setShowReturnModal] = useState(false);
   const [loading, setLoading] = useState(true);
 

@@ -7,24 +7,69 @@ import { invoiceService } from '@/lib/invoice-service';
 import { activityLogger } from '@/lib/activity-logger';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 
+interface Order {
+  id: string;
+  orderNumber: string;
+  customer: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  items: Array<{
+    id: number;
+    name: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  total: number;
+  status: string;
+  paymentStatus: string;
+  orderDate: string;
+  shippingAddress: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  billingAddress: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  paymentMethod: string;
+  shippingMethod: string;
+  trackingNumber?: string;
+  notes?: string;
+}
+
+interface AutomationRules {
+  emailOnPaid: boolean;
+  autoShippingLabel: boolean;
+  autoOutOfStock: boolean;
+}
+
 export default function OrderManagement() {
-  const [orders, setOrders] = useState([]);
-  const [filteredOrders, setFilteredOrders] = useState([]);
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [paymentFilter, setPaymentFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [showUpdateModal, setShowUpdateModal] = useState(false);
   const [newStatus, setNewStatus] = useState('');
   const [showBulkActions, setShowBulkActions] = useState(false);
-  const [selectedOrders, setSelectedOrders] = useState([]);
+  const [selectedOrders, setSelectedOrders] = useState<string[]>([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [automationRules, setAutomationRules] = useState({
+  const [automationRules, setAutomationRules] = useState<AutomationRules>({
     emailOnPaid: true,
     autoShippingLabel: true,
     autoOutOfStock: true
@@ -42,7 +87,12 @@ export default function OrderManagement() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  const orderStatuses = {
+  const orderStatuses: Record<string, {
+    label: string;
+    color: string;
+    icon: string;
+    description: string;
+  }> = {
     'pending-payment': {
       label: 'Pending Payment',
       color: 'bg-yellow-100 text-yellow-800',
@@ -81,7 +131,11 @@ export default function OrderManagement() {
     }
   };
 
-  const paymentStatuses = {
+  const paymentStatuses: Record<string, {
+    label: string;
+    color: string;
+    icon: string;
+  }> = {
     'pending': {
       label: 'Pending',
       color: 'bg-yellow-100 text-yellow-800',
@@ -99,120 +153,105 @@ export default function OrderManagement() {
     },
     'refunded': {
       label: 'Refunded',
-      color: 'bg-purple-100 text-purple-800',
-      icon: 'ri-refund-line'
+      color: 'bg-gray-100 text-gray-800',
+      icon: 'ri-arrow-go-back-line'
     }
   };
 
   useEffect(() => {
     setTimeout(() => {
-      const mockOrders = [
+      const mockOrders: Order[] = [
         {
           id: 'FL001',
-          customer: 'John Smith',
-          email: 'john@example.com',
-          phone: '+1 (555) 123-4567',
-          amount: 299.99,
+          orderNumber: 'FL001',
+          customer: { name: 'John Smith', email: 'john@example.com', phone: '+1 (555) 123-4567' },
+          items: [
+            { id: 1, name: 'Premium Wireless Headphones', quantity: 1, price: 149.99, total: 149.99 },
+            { id: 2, name: 'Wireless Charging Pad', quantity: 1, price: 39.99, total: 39.99 }
+          ],
+          total: 189.98,
           status: 'packing',
           paymentStatus: 'paid',
-          date: '2024-01-15',
           orderDate: '2024-01-15T08:00:00Z',
-          items: [
-            { id: 1, name: 'Premium Wireless Headphones', quantity: 1, price: 149.99, sku: 'PWH-001' },
-            { id: 2, name: 'Wireless Charging Pad', quantity: 1, price: 39.99, sku: 'WCP-002' }
-          ],
-          shipping: {
-            address: '123 Main St, New York, NY 10001',
-            method: 'Standard Shipping',
-            tracking: 'TRK123456789'
-          },
-          type: 'our',
-          priority: 'normal'
+          shippingAddress: { address: '123 Main St', city: 'New York', state: 'NY', zipCode: '10001', country: 'USA' },
+          billingAddress: { address: '123 Main St', city: 'New York', state: 'NY', zipCode: '10001', country: 'USA' },
+          paymentMethod: 'Credit Card',
+          shippingMethod: 'Standard Shipping',
+          trackingNumber: 'TRK123456789',
+          notes: 'Some notes for order FL001'
         },
         {
           id: 'FL002',
-          customer: 'Sarah Johnson',
-          email: 'sarah@example.com',
-          phone: '+1 (555) 987-6543',
-          amount: 149.50,
+          orderNumber: 'FL002',
+          customer: { name: 'Sarah Johnson', email: 'sarah@example.com', phone: '+1 (555) 987-6543' },
+          items: [
+            { id: 3, name: 'Organic Cotton T-Shirt', quantity: 2, price: 29.99, total: 59.98 },
+            { id: 4, name: 'Eco-Friendly Water Bottle', quantity: 1, price: 24.99, total: 24.99 }
+          ],
+          total: 84.97,
           status: 'shipped',
           paymentStatus: 'paid',
-          date: '2024-01-14',
           orderDate: '2024-01-14T10:30:00Z',
-          items: [
-            { id: 3, name: 'Organic Cotton T-Shirt', quantity: 2, price: 29.99, sku: 'OCT-003' },
-            { id: 4, name: 'Eco-Friendly Water Bottle', quantity: 1, price: 24.99, sku: 'EWB-004' }
-          ],
-          shipping: {
-            address: '456 Oak Ave, Los Angeles, CA 90210',
-            method: 'Express Shipping',
-            tracking: 'TRK987654321'
-          },
-          type: 'our',
-          priority: 'high'
+          shippingAddress: { address: '456 Oak Ave', city: 'Los Angeles', state: 'CA', zipCode: '90210', country: 'USA' },
+          billingAddress: { address: '456 Oak Ave', city: 'Los Angeles', state: 'CA', zipCode: '90210', country: 'USA' },
+          paymentMethod: 'PayPal',
+          shippingMethod: 'Express Shipping',
+          trackingNumber: 'TRK987654321',
+          notes: 'Some notes for order FL002'
         },
         {
           id: 'FL003',
-          customer: 'Mike Chen',
-          email: 'mike@example.com',
-          phone: '+1 (555) 456-7890',
-          amount: 89.99,
+          orderNumber: 'FL003',
+          customer: { name: 'Mike Chen', email: 'mike@example.com', phone: '+1 (555) 456-7890' },
+          items: [
+            { id: 5, name: 'Bluetooth Speaker', quantity: 1, price: 89.99, total: 89.99 }
+          ],
+          total: 89.99,
           status: 'delivered',
           paymentStatus: 'paid',
-          date: '2024-01-13',
           orderDate: '2024-01-13T14:15:00Z',
-          items: [
-            { id: 5, name: 'Bluetooth Speaker', quantity: 1, price: 89.99, sku: 'BTS-005' }
-          ],
-          shipping: {
-            address: '789 Pine St, Chicago, IL 60601',
-            method: 'Standard Shipping',
-            tracking: 'TRK456789123'
-          },
-          type: 'dropship',
-          priority: 'normal'
+          shippingAddress: { address: '789 Pine St', city: 'Chicago', state: 'IL', zipCode: '60601', country: 'USA' },
+          billingAddress: { address: '789 Pine St', city: 'Chicago', state: 'IL', zipCode: '60601', country: 'USA' },
+          paymentMethod: 'Bank Transfer',
+          shippingMethod: 'Standard Shipping',
+          trackingNumber: 'TRK456789123',
+          notes: 'Some notes for order FL003'
         },
         {
           id: 'FL004',
-          customer: 'Emma Wilson',
-          email: 'emma@example.com',
-          phone: '+1 (555) 234-5678',
-          amount: 199.99,
+          orderNumber: 'FL004',
+          customer: { name: 'Emma Wilson', email: 'emma@example.com', phone: '+1 (555) 234-5678' },
+          items: [
+            { id: 6, name: 'Smart Fitness Watch', quantity: 1, price: 199.99, total: 199.99 }
+          ],
+          total: 199.99,
           status: 'pending-payment',
           paymentStatus: 'pending',
-          date: '2024-01-12',
           orderDate: '2024-01-12T16:45:00Z',
-          items: [
-            { id: 6, name: 'Smart Fitness Watch', quantity: 1, price: 199.99, sku: 'SFW-006' }
-          ],
-          shipping: {
-            address: '321 Elm St, Miami, FL 33101',
-            method: 'Express Shipping',
-            tracking: ''
-          },
-          type: 'dropship',
-          priority: 'normal'
+          shippingAddress: { address: '321 Elm St', city: 'Miami', state: 'FL', zipCode: '33101', country: 'USA' },
+          billingAddress: { address: '321 Elm St', city: 'Miami', state: 'FL', zipCode: '33101', country: 'USA' },
+          paymentMethod: 'Credit Card',
+          shippingMethod: 'Express Shipping',
+          trackingNumber: '',
+          notes: 'Some notes for order FL004'
         },
         {
           id: 'FL005',
-          customer: 'David Brown',
-          email: 'david@example.com',
-          phone: '+1 (555) 345-6789',
-          amount: 79.99,
+          orderNumber: 'FL005',
+          customer: { name: 'David Brown', email: 'david@example.com', phone: '+1 (555) 345-6789' },
+          items: [
+            { id: 7, name: 'Wireless Mouse', quantity: 1, price: 79.99, total: 79.99 }
+          ],
+          total: 79.99,
           status: 'cancelled',
           paymentStatus: 'refunded',
-          date: '2024-01-11',
           orderDate: '2024-01-11T09:20:00Z',
-          items: [
-            { id: 7, name: 'Wireless Mouse', quantity: 1, price: 79.99, sku: 'WM-007' }
-          ],
-          shipping: {
-            address: '654 Maple Ave, Seattle, WA 98101',
-            method: 'Standard Shipping',
-            tracking: ''
-          },
-          type: 'our',
-          priority: 'low'
+          shippingAddress: { address: '654 Maple Ave', city: 'Seattle', state: 'WA', zipCode: '98101', country: 'USA' },
+          billingAddress: { address: '654 Maple Ave', city: 'Seattle', state: 'WA', zipCode: '98101', country: 'USA' },
+          paymentMethod: 'Cash on Delivery',
+          shippingMethod: 'Standard Shipping',
+          trackingNumber: '',
+          notes: 'Some notes for order FL005'
         }
       ];
 
@@ -228,9 +267,10 @@ export default function OrderManagement() {
     if (searchTerm) {
       filtered = filtered.filter(order =>
         order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.customer.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        order.phone.toLowerCase().includes(searchTerm.toLowerCase())
+        order.orderNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        order.customer.phone.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
@@ -265,7 +305,7 @@ export default function OrderManagement() {
     setCurrentPage(1);
   }, [searchTerm, statusFilter, paymentFilter, dateFilter, orders]);
 
-  const handleUpdateStatus = (order) => {
+  const handleUpdateStatus = (order: Order) => {
     setSelectedOrder(order);
     setNewStatus(order.status);
     setShowUpdateModal(true);
@@ -316,11 +356,11 @@ export default function OrderManagement() {
     showNotification(`Order ${selectedOrder.id} status updated to "${orderStatuses[newStatus].label}"`, 'success');
   };
 
-  const applyAutomationRules = async (order, oldStatus, newStatus) => {
+  const applyAutomationRules = async (order: Order, oldStatus: string, newStatus: string) => {
     // Automation logic here
   };
 
-  const showNotification = (message, type = 'info') => {
+  const showNotification = (message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info') => {
     const notification = document.createElement('div');
     notification.className = `fixed top-4 right-4 z-50 p-4 rounded-lg shadow-lg max-w-sm ${
       type === 'success' ? 'bg-green-500 text-white' :
@@ -344,7 +384,7 @@ export default function OrderManagement() {
     }, 5000);
   };
 
-  const handleGenerateInvoice = async (order) => {
+  const handleGenerateInvoice = async (order: Order) => {
     try {
       const invoice = await invoiceService.generateInvoice(order);
       showNotification(`Invoice ${invoice.invoiceNumber} generated successfully`, 'success');
@@ -587,12 +627,12 @@ export default function OrderManagement() {
                         </div>
                         <div>
                           <h3 className="font-medium text-gray-900">#{order.id}</h3>
-                          <p className="text-sm text-gray-500">{order.customer}</p>
+                          <p className="text-sm text-gray-500">{order.customer.name}</p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="font-medium text-gray-900">${order.amount}</p>
-                        <p className="text-sm text-gray-500">{order.date}</p>
+                        <p className="font-medium text-gray-900">${order.total}</p>
+                        <p className="text-sm text-gray-500">{new Date(order.orderDate).toLocaleDateString()}</p>
                       </div>
                     </div>
 
@@ -607,8 +647,8 @@ export default function OrderManagement() {
                           {paymentStatuses[order.paymentStatus]?.label || order.paymentStatus}
                         </span>
                       </div>
-                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${order.type === 'our' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
-                        {order.type === 'our' ? 'Our Stock' : 'Dropship'}
+                      <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${order.status === 'our' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                        {order.status === 'our' ? 'Our Stock' : 'Dropship'}
                       </span>
                     </div>
 
@@ -668,10 +708,10 @@ export default function OrderManagement() {
                             <div className="text-sm text-gray-500">{order.items.length} item(s)</div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{order.customer}</div>
-                            <div className="text-sm text-gray-500">{order.email}</div>
+                            <div className="text-sm font-medium text-gray-900">{order.customer.name}</div>
+                            <div className="text-sm text-gray-500">{order.customer.email}</div>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${order.amount}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 font-medium">${order.total}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${orderStatuses[order.status]?.color || 'bg-gray-100 text-gray-800'}`}>
                               <i className={`${orderStatuses[order.status]?.icon || 'ri-question-line'} mr-1`}></i>
@@ -685,11 +725,11 @@ export default function OrderManagement() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.type === 'our' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
-                              {order.type === 'our' ? 'Our Stock' : 'Dropship'}
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${order.status === 'our' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'}`}>
+                              {order.status === 'our' ? 'Our Stock' : 'Dropship'}
                             </span>
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.date}</td>
+                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{new Date(order.orderDate).toLocaleDateString()}</td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                             <div className="flex items-center space-x-2">
                               <button

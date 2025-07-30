@@ -38,7 +38,34 @@ function AdminDashboardContent() {
     conversionRate: 0
   });
 
-  const [analyticsData, setAnalyticsData] = useState({
+  const [analyticsData, setAnalyticsData] = useState<{
+    revenueData: Array<{
+      date: string;
+      revenue: number;
+      orders: number;
+    }>;
+    ordersByStatus: Array<{
+      status: string;
+      count: number;
+      percentage: number;
+    }>;
+    topProducts: Array<{
+      name: string;
+      sales: number;
+      revenue: number;
+    }>;
+    trafficData: Array<{
+      date: string;
+      visitors: number;
+      pageViews: number;
+      bounceRate: number;
+    }>;
+    userGrowthData: Array<{
+      month: string;
+      users: number;
+      newUsers: number;
+    }>;
+  }>({
     revenueData: [],
     ordersByStatus: [],
     topProducts: [],
@@ -46,8 +73,18 @@ function AdminDashboardContent() {
     userGrowthData: []
   });
 
-  const [recentOrders, setRecentOrders] = useState([]);
-  const [recentActivity, setRecentActivity] = useState([]);
+  const [recentOrders, setRecentOrders] = useState<Array<{
+    id: string;
+    customer: string;
+    amount: number;
+    status: string;
+    date: string;
+  }>>([]);
+  const [recentActivity, setRecentActivity] = useState<Array<{
+    type: string;
+    message: string;
+    time: string;
+  }>>([]);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -204,33 +241,31 @@ function AdminDashboardContent() {
     URL.revokeObjectURL(url);
   };
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, string> = {
       pending: 'bg-yellow-100 text-yellow-800',
       processing: 'bg-blue-100 text-blue-800',
       shipped: 'bg-purple-100 text-purple-800',
       delivered: 'bg-green-100 text-green-800',
       cancelled: 'bg-red-100 text-red-800'
     };
-
     return statusConfig[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getActivityIcon = (type) => {
-    const icons = {
-      order: 'ri-shopping-bag-line',
-      product: 'ri-box-3-line',
-      customer: 'ri-user-line',
-      system: 'ri-settings-3-line'
+  const getActivityIcon = (type: string) => {
+    const iconConfig: Record<string, string> = {
+      order: '📦',
+      product: '🛍️',
+      customer: '👤',
+      system: '⚙️'
     };
-
-    return icons[type] || 'ri-information-line';
+    return iconConfig[type] || '📋';
   };
 
-  const formatDuration = (seconds) => {
+  const formatDuration = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
-    return `${minutes}m ${remainingSeconds}s`;
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
   return (

@@ -7,13 +7,23 @@ import { getSupportedLanguages, getSupportedCurrencies, translations } from '@/l
 import { currencyManager } from '@/lib/currency-manager';
 import { activityLogger } from '@/lib/activity-logger';
 
+interface TranslationData {
+  [key: string]: string;
+}
+
+interface UploadedFile {
+  name: string;
+  content: string;
+  type: string;
+}
+
 export default function TranslationsPage() {
   const { t, language, changeLanguage } = useTranslation();
   const [selectedLanguage, setSelectedLanguage] = useState('en');
   const [selectedNamespace, setSelectedNamespace] = useState('common');
-  const [translations, setTranslations] = useState({});
+  const [translations, setTranslations] = useState<TranslationData>({});
   const [newTranslation, setNewTranslation] = useState({ key: '', value: '' });
-  const [uploadedFile, setUploadedFile] = useState(null);
+  const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [isDirty, setIsDirty] = useState(false);

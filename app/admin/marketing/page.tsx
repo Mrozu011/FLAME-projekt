@@ -56,6 +56,14 @@ interface Subscriber {
   customFields: Record<string, any>;
 }
 
+interface MarketingTestResult {
+  [platform: string]: {
+    success: boolean;
+    message: string;
+    details?: any;
+  };
+}
+
 export default function MarketingEmail() {
   const { t } = useTranslation();
   const [activeTab, setActiveTab] = useState('campaigns');
@@ -193,7 +201,7 @@ export default function MarketingEmail() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig = {
+    const statusConfig: Record<string, string> = {
       draft: 'bg-gray-100 text-gray-800',
       scheduled: 'bg-blue-100 text-blue-800',
       sending: 'bg-yellow-100 text-yellow-800',
@@ -1063,14 +1071,21 @@ function TemplateModal({ template, onClose, onSave }: { template?: EmailTemplate
 function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () => void }) {
   const [settings, setSettings] = useState({
     mailchimp: {
+      enabled: false,
       apiKey: '',
       listId: '',
-      enabled: false
+      serverPrefix: ''
     },
     brevo: {
+      enabled: false,
       apiKey: '',
-      listId: '',
-      enabled: false
+      listId: ''
+    },
+    sendgrid: {
+      enabled: false,
+      apiKey: '',
+      fromEmail: '',
+      fromName: ''
     },
     autoTranslation: {
       enabled: false,
@@ -1078,7 +1093,7 @@ function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () =>
     }
   });
   const [loading, setLoading] = useState(false);
-  const [testResults, setTestResults] = useState({});
+  const [testResults, setTestResults] = useState<MarketingTestResult>({});
 
   const handleTest = async (platform: string) => {
     setLoading(true);

@@ -36,9 +36,16 @@ interface SupportAttachment {
   type: string;
 }
 
+interface UserSession {
+  id: string;
+  email: string;
+  name: string;
+  role: string;
+}
+
 export default function CustomerSupportPage() {
   const router = useRouter();
-  const [userSession, setUserSession] = useState(null);
+  const [userSession, setUserSession] = useState<UserSession | null>(null);
   const [activeTab, setActiveTab] = useState('new');
   const [messages, setMessages] = useState<SupportMessage[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<SupportMessage | null>(null);
