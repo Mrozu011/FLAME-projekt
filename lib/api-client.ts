@@ -1,4 +1,4 @@
-'use client';
+
 
 interface ApiResponse<T = any> {
   success: boolean;

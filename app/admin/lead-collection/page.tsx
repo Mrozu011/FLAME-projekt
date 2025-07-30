@@ -3,14 +3,50 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+interface LeadForm {
+  id: number;
+  name: string;
+  title: string;
+  description: string;
+  fields: string[];
+  submissions: number;
+  conversionRate: number;
+  status: string;
+  created: string;
+}
+
+interface Lead {
+  id: number;
+  formId: number;
+  name: string;
+  email: string;
+  phone?: string;
+  message?: string;
+  submittedAt: string;
+  status: string;
+  source: string;
+}
+
+interface FormData {
+  name: string;
+  title: string;
+  description: string;
+  fields: string[];
+  settings: {
+    enableNotifications: boolean;
+    redirectUrl: string;
+    thankYouMessage: string;
+  };
+}
+
 export default function LeadCollectionPage() {
   const [activeTab, setActiveTab] = useState('forms');
-  const [leadForms, setLeadForms] = useState([]);
-  const [leads, setLeads] = useState([]);
+  const [leadForms, setLeadForms] = useState<LeadForm[]>([]);
+  const [leads, setLeads] = useState<Lead[]>([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
-  const [selectedLead, setSelectedLead] = useState(null);
+  const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [showLeadModal, setShowLeadModal] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: '',
     title: '',
     description: '',
@@ -136,7 +172,7 @@ export default function LeadCollectionPage() {
     setShowCreateForm(false);
   };
 
-  const handleLeadStatusUpdate = (leadId, newStatus) => {
+  const handleLeadStatusUpdate = (leadId: number, newStatus: string) => {
     setLeads(leads.map(lead => 
       lead.id === leadId 
         ? { ...lead, status: newStatus }
@@ -144,7 +180,7 @@ export default function LeadCollectionPage() {
     ));
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     const statusConfig = {
       new: 'bg-blue-100 text-blue-800',
       contacted: 'bg-yellow-100 text-yellow-800',
@@ -156,7 +192,7 @@ export default function LeadCollectionPage() {
     return statusConfig[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getPriorityBadge = (priority) => {
+  const getPriorityBadge = (priority: string) => {
     const priorityConfig = {
       low: 'bg-gray-100 text-gray-800',
       medium: 'bg-yellow-100 text-yellow-800',
@@ -166,7 +202,7 @@ export default function LeadCollectionPage() {
     return priorityConfig[priority] || 'bg-gray-100 text-gray-800';
   };
 
-  const getFormStatusBadge = (status) => {
+  const getFormStatusBadge = (status: string) => {
     const statusConfig = {
       active: 'bg-green-100 text-green-800',
       draft: 'bg-yellow-100 text-yellow-800',
@@ -176,7 +212,7 @@ export default function LeadCollectionPage() {
     return statusConfig[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',

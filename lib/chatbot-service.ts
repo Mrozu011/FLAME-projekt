@@ -1,5 +1,5 @@
 
-'use client';
+
 
 export interface ChatMessage {
   id: string;

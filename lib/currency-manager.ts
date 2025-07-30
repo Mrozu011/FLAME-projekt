@@ -1,5 +1,5 @@
 
-'use client';
+
 
 import { getExchangeRates, formatPrice, convertPrice } from './translations';
 

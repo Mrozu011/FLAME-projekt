@@ -1,4 +1,4 @@
-'use client';
+
 
 interface BusinessAccount {
   id: string;

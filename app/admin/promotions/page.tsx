@@ -3,12 +3,62 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+interface Promotion {
+  id: number;
+  code: string;
+  name: string;
+  type: string;
+  value: number;
+  conditions: {
+    minOrderValue: number;
+    validCategories: string[];
+    firstTimeOnly: boolean;
+    validProducts: number[];
+  };
+  usageLimits: {
+    totalUses: number;
+    perUserLimit: number;
+    enabled: boolean;
+  };
+  validFrom: string;
+  validUntil: string;
+  active: boolean;
+  description: string;
+  priority: string;
+  usageCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+interface PromotionForm {
+  code: string;
+  name: string;
+  type: string;
+  value: string;
+  conditions: {
+    minOrderValue: string;
+    validCategories: string[];
+    firstTimeOnly: boolean;
+    validProducts: number[];
+  };
+  usageLimits: {
+    totalUses: string;
+    perUserLimit: string;
+    enabled: boolean;
+  };
+  validFrom: string;
+  validUntil: string;
+  active: boolean;
+  description: string;
+  priority: string;
+}
+
 export default function PromotionsManagement() {
-  const [promotions, setPromotions] = useState([]);
+  const [promotions, setPromotions] = useState<Promotion[]>([]);
   const [showModal, setShowModal] = useState(false);
-  const [editingPromotion, setEditingPromotion] = useState(null);
+  const [editingPromotion, setEditingPromotion] = useState<Promotion | null>(null);
   const [activeTab, setActiveTab] = useState('active');
-  const [promotionForm, setPromotionForm] = useState({
+  const [promotionForm, setPromotionForm] = useState<PromotionForm>({
     code: '',
     name: '',
     type: 'percentage',
@@ -32,7 +82,7 @@ export default function PromotionsManagement() {
   });
 
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
-  const [bulkActions, setBulkActions] = useState([]);
+  const [bulkActions, setBulkActions] = useState<string[]>([]);
 
   const categories = [
     { id: 'men', name: 'Men' },
@@ -52,16 +102,16 @@ export default function PromotionsManagement() {
   ];
 
   useEffect(() => {
-    const mockPromotions = [
+    const mockPromotions: Promotion[] = [
       {
         id: 1,
-        code: 'SUMMER25',
-        name: 'Summer Sale 2024',
+        code: 'SAVE10',
+        name: '10% Off All Items',
         type: 'percentage',
-        value: 25,
+        value: 10,
         conditions: {
-          minOrderValue: 75,
-          validCategories: ['men', 'women'],
+          minOrderValue: 50,
+          validCategories: [],
           firstTimeOnly: false,
           validProducts: []
         },
@@ -70,14 +120,14 @@ export default function PromotionsManagement() {
           perUserLimit: 1,
           enabled: true
         },
-        validFrom: '2024-06-01',
-        validUntil: '2024-08-31',
+        validFrom: '2024-01-01',
+        validUntil: '2024-12-31',
         active: true,
-        description: 'Summer collection discount',
-        priority: 'high',
-        usageCount: 234,
-        createdAt: '2024-05-15T10:00:00Z',
-        updatedAt: '2024-05-15T10:00:00Z'
+        description: 'Get 10% off your entire order',
+        priority: 'normal',
+        usageCount: 156,
+        createdAt: '2024-01-01T00:00:00Z',
+        updatedAt: '2024-01-15T00:00:00Z'
       },
       {
         id: 2,
@@ -162,8 +212,9 @@ export default function PromotionsManagement() {
     setPromotions(mockPromotions);
   }, []);
 
-  const handleFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+          const { name, value, type } = e.target;
+      const checked = (e.target as HTMLInputElement).checked;
     
     if (name.includes('.')) {
       const [parent, child] = name.split('.');
@@ -182,7 +233,7 @@ export default function PromotionsManagement() {
     }
   };
 
-  const handleCategoryChange = (categoryId) => {
+  const handleCategoryChange = (categoryId: string) => {
     setPromotionForm(prev => ({
       ...prev,
       conditions: {
@@ -194,7 +245,7 @@ export default function PromotionsManagement() {
     }));
   };
 
-  const handleProductChange = (productId) => {
+  const handleProductChange = (productId: number) => {
     setPromotionForm(prev => ({
       ...prev,
       conditions: {
@@ -206,7 +257,7 @@ export default function PromotionsManagement() {
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: 'loading', message: 'Saving promotion...' });
 
@@ -216,12 +267,12 @@ export default function PromotionsManagement() {
       return;
     }
 
-    if (promotionForm.type !== 'shipping' && (!promotionForm.value || promotionForm.value <= 0)) {
+    if (promotionForm.type !== 'shipping' && (!promotionForm.value || parseFloat(promotionForm.value) <= 0)) {
       setSubmitStatus({ type: 'error', message: 'Please provide a valid discount value.' });
       return;
     }
 
-    if (promotionForm.type === 'percentage' && promotionForm.value > 100) {
+    if (promotionForm.type === 'percentage' && parseFloat(promotionForm.value) > 100) {
       setSubmitStatus({ type: 'error', message: 'Percentage discount cannot exceed 100%.' });
       return;
     }
@@ -322,13 +373,13 @@ export default function PromotionsManagement() {
     });
   };
 
-  const handleEdit = (promotion) => {
+  const handleEdit = (promotion: Promotion) => {
     setEditingPromotion(promotion);
     setPromotionForm({
       code: promotion.code,
       name: promotion.name,
       type: promotion.type,
-      value: promotion.value,
+      value: promotion.value.toString(),
       conditions: promotion.conditions,
       usageLimits: promotion.usageLimits,
       validFrom: promotion.validFrom,
@@ -340,13 +391,13 @@ export default function PromotionsManagement() {
     setShowModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this promotion?')) {
       setPromotions(promotions.filter(promo => promo.id !== id));
     }
   };
 
-  const toggleActive = (id) => {
+  const toggleActive = (id: number) => {
     setPromotions(promotions.map(promo =>
       promo.id === id
         ? { ...promo, active: !promo.active, updatedAt: new Date().toISOString() }
@@ -354,7 +405,7 @@ export default function PromotionsManagement() {
     ));
   };
 
-  const duplicatePromotion = (promotion) => {
+  const duplicatePromotion = (promotion: Promotion) => {
     const duplicated = {
       ...promotion,
       id: Date.now(),
@@ -368,7 +419,7 @@ export default function PromotionsManagement() {
     setPromotions([...promotions, duplicated]);
   };
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = (type: string) => {
     switch (type) {
       case 'percentage': return 'ri-percent-line';
       case 'fixed': return 'ri-money-dollar-circle-line';
@@ -377,7 +428,7 @@ export default function PromotionsManagement() {
     }
   };
 
-  const getTypeBadge = (type) => {
+  const getTypeBadge = (type: string) => {
     const typeConfig = {
       percentage: 'bg-blue-100 text-blue-800',
       fixed: 'bg-green-100 text-green-800',
@@ -386,7 +437,7 @@ export default function PromotionsManagement() {
     return typeConfig[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const getPriorityBadge = (priority) => {
+  const getPriorityBadge = (priority: string) => {
     const priorityConfig = {
       high: 'bg-red-100 text-red-800',
       normal: 'bg-gray-100 text-gray-800',
@@ -395,18 +446,18 @@ export default function PromotionsManagement() {
     return priorityConfig[priority] || 'bg-gray-100 text-gray-800';
   };
 
-  const getStatusBadge = (active) => {
+  const getStatusBadge = (active: boolean) => {
     return active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   };
 
-  const formatValue = (promotion) => {
+  const formatValue = (promotion: Promotion) => {
     if (promotion.type === 'percentage') return `${promotion.value}%`;
     if (promotion.type === 'fixed') return `$${promotion.value}`;
     if (promotion.type === 'shipping') return 'Free Shipping';
     return promotion.value;
   };
 
-  const getUsageProgress = (promotion) => {
+  const getUsageProgress = (promotion: Promotion) => {
     if (!promotion.usageLimits.totalUses) return 0;
     return Math.min((promotion.usageCount / promotion.usageLimits.totalUses) * 100, 100);
   };

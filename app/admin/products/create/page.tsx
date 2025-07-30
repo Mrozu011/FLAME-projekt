@@ -9,6 +9,51 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { activityLogger } from '@/lib/activity-logger';
 import PriceDisplay from '@/components/PriceDisplay';
 
+interface ProductFormData {
+  name: string;
+  description: string;
+  category: string;
+  subcategory: string;
+  price: string;
+  comparePrice: string;
+  sku: string;
+  stock: string;
+  weight: string;
+  dimensions: string;
+  materials: string;
+  tags: string;
+  images: string[];
+  variants: any[];
+  brand: string;
+  warranty: string;
+  origin: string;
+  careInstructions: string[];
+}
+
+interface LanguageVersions {
+  en: { name: string; description: string };
+  pl: { name: string; description: string };
+  it: { name: string; description: string };
+  pt: { name: string; description: string };
+  fr: { name: string; description: string };
+  de: { name: string; description: string };
+}
+
+interface DropshipData {
+  supplierName: string;
+  supplierUrl: string;
+  supplierPrice: string;
+  shippingCost: string;
+  processingTime: string;
+  apiEndpoint: string;
+}
+
+interface ImageData {
+  uploadedImages: (string | { id: number; name: string; url: string; file: File | null })[];
+  uploadProgress: Record<string, number>;
+  mainImageIndex: number;
+}
+
 export default function CreateProduct() {
   const router = useRouter();
   const { t, language, changeLanguage } = useTranslation();
@@ -16,7 +61,7 @@ export default function CreateProduct() {
   
   const [productType, setProductType] = useState('our');
   const [activeTab, setActiveTab] = useState('general');
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<ProductFormData>({
     name: '',
     description: '',
     category: '',
@@ -37,7 +82,7 @@ export default function CreateProduct() {
     careInstructions: []
   });
 
-  const [languageVersions, setLanguageVersions] = useState({
+  const [languageVersions, setLanguageVersions] = useState<LanguageVersions>({
     en: { name: '', description: '' },
     pl: { name: '', description: '' },
     it: { name: '', description: '' },
@@ -46,7 +91,7 @@ export default function CreateProduct() {
     de: { name: '', description: '' }
   });
 
-  const [dropshipData, setDropshipData] = useState({
+  const [dropshipData, setDropshipData] = useState<DropshipData>({
     supplierName: '',
     supplierUrl: '',
     supplierPrice: '',
@@ -55,15 +100,15 @@ export default function CreateProduct() {
     apiEndpoint: ''
   });
 
-  const [imageData, setImageData] = useState({
+  const [imageData, setImageData] = useState<ImageData>({
     uploadedImages: [],
     uploadProgress: {},
     mainImageIndex: 0
   });
 
-  const [sizeOptions, setSizeOptions] = useState([]);
-  const [colorOptions, setColorOptions] = useState([]);
-  const [careInstructions, setCareInstructions] = useState([]);
+  const [sizeOptions, setSizeOptions] = useState<string[]>([]);
+  const [colorOptions, setColorOptions] = useState<string[]>([]);
+  const [careInstructions, setCareInstructions] = useState<string[]>([]);
   const [newCareInstruction, setNewCareInstruction] = useState('');
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
   const [loading, setLoading] = useState(false);
@@ -126,7 +171,7 @@ export default function CreateProduct() {
     }));
   }, [formData.name, formData.description, language]);
 
-  const handleInputChange = (e) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ 
       ...prev,
@@ -134,7 +179,7 @@ export default function CreateProduct() {
     }));
   };
 
-  const handleLanguageVersionChange = (lang, field, value) => {
+  const handleLanguageVersionChange = (lang: string, field: string, value: string) => {
     setLanguageVersions(prev => ({
       ...prev,
       [lang]: {
@@ -144,7 +189,7 @@ export default function CreateProduct() {
     }));
   };
 
-  const handleDropshipChange = (e) => {
+  const handleDropshipChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setDropshipData(prev => ({ 
       ...prev,
@@ -152,8 +197,8 @@ export default function CreateProduct() {
     }));
   };
 
-  const handleImageUpload = (event) => {
-    const files = Array.from(event.target.files);
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
     
     files.forEach((file, index) => {
       if (!file.type.startsWith('image/')) {
@@ -168,7 +213,7 @@ export default function CreateProduct() {
 
       const reader = new FileReader();
       reader.onload = (e) => {
-        const imageUrl = e.target.result;
+        const imageUrl = e.target?.result as string;
         const newImage = {
           id: Date.now() + index,
           name: file.name,
@@ -185,7 +230,7 @@ export default function CreateProduct() {
     });
   };
 
-  const removeImage = (imageId) => {
+  const removeImage = (imageId: string) => {
     setImageData(prev => ({
       ...prev,
       uploadedImages: prev.uploadedImages.filter(img => img.id !== imageId),
@@ -193,7 +238,7 @@ export default function CreateProduct() {
     }));
   };
 
-  const setMainImage = (index) => {
+  const setMainImage = (index: number) => {
     setImageData(prev => ({
       ...prev,
       mainImageIndex: index
@@ -216,7 +261,7 @@ export default function CreateProduct() {
     }
   };
 
-  const handleSizeToggle = (size) => {
+  const handleSizeToggle = (size: string) => {
     setSizeOptions(prev => 
       prev.includes(size)
         ? prev.filter(s => s !== size)
@@ -224,7 +269,7 @@ export default function CreateProduct() {
     );
   };
 
-  const handleColorToggle = (color) => {
+  const handleColorToggle = (color: string) => {
     setColorOptions(prev => 
       prev.includes(color)
         ? prev.filter(c => c !== color)
@@ -239,16 +284,16 @@ export default function CreateProduct() {
     }
   };
 
-  const removeCareInstruction = (index) => {
+  const removeCareInstruction = (index: number) => {
     setCareInstructions(prev => prev.filter((_, i) => i !== index));
   };
 
-  const showNotification = (message, type) => {
+  const showNotification = (message: string, type: 'success' | 'error' | 'info') => {
     setSubmitStatus({ type, message });
     setTimeout(() => setSubmitStatus({ type: '', message: '' }), 5000);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.price || !formData.category) {
@@ -479,7 +524,7 @@ export default function CreateProduct() {
                       name="productType"
                       value="our"
                       checked={productType === 'our'}
-                      onChange={(e) => setProductType(e.target.value)}
+                      onChange={(e) => setProductType(e.target.value as 'our' | 'dropship')}
                       className="mr-3 w-4 h-4 text-blue-600"
                     />
                     <span className="text-gray-900 font-medium">Our Product</span>
@@ -490,7 +535,7 @@ export default function CreateProduct() {
                       name="productType"
                       value="dropship"
                       checked={productType === 'dropship'}
-                      onChange={(e) => setProductType(e.target.value)}
+                      onChange={(e) => setProductType(e.target.value as 'our' | 'dropship')}
                       className="mr-3 w-4 h-4 text-blue-600"
                     />
                     <span className="text-gray-900 font-medium">Dropshipping Product</span>
@@ -766,20 +811,20 @@ export default function CreateProduct() {
                           </h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {imageData.uploadedImages.map((image, index) => (
-                              <div key={image.id} className="relative group">
+                              <div key={typeof image === 'string' ? image : image.id} className="relative group">
                                 <div className={`relative border-2 rounded-lg overflow-hidden ${
-                                  index === imageData.mainImageIndex ? 'border-blue-500' : 'border-gray-200'
+                                  typeof image === 'string' ? (imageData.uploadedImages[imageData.mainImageIndex] === image ? 'border-blue-500' : 'border-gray-200') : (image.id === imageData.uploadedImages[imageData.mainImageIndex]?.id ? 'border-blue-500' : 'border-gray-200')
                                 }`}>
                                   <img
-                                    src={image.url}
-                                    alt={image.name}
+                                    src={typeof image === 'string' ? image : image.url}
+                                    alt={typeof image === 'string' ? `Image ${index + 1}` : image.name}
                                     className="w-full h-32 object-cover"
                                   />
                                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
                                       <button
                                         type="button"
-                                        onClick={() => setMainImage(index)}
+                                        onClick={() => setMainImage(imageData.uploadedImages.findIndex(img => typeof img === 'string' ? img === image : img.id === image.id))}
                                         className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                                         title="Set as main image"
                                       >
@@ -787,7 +832,7 @@ export default function CreateProduct() {
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => removeImage(image.id)}
+                                        onClick={() => removeImage(typeof image === 'string' ? image : image.id)}
                                         className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                                         title="Remove image"
                                       >
@@ -797,9 +842,15 @@ export default function CreateProduct() {
                                   </div>
                                 </div>
                                 <div className="mt-2 text-center">
-                                  <p className="text-xs text-gray-600 truncate">{image.name}</p>
-                                  {index === imageData.mainImageIndex && (
-                                    <p className="text-xs text-blue-600 font-medium">Main Image</p>
+                                  <p className="text-xs text-gray-600 truncate">{typeof image === 'string' ? `Image ${index + 1}` : image.name}</p>
+                                  {typeof image === 'string' ? (
+                                    imageData.uploadedImages[imageData.mainImageIndex] === image && (
+                                      <p className="text-xs text-blue-600 font-medium">Main Image</p>
+                                    )
+                                  ) : (
+                                    image.id === imageData.uploadedImages[imageData.mainImageIndex]?.id && (
+                                      <p className="text-xs text-blue-600 font-medium">Main Image</p>
+                                    )
                                   )}
                                 </div>
                               </div>

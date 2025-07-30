@@ -99,15 +99,15 @@ export default function UserInvoicesPage() {
     setCurrentPage(1);
   };
 
-  const handleDownloadInvoice = (invoice) => {
+  const handleDownloadInvoice = (invoice: any) => {
     invoiceService.downloadInvoice(invoice);
   };
 
-  const handlePrintInvoice = (invoice) => {
+  const handlePrintInvoice = (invoice: any) => {
     invoiceService.printInvoice(invoice);
   };
 
-  const handleViewInvoice = (invoice) => {
+  const handleViewInvoice = (invoice: any) => {
     const html = invoiceService.generateHTML(invoice);
     const viewWindow = window.open('', '_blank', 'width=800,height=600');
     if (viewWindow) {
@@ -116,7 +116,7 @@ export default function UserInvoicesPage() {
     }
   };
 
-  const getStatusBadge = (status) => {
+  const getStatusBadge = (status: string) => {
     const statusConfig = {
       'paid': 'bg-green-100 text-green-800',
       'pending': 'bg-yellow-100 text-yellow-800',
@@ -127,7 +127,7 @@ export default function UserInvoicesPage() {
     return statusConfig[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     const statusConfig = {
       'paid': 'ri-check-line',
       'pending': 'ri-time-line',
@@ -138,7 +138,7 @@ export default function UserInvoicesPage() {
     return statusConfig[status] || 'ri-question-line';
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -146,7 +146,7 @@ export default function UserInvoicesPage() {
     });
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'

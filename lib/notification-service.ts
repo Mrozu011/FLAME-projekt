@@ -1,5 +1,5 @@
 
-'use client';
+
 
 export interface NotificationRule {
   id: string;

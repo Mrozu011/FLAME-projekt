@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
 export default function ContentManagement() {
-  const [sliderItems, setSliderItems] = useState([]);
+  const [sliderItems, setSliderItems] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('slider');
   const [showSliderModal, setShowSliderModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -265,9 +265,9 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     setSliderItems(mockSliderItems.sort((a, b) => a.order - b.order));
   }, []);
 
-  const handleFileUpload = async (event) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (!event.target.files || event.target.files.length === 0) return;
     const file = event.target.files[0];
-    if (!file) return;
 
     const maxSize = uploadType === 'image' ? 5 * 1024 * 1024 : 50 * 1024 * 1024;
     if (file.size > maxSize) {
@@ -316,7 +316,8 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
       setShowSliderModal(true);
       
     } catch (error) {
-      setSubmitStatus({ type: 'error', message: 'Upload failed. Please try again.' });
+      const err = error as Error;
+      setSubmitStatus({ type: 'error', message: err.message || 'Upload failed. Please try again.' });
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -324,17 +325,17 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleDragStart = (e, item) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: any) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = (e, targetItem) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetItem: any) => {
     e.preventDefault();
     if (!draggedItem || draggedItem.id === targetItem.id) return;
 
@@ -353,7 +354,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     setDraggedItem(null);
   };
 
-  const moveSlideUp = (id) => {
+  const moveSlideUp = (id: string) => {
     const currentIndex = sliderItems.findIndex(item => item.id === id);
     if (currentIndex > 0) {
       const newItems = [...sliderItems];
@@ -365,7 +366,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const moveSlideDown = (id) => {
+  const moveSlideDown = (id: string) => {
     const currentIndex = sliderItems.findIndex(item => item.id === id);
     if (currentIndex < sliderItems.length - 1) {
       const newItems = [...sliderItems];
@@ -377,8 +378,9 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleSliderFormChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const handleSliderFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+          const { name, value, type } = e.target;
+      const checked = (e.target as HTMLInputElement).checked;
     if (name.startsWith('textOverlay.')) {
       const overlayField = name.split('.').pop();
       setSliderForm(prev => ({
@@ -396,7 +398,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleSliderSubmit = async (e) => {
+  const handleSliderSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: 'loading', message: 'Submitting...' });
 
@@ -488,14 +490,15 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         });
       }
     } catch (error) {
+      const err = error as Error;
       setSubmitStatus({ 
         type: 'error', 
-        message: `Network error: ${error.message}. Please check your connection and try again.` 
+        message: `Network error: ${err.message}. Please check your connection and try again.` 
       });
     }
   };
 
-  const handleSeoFormChange = (e) => {
+  const handleSeoFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setSeoForm(prev => ({
       ...prev,
@@ -503,7 +506,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }));
   };
 
-  const handleSeoSubmit = async (e) => {
+  const handleSeoSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: 'loading', message: 'Saving SEO settings...' });
 
@@ -550,14 +553,15 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         });
       }
     } catch (error) {
+      const err = error as Error;
       setSubmitStatus({ 
         type: 'error', 
-        message: `Network error: ${error.message}. Please check your connection and try again.` 
+        message: `Network error: ${err.message}. Please check your connection and try again.` 
       });
     }
   };
 
-  const handleEditSlider = (item) => {
+  const handleEditSlider = (item: any) => {
     setEditingSlider(item);
     setSliderForm({
       title: item.title,
@@ -580,13 +584,13 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     setShowSliderModal(true);
   };
 
-  const handleDeleteSlider = (id) => {
+  const handleDeleteSlider = (id: string) => {
     if (confirm('Are you sure you want to delete this slider item?')) {
       setSliderItems(sliderItems.filter(item => item.id !== id));
     }
   };
 
-  const toggleSliderActive = (id) => {
+  const toggleSliderActive = (id: string) => {
     setSliderItems(sliderItems.map(item =>
       item.id === id
         ? { ...item, active: !item.active }
@@ -594,7 +598,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     ));
   };
 
-  const openUploadModal = (type) => {
+  const openUploadModal = (type: string) => {
     setUploadType(type);
     setShowUploadModal(true);
     setSubmitStatus({ type: '', message: '' });
@@ -621,7 +625,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     });
   };
 
-  const handleContentFormChange = (e) => {
+  const handleContentFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setContentForm(prev => ({
       ...prev,
@@ -629,7 +633,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }));
   };
 
-  const handleContentSubmit = async (e) => {
+  const handleContentSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitStatus({ type: 'loading', message: 'Saving content...' });
 
@@ -689,14 +693,15 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         });
       }
     } catch (error) {
+      const err = error as Error;
       setSubmitStatus({ 
         type: 'error', 
-        message: `Network error: ${error.message}. Please check your connection and try again.` 
+        message: `Network error: ${err.message}. Please check your connection and try again.` 
       });
     }
   };
 
-  const handleEditContent = (page) => {
+  const handleEditContent = (page: any) => {
     setEditingContent(page);
     setContentForm({
       title: page.title,

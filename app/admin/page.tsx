@@ -147,7 +147,7 @@ function AdminDashboardContent() {
     setRecentActivity(mockRecentActivity);
   };
 
-  const handleTimeRangeChange = (range) => {
+  const handleTimeRangeChange = (range: string) => {
     setSelectedTimeRange(range);
     if (range !== 'custom') {
       setShowCustomDatePicker(false);
@@ -156,7 +156,7 @@ function AdminDashboardContent() {
     }
   };
 
-  const handleExport = async (format) => {
+  const handleExport = async (format: string) => {
     setIsExporting(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 2000));
@@ -192,7 +192,7 @@ function AdminDashboardContent() {
     return 'Excel data would be generated here';
   };
 
-  const downloadFile = (data, filename, type) => {
+  const downloadFile = (data: string, filename: string, type: string) => {
     const blob = new Blob([data], { type });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');

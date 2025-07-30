@@ -749,7 +749,7 @@ export default function MarketingEmail() {
 }
 
 // Modal Components
-function CampaignModal({ campaign, templates, onClose, onSave }) {
+function CampaignModal({ campaign, templates, onClose, onSave }: { campaign?: Campaign; templates: EmailTemplate[]; onClose: () => void; onSave: () => void }) {
   const [formData, setFormData] = useState({
     name: campaign?.name || '',
     subject: campaign?.subject || '',
@@ -763,7 +763,7 @@ function CampaignModal({ campaign, templates, onClose, onSave }) {
   const [loading, setLoading] = useState(false);
   const [showEditor, setShowEditor] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
@@ -942,7 +942,7 @@ function CampaignModal({ campaign, templates, onClose, onSave }) {
   );
 }
 
-function TemplateModal({ template, onClose, onSave }) {
+function TemplateModal({ template, onClose, onSave }: { template?: EmailTemplate; onClose: () => void; onSave: () => void }) {
   const [formData, setFormData] = useState({
     name: template?.name || '',
     subject: template?.subject || '',
@@ -952,7 +952,7 @@ function TemplateModal({ template, onClose, onSave }) {
   });
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
@@ -1060,7 +1060,7 @@ function TemplateModal({ template, onClose, onSave }) {
   );
 }
 
-function SettingsModal({ onClose, onSave }) {
+function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () => void }) {
   const [settings, setSettings] = useState({
     mailchimp: {
       apiKey: '',
@@ -1080,7 +1080,7 @@ function SettingsModal({ onClose, onSave }) {
   const [loading, setLoading] = useState(false);
   const [testResults, setTestResults] = useState({});
 
-  const handleTest = async (platform) => {
+  const handleTest = async (platform: string) => {
     setLoading(true);
     try {
       const result = await emailMarketingService.testIntegration(platform, settings[platform]);
@@ -1092,7 +1092,7 @@ function SettingsModal({ onClose, onSave }) {
     }
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
     
@@ -1290,7 +1290,7 @@ function SettingsModal({ onClose, onSave }) {
   );
 }
 
-function ExportModal({ onClose, onExport }) {
+function ExportModal({ onClose, onExport }: { onClose: () => void; onExport: (format: string) => void }) {
   const [exportType, setExportType] = useState('csv');
   const [includeFields, setIncludeFields] = useState({
     email: true,

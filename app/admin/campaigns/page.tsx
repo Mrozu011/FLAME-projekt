@@ -259,13 +259,14 @@ export default function CampaignsPage() {
   }, []);
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type, checked } = e.target;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
 
     if (name.includes('.')) {
       const keys = name.split('.');
       setForm(prev => {
         const updated = { ...prev };
-        let current = updated;
+        let current: any = updated;
 
         for (let i = 0; i < keys.length - 1; i++) {
           current = current[keys[i]];
@@ -282,19 +283,19 @@ export default function CampaignsPage() {
     }
   };
 
-  const handleArrayChange = (section, field, value) => {
+  const handleArrayChange = (section: keyof CampaignForm, field: keyof CampaignContent, value: string) => {
     setForm(prev => ({
       ...prev,
       [section]: {
         ...prev[section],
-        [field]: prev[section][field].includes(value)
-          ? prev[section][field].filter(item => item !== value)
-          : [...prev[section][field], value]
+        [field]: (prev[section] as any)[field].includes(value)
+          ? (prev[section] as any)[field].filter((item: any) => item !== value)
+          : [...(prev[section] as any)[field], value]
       }
     }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setSubmitStatus({ type: 'loading', message: 'Saving campaign...' });
 
@@ -421,23 +422,23 @@ export default function CampaignsPage() {
     });
   };
 
-  const handleEdit = (campaign) => {
+  const handleEdit = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
     setForm(campaign);
     setShowCreateModal(true); // Changed to showCreateModal
     setShowEditModal(true);
   };
 
-  const handleDelete = (id) => {
+  const handleDelete = (id: number) => {
     if (confirm('Are you sure you want to delete this campaign?')) {
       setCampaigns(campaigns.filter(campaign => campaign.id !== id));
     }
   };
 
-  const toggleActive = (id) => {
+  const toggleActive = (id: number) => {
     setCampaigns(campaigns.map(campaign =>
       campaign.id === id
-        ? { ...campaign, active: !campaign.active, updatedAt: new Date().toISOString() }
+        ? { ...campaign, status: campaign.status === 'active' ? 'inactive' : 'active', updatedAt: new Date().toISOString() }
         : campaign
     ));
   };

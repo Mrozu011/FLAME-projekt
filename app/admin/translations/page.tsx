@@ -368,7 +368,7 @@ export default function TranslationsPage() {
     return defaults[selectedNamespace] || {};
   };
 
-  const handleSaveTranslation = (key, value) => {
+  const handleSaveTranslation = (key: string, value: string) => {
     if (!key || !value) return;
 
     const updatedTranslations = {
@@ -406,7 +406,7 @@ export default function TranslationsPage() {
     setNewTranslation({ key: '', value: '' });
   };
 
-  const handleDeleteTranslation = (key) => {
+  const handleDeleteTranslation = (key: string) => {
     if (confirm(`Are you sure you want to delete the translation for "${key}"?`)) {
       const updatedTranslations = { ...translations };
       delete updatedTranslations[key];
@@ -432,7 +432,7 @@ export default function TranslationsPage() {
     }
   };
 
-  const handleFileUpload = (event) => {
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -497,12 +497,12 @@ export default function TranslationsPage() {
     );
   };
 
-  const handleProductTranslation = (productId, field, value) => {
+  const handleProductTranslation = (productId: string, field: string, value: string) => {
     const key = `product.${productId}.${field}`;
     handleSaveTranslation(key, value);
   };
 
-  const handleCategoryTranslation = (categoryId, value) => {
+  const handleCategoryTranslation = (categoryId: string, value: string) => {
     const key = `category.${categoryId}`;
     handleSaveTranslation(key, value);
   };

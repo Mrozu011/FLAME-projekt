@@ -1,4 +1,4 @@
-'use client';
+
 
 export interface SecurityEvent {
   id: string;
