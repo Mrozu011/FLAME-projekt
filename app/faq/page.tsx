@@ -163,7 +163,7 @@ export default function FAQPage() {
       'faq.sizeExchangeAnswer': t('language') === 'pl' ? 'Tak, oferujemy darmowe wymiany rozmiarów w ciągu 30 dni od zakupu. Przedmiot musi być w oryginalnym stanie z metkami. Wyślemy Ci opłaconą etykietę zwrotną i prześlemy nowy rozmiar po otrzymaniu oryginalnego przedmiotu.' : 'Yes, we offer free size exchanges within 30 days of purchase. The item must be in original condition with tags attached. We\'ll send you a prepaid return label and ship the new size once we receive the original item.'
     };
 
-    return faqTranslations[key] || key;
+    return faqTranslations[key as keyof typeof faqTranslations] || key;
   };
 
   return (

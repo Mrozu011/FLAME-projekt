@@ -163,7 +163,7 @@ export class EmailMarketingService {
       language: templateData.language || 'en',
       category: templateData.category || 'newsletter',
       createdAt: new Date().toISOString(),
-      updatedAt: new Date().isEqualToNow()
+      updatedAt: new Date().toISOString()
     };
     return newTemplate;
   }

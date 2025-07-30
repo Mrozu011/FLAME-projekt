@@ -135,7 +135,7 @@ export class TrackingService {
     }
   }
 
-  private async initializeTracking(): Promise<void> {
+  public async initializeTracking(): Promise<void> {
     if (typeof window === 'undefined') return;
 
     try {
@@ -289,6 +289,10 @@ export class TrackingService {
 
   // Test connection methods
   async testGoogleAnalytics(trackingId: string): Promise<{success: boolean; error?: string}> {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'Document not available' };
+    }
+    
     try {
       if (!trackingId || !trackingId.startsWith('G-')) {
         return { success: false, error: 'Invalid tracking ID format' };
@@ -319,11 +323,15 @@ export class TrackingService {
         }, 10000);
       });
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as any).message };
     }
   }
 
   async testFacebookPixel(pixelId: string): Promise<{success: boolean; error?: string}> {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'Document not available' };
+    }
+    
     try {
       if (!pixelId || pixelId.length < 10) {
         return { success: false, error: 'Invalid pixel ID format' };
@@ -353,11 +361,15 @@ export class TrackingService {
         }, 10000);
       });
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as any).message };
     }
   }
 
   async testTikTokPixel(pixelId: string): Promise<{success: boolean; error?: string}> {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'Document not available' };
+    }
+    
     try {
       if (!pixelId || pixelId.length < 10) {
         return { success: false, error: 'Invalid pixel ID format' };
@@ -387,7 +399,7 @@ export class TrackingService {
         }, 10000);
       });
     } catch (error) {
-      return { success: false, error: error.message };
+      return { success: false, error: (error as any).message };
     }
   }
 
@@ -462,7 +474,7 @@ export class TrackingService {
 
   // Event name mapping methods
   private mapEventNameForGA(eventName: string): string {
-    const mapping = {
+    const mapping: Record<string, string> = {
       'page_view': 'page_view',
       'add_to_cart': 'add_to_cart',
       'purchase': 'purchase',
@@ -477,7 +489,7 @@ export class TrackingService {
   }
 
   private mapEventNameForFB(eventName: string): string {
-    const mapping = {
+    const mapping: Record<string, string> = {
       'page_view': 'PageView',
       'add_to_cart': 'AddToCart',
       'purchase': 'Purchase',
@@ -492,7 +504,7 @@ export class TrackingService {
   }
 
   private mapEventNameForTikTok(eventName: string): string {
-    const mapping = {
+    const mapping: Record<string, string> = {
       'page_view': 'PageView',
       'add_to_cart': 'AddToCart',
       'purchase': 'PlaceAnOrder',
@@ -552,7 +564,7 @@ export class TrackingService {
     await this.trackEvent('page_view', {
       ...(page_location && { page_location }),
       ...(page_title && { page_title })
-    });
+    } as any);
   }
 
   async trackAddToCart(item: any, value?: number, currency: string = 'USD'): Promise<void> {
@@ -655,7 +667,7 @@ export class TrackingService {
 
     await this.trackEvent('sign_up', {
       method: method || 'email'
-    });
+    } as any);
   }
 
   async trackLogin(method?: string): Promise<void> {
@@ -663,7 +675,7 @@ export class TrackingService {
 
     await this.trackEvent('login', {
       method: method || 'email'
-    });
+    } as any);
   }
 }
 

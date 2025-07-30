@@ -244,7 +244,7 @@ export class EmailService {
     const sgMail = require('@sendgrid/mail');
     sgMail.setApiKey(this.config.apiKey);
 
-    const msg = {
+    const msg: any = {
       to: Array.isArray(options.to) ? options.to : [options.to],
       from: {
         email: this.config.from,
@@ -372,7 +372,7 @@ export class EmailService {
     });
 
     // Handle arrays with {{#each}} syntax
-    const eachRegex = /{{#each (\w+)}}(.*?){{\/each}}/gs;
+    const eachRegex = /{{#each (\w+)}}([\s\S]*?){{\/each}}/g;
     compiled = compiled.replace(eachRegex, (match, arrayName, itemTemplate) => {
       const array = data[arrayName];
       if (!Array.isArray(array)) return '';

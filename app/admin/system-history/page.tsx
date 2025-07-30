@@ -148,7 +148,7 @@ export default function SystemHistoryPage() {
       system: 'bg-red-100 text-red-800',
       settings: 'bg-indigo-100 text-indigo-800'
     };
-    return colors[type] || 'bg-gray-100 text-gray-800';
+    return colors[type as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   const getSeverityColor = (severity: string) => {
@@ -158,7 +158,7 @@ export default function SystemHistoryPage() {
       warning: 'bg-yellow-100 text-yellow-800',
       error: 'bg-red-100 text-red-800'
     };
-    return colors[severity] || 'bg-gray-100 text-gray-800';
+    return colors[severity as keyof typeof colors] || 'bg-gray-100 text-gray-800';
   };
 
   const getSeverityIcon = (severity: string) => {
@@ -168,7 +168,7 @@ export default function SystemHistoryPage() {
       warning: 'ri-alert-line',
       error: 'ri-error-warning-line'
     };
-    return icons[severity] || 'ri-information-line';
+    return icons[severity as keyof typeof icons] || 'ri-information-line';
   };
 
   const getActionTypeIcon = (type: string) => {
@@ -182,7 +182,7 @@ export default function SystemHistoryPage() {
       system: 'ri-settings-3-line',
       settings: 'ri-settings-line'
     };
-    return icons[type] || 'ri-information-line';
+    return icons[type as keyof typeof icons] || 'ri-information-line';
   };
 
   const formatTimestamp = (timestamp: string) => {

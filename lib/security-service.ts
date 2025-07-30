@@ -196,6 +196,8 @@ export class SecurityService {
   }
 
   private loadFromStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const storedEvents = localStorage.getItem('flame-security-events');
       if (storedEvents) {
@@ -252,6 +254,8 @@ export class SecurityService {
   }
 
   private saveToStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('flame-security-events', JSON.stringify(this.events));
       localStorage.setItem('flame-security-rules', JSON.stringify(this.rules));

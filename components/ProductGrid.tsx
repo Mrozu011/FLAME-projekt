@@ -6,30 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import QuickViewModal from './QuickViewModal';
 import PriceDisplay from './PriceDisplay';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  images?: string[];
-  category: string;
-  subcategory?: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  rating?: number;
-  reviewCount?: number;
-  colors?: string[];
-  sizes?: string[];
-  stockStatus?: 'in-stock' | 'low-stock' | 'out-of-stock';
-  description?: string;
-  material?: string;
-  tags?: string[];
-  has3DModel?: boolean;
-  popularity?: number;
-}
+import type { Product } from '@/lib/types';
 
 interface ProductGridProps {
   products: Product[];

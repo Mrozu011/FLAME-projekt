@@ -189,7 +189,7 @@ export default function UserInvoicesPage() {
       'refunded': 'bg-purple-100 text-purple-800'
     };
 
-    return statusConfig[status] || 'bg-gray-100 text-gray-800';
+    return statusConfig[status as keyof typeof statusConfig] || 'bg-gray-100 text-gray-800';
   };
 
   const getStatusIcon = (status: string) => {
@@ -200,7 +200,7 @@ export default function UserInvoicesPage() {
       'refunded': 'ri-refund-line'
     };
 
-    return statusConfig[status] || 'ri-question-line';
+    return statusConfig[status as keyof typeof statusConfig] || 'ri-question-line';
   };
 
   const formatDate = (dateString: string) => {

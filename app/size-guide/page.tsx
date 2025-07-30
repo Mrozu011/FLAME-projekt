@@ -41,17 +41,17 @@ export default function SizeGuidePage() {
       { size: 'XS', chest: '84-88', waist: '68-72', hips: '88-92' },
       { size: 'S', chest: '88-92', waist: '72-76', hips: '92-96' },
       { size: 'M', chest: '92-96', waist: '76-80', hips: '96-100' },
-      { size: 'L', chest: '96-102', waist: '80-86', hips: '100-106' },
-      { size: 'XL', chest: '102-108', waist: '86-92', hips: '106-112' },
-      { size: 'XXL', chest: '108-114', waist: '92-98', hips: '112-118' }
+      { size: 'L', bust: '96-102', waist: '80-86', hips: '100-106' },
+      { size: 'XL', bust: '102-108', waist: '86-92', hips: '106-112' },
+      { size: 'XXL', bust: '108-114', waist: '92-98', hips: '112-118' }
     ],
     in: [
       { size: 'XS', chest: '33-35', waist: '27-28', hips: '35-36' },
       { size: 'S', chest: '35-36', waist: '28-30', hips: '36-38' },
       { size: 'M', chest: '36-38', waist: '30-31', hips: '38-39' },
-      { size: 'L', chest: '38-40', waist: '31-34', hips: '39-42' },
-      { size: 'XL', chest: '40-43', waist: '34-36', hips: '42-44' },
-      { size: 'XXL', chest: '43-45', waist: '36-39', hips: '44-46' }
+      { size: 'L', bust: '38-40', waist: '31-34', hips: '39-42' },
+      { size: 'XL', bust: '40-43', waist: '34-36', hips: '42-44' },
+      { size: 'XXL', bust: '43-45', waist: '36-39', hips: '44-46' }
     ]
   };
 
@@ -88,9 +88,9 @@ export default function SizeGuidePage() {
   };
 
   const getCurrentSizes = () => {
-    if (activeCategory === 'women') return womenSizes[activeUnit];
-    if (activeCategory === 'men') return menSizes[activeUnit];
-    if (activeCategory === 'shoes') return shoeSizes[selectedGender];
+    if (activeCategory === 'women') return womenSizes[activeUnit as keyof typeof womenSizes];
+    if (activeCategory === 'men') return menSizes[activeUnit as keyof typeof menSizes];
+    if (activeCategory === 'shoes') return shoeSizes[selectedGender as keyof typeof shoeSizes];
     return [];
   };
 
@@ -178,12 +178,12 @@ export default function SizeGuidePage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {getCurrentSizes().map((size, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{size.size}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{(size as any).size ?? ''}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {activeCategory === 'women' ? size.bust : size.chest}
+                        {activeCategory === 'women' ? (size as any).bust : (size as any).chest}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{size.waist}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{size.hips}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(size as any).waist}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(size as any).hips}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -236,10 +236,10 @@ export default function SizeGuidePage() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {getCurrentSizes().map((size, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{size.us}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{size.uk}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{size.eu}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{size.cm}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{(size as any).us}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(size as any).uk}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(size as any).eu}</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{(size as any).cm}</td>
                     </tr>
                   ))}
                 </tbody>

@@ -74,6 +74,7 @@ export default function TrackingPage() {
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<'success' | 'error' | null>(null);
   const [activeTab, setActiveTab] = useState('google-analytics');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [testResults, setTestResults] = useState<{[key: string]: any}>({});
 
   useEffect(() => {
@@ -166,7 +167,7 @@ export default function TrackingPage() {
           }
         }));
       } catch (error) {
-        results.googleAnalytics = { success: false, error: error.message };
+        results.googleAnalytics = { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
         setSettings(prev => ({
           ...prev,
           googleAnalytics: {
@@ -189,7 +190,7 @@ export default function TrackingPage() {
           }
         }));
       } catch (error) {
-        results.facebookPixel = { success: false, error: error.message };
+        results.facebookPixel = { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
         setSettings(prev => ({
           ...prev,
           facebookPixel: {
@@ -212,7 +213,7 @@ export default function TrackingPage() {
           }
         }));
       } catch (error) {
-        results.tiktokPixel = { success: false, error: error.message };
+        results.tiktokPixel = { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
         setSettings(prev => ({
           ...prev,
           tiktokPixel: {
@@ -228,7 +229,7 @@ export default function TrackingPage() {
 
   const handleTestConnection = async (platform: string) => {
     try {
-      let result;
+      let result: { success: boolean; error?: string };
       
       switch (platform) {
         case 'google-analytics':
@@ -300,7 +301,7 @@ export default function TrackingPage() {
       ...prev,
       events: {
         ...prev.events,
-        [event]: !prev.events[event]
+        [event]: !prev.events[event as keyof typeof prev.events]
       }
     }));
   };
@@ -315,7 +316,7 @@ export default function TrackingPage() {
   if (isLoading) {
     return (
       <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <i className="ri-loader-4-line animate-spin text-4xl text-gray-400 mb-4"></i>
@@ -328,7 +329,7 @@ export default function TrackingPage() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className="flex-1 overflow-auto">
         <div className="p-8">
@@ -826,5 +827,5 @@ function getEventDescription(eventKey: string): string {
     login: 'Track user logins'
   };
   
-  return descriptions[eventKey] || 'Track user interactions';
+  return descriptions[eventKey as keyof typeof descriptions] || 'Track user interactions';
 }

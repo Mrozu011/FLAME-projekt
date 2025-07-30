@@ -142,7 +142,7 @@ export default function PromotionsManagement() {
           validProducts: []
         },
         usageLimits: {
-          totalUses: '',
+          totalUses: 0,
           perUserLimit: 1,
           enabled: true
         },
@@ -169,7 +169,7 @@ export default function PromotionsManagement() {
         },
         usageLimits: {
           totalUses: 500,
-          perUserLimit: '',
+          perUserLimit: 1,
           enabled: true
         },
         validFrom: '2024-01-01',
@@ -221,7 +221,7 @@ export default function PromotionsManagement() {
       setPromotionForm(prev => ({
         ...prev,
         [parent]: {
-          ...prev[parent],
+          ...(prev as any)[parent],
           [child]: type === 'checkbox' ? checked : value
         }
       }));
@@ -320,13 +320,37 @@ export default function PromotionsManagement() {
         if (editingPromotion) {
           setPromotions(promotions.map(promo =>
             promo.id === editingPromotion.id
-              ? { ...promo, ...promotionForm, updatedAt: new Date().toISOString() }
+              ? { 
+                  ...promo, 
+                  ...promotionForm,
+                  value: parseFloat(promotionForm.value) || 0,
+                  conditions: {
+                    ...promotionForm.conditions,
+                    minOrderValue: parseFloat(promotionForm.conditions.minOrderValue) || 0
+                  },
+                  usageLimits: {
+                    ...promotionForm.usageLimits,
+                    totalUses: parseInt(promotionForm.usageLimits.totalUses) || 0,
+                    perUserLimit: parseInt(promotionForm.usageLimits.perUserLimit) || 0
+                  },
+                  updatedAt: new Date().toISOString() 
+                }
               : promo
           ));
         } else {
           const newPromotion = {
             id: Date.now(),
             ...promotionForm,
+            value: parseFloat(promotionForm.value) || 0,
+            conditions: {
+              ...promotionForm.conditions,
+              minOrderValue: parseFloat(promotionForm.conditions.minOrderValue) || 0
+            },
+            usageLimits: {
+              ...promotionForm.usageLimits,
+              totalUses: parseInt(promotionForm.usageLimits.totalUses) || 0,
+              perUserLimit: parseInt(promotionForm.usageLimits.perUserLimit) || 0
+            },
             usageCount: 0,
             createdAt: new Date().toISOString(),
             updatedAt: new Date().toISOString()
@@ -380,8 +404,15 @@ export default function PromotionsManagement() {
       name: promotion.name,
       type: promotion.type,
       value: promotion.value.toString(),
-      conditions: promotion.conditions,
-      usageLimits: promotion.usageLimits,
+      conditions: {
+        ...promotion.conditions,
+        minOrderValue: promotion.conditions.minOrderValue.toString()
+      },
+      usageLimits: {
+        ...promotion.usageLimits,
+        totalUses: promotion.usageLimits.totalUses.toString(),
+        perUserLimit: promotion.usageLimits.perUserLimit.toString()
+      },
       validFrom: promotion.validFrom,
       validUntil: promotion.validUntil,
       active: promotion.active,
@@ -434,7 +465,7 @@ export default function PromotionsManagement() {
       fixed: 'bg-green-100 text-green-800',
       shipping: 'bg-purple-100 text-purple-800'
     };
-    return typeConfig[type] || 'bg-gray-100 text-gray-800';
+    return typeConfig[type as keyof typeof typeConfig] || 'bg-gray-100 text-gray-800';
   };
 
   const getPriorityBadge = (priority: string) => {
@@ -443,7 +474,7 @@ export default function PromotionsManagement() {
       normal: 'bg-gray-100 text-gray-800',
       low: 'bg-green-100 text-green-800'
     };
-    return priorityConfig[priority] || 'bg-gray-100 text-gray-800';
+    return priorityConfig[priority as keyof typeof priorityConfig] || 'bg-gray-100 text-gray-800';
   };
 
   const getStatusBadge = (active: boolean) => {

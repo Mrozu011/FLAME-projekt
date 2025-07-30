@@ -1,26 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  subcategory: string;
-  size: string[];
-  colors: string[];
-  material: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  popularity: number;
-  tags: string[];
-}
+import type { Product } from '@/lib/types';
 
 interface CategoryFilterProps {
   filters: {
@@ -49,10 +30,10 @@ export default function CategoryFilter({
   const [priceRange, setPriceRange] = useState(filters.priceRange);
 
   // Extract unique values from products
-  const uniqueSizes = [...new Set(products.flatMap(p => p.size))].sort();
-  const uniqueColors = [...new Set(products.flatMap(p => p.colors))].sort();
-  const uniqueMaterials = [...new Set(products.map(p => p.material))].sort();
-  const uniqueTags = [...new Set(products.flatMap(p => p.tags))].sort();
+  const uniqueSizes = [...new Set(products.flatMap(p => p.sizes || []))].sort();
+  const uniqueColors = [...new Set(products.flatMap(p => p.colors || []))].sort();
+  const uniqueMaterials = [...new Set(products.map(p => p.material || ''))].sort();
+  const uniqueTags = [...new Set(products.flatMap(p => p.tags || []))].sort();
 
   const handlePriceRangeChange = (index: number, value: number) => {
     const newRange = [...priceRange];

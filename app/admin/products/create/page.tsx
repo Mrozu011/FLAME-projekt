@@ -9,6 +9,14 @@ import { useCurrency } from '@/hooks/useCurrency';
 import { activityLogger } from '@/lib/activity-logger';
 import PriceDisplay from '@/components/PriceDisplay';
 
+// Type definitions for categories to ensure type safety
+type CategoryKey = 'women' | 'men' | 'accessories';
+
+interface CategoryData {
+  name: string;
+  subcategories: Record<string, string>;
+}
+
 interface ProductFormData {
   name: string;
   description: string;
@@ -37,6 +45,7 @@ interface LanguageVersions {
   pt: { name: string; description: string };
   fr: { name: string; description: string };
   de: { name: string; description: string };
+  [key: string]: { name: string; description: string };
 }
 
 interface DropshipData {
@@ -49,7 +58,7 @@ interface DropshipData {
 }
 
 interface ImageData {
-  uploadedImages: (string | { id: number; name: string; url: string; file: File | null })[];
+  uploadedImages: Array<{ id: number; name: string; url: string; file: File | null }>;
   uploadProgress: Record<string, number>;
   mainImageIndex: number;
 }
@@ -114,7 +123,8 @@ export default function CreateProduct() {
   const [loading, setLoading] = useState(false);
   const [previewMode, setPreviewMode] = useState(false);
 
-  const categories = {
+  // Type-safe categories object with proper typing
+  const categories: Record<CategoryKey, CategoryData> = {
     women: {
       name: 'Women',
       subcategories: {
@@ -230,7 +240,7 @@ export default function CreateProduct() {
     });
   };
 
-  const removeImage = (imageId: string) => {
+  const removeImage = (imageId: number) => {
     setImageData(prev => ({
       ...prev,
       uploadedImages: prev.uploadedImages.filter(img => img.id !== imageId),
@@ -393,7 +403,7 @@ export default function CreateProduct() {
               </span>
               {formData.category && (
                 <span className="text-sm text-gray-500">
-                  {categories[formData.category]?.name}
+                  {categories[formData.category as CategoryKey]?.name}
                 </span>
               )}
             </div>
@@ -682,15 +692,17 @@ export default function CreateProduct() {
                             Subcategory
                           </label>
                           <select
-                            name="subcategory"
                             value={formData.subcategory}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-8"
+                            name="subcategory"
+                            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
                             disabled={!formData.category}
                           >
                             <option value="">Select Subcategory</option>
-                            {formData.category && Object.entries(categories[formData.category]?.subcategories || {}).map(([key, name]) => (
-                              <option key={key} value={key}>{name}</option>
+                            {formData.category && Object.entries(categories[formData.category as CategoryKey]?.subcategories || {}).map(([key, name]) => (
+                              <option key={key} value={key}>
+                                {name}
+                              </option>
                             ))}
                           </select>
                         </div>
@@ -811,20 +823,20 @@ export default function CreateProduct() {
                           </h4>
                           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                             {imageData.uploadedImages.map((image, index) => (
-                              <div key={typeof image === 'string' ? image : image.id} className="relative group">
+                              <div key={image.id} className="relative group">
                                 <div className={`relative border-2 rounded-lg overflow-hidden ${
-                                  typeof image === 'string' ? (imageData.uploadedImages[imageData.mainImageIndex] === image ? 'border-blue-500' : 'border-gray-200') : (image.id === imageData.uploadedImages[imageData.mainImageIndex]?.id ? 'border-blue-500' : 'border-gray-200')
+                                  imageData.uploadedImages[imageData.mainImageIndex]?.id === image.id ? 'border-blue-500' : 'border-gray-200'
                                 }`}>
                                   <img
-                                    src={typeof image === 'string' ? image : image.url}
-                                    alt={typeof image === 'string' ? `Image ${index + 1}` : image.name}
+                                    src={image.url}
+                                    alt={image.name}
                                     className="w-full h-32 object-cover"
                                   />
                                   <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-40 transition-all duration-200 flex items-center justify-center">
                                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex space-x-2">
                                       <button
                                         type="button"
-                                        onClick={() => setMainImage(imageData.uploadedImages.findIndex(img => typeof img === 'string' ? img === image : img.id === image.id))}
+                                        onClick={() => setMainImage(imageData.uploadedImages.findIndex(img => img.id === image.id))}
                                         className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                                         title="Set as main image"
                                       >
@@ -832,7 +844,7 @@ export default function CreateProduct() {
                                       </button>
                                       <button
                                         type="button"
-                                        onClick={() => removeImage(typeof image === 'string' ? image : image.id)}
+                                        onClick={() => removeImage(image.id)}
                                         className="p-2 bg-white rounded-full hover:bg-gray-100 transition-colors"
                                         title="Remove image"
                                       >
@@ -842,15 +854,9 @@ export default function CreateProduct() {
                                   </div>
                                 </div>
                                 <div className="mt-2 text-center">
-                                  <p className="text-xs text-gray-600 truncate">{typeof image === 'string' ? `Image ${index + 1}` : image.name}</p>
-                                  {typeof image === 'string' ? (
-                                    imageData.uploadedImages[imageData.mainImageIndex] === image && (
-                                      <p className="text-xs text-blue-600 font-medium">Main Image</p>
-                                    )
-                                  ) : (
-                                    image.id === imageData.uploadedImages[imageData.mainImageIndex]?.id && (
-                                      <p className="text-xs text-blue-600 font-medium">Main Image</p>
-                                    )
+                                  <p className="text-xs text-gray-600 truncate">{image.name}</p>
+                                  {imageData.uploadedImages[imageData.mainImageIndex]?.id === image.id && (
+                                    <p className="text-xs text-blue-600 font-medium">Main Image</p>
                                   )}
                                 </div>
                               </div>

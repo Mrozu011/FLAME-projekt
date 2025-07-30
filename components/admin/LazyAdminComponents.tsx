@@ -62,10 +62,10 @@ export function withAdminLazyLoading<P extends object>(
 ) {
   const LazyComponent = lazy(importFn);
   
-  return function LazyLoadedComponent(props: P) {
+  return function LazyLoadedComponent(props: JSX.LibraryManagedAttributes<ComponentType<P>, P>) {
     return (
       <Suspense fallback={fallback || <ComponentLoadingFallback />}>
-        <LazyComponent {...props} />
+        <LazyComponent {...(props as any)} />
       </Suspense>
     );
   };

@@ -29,13 +29,20 @@ interface Currency {
   name: string;
 }
 
+interface CheckoutData {
+  contact: Record<string, any>;
+  shipping: Record<string, any>;
+  delivery: Record<string, any>;
+  payment: Record<string, any>;
+}
+
 export default function CheckoutPage() {
   const router = useRouter();
   const [currentStep, setCurrentStep] = useState(0);
   const [userType, setUserType] = useState<'login' | 'register' | 'guest' | null>(null);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [currentCurrency, setCurrentCurrency] = useState('USD');
-  const [checkoutData, setCheckoutData] = useState({
+  const [checkoutData, setCheckoutData] = useState<CheckoutData>({
     contact: {},
     shipping: {},
     delivery: {},
@@ -135,7 +142,7 @@ export default function CheckoutPage() {
   };
 
   const handlePlaceOrder = async () => {
-    if (!checkoutData.payment.paymentMethod) {
+    if (!checkoutData.payment?.paymentMethod) {
       alert('Please select a payment method');
       return;
     }

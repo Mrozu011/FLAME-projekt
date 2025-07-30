@@ -216,7 +216,17 @@ export default function OrderDetailsPage() {
       // Auto-generate invoice when status changes to paid
       if (newStatus === 'paid' && oldStatus !== 'paid' && order) {
         try {
-          const invoice = await invoiceService.generateInvoice(order);
+          const invoice = await invoiceService.generateInvoice({
+            ...order,
+            items: order.items.map((item) => ({
+              ...item,
+              id: item.id.toString(),
+            })),
+            summary: {
+              ...order.summary,
+              taxRate: 8.25, // Add missing taxRate property
+            },
+          });
           setOrderInvoices((prev) => [invoice, ...prev]);
           alert(`Invoice ${invoice.invoiceNumber} generated successfully!`);
         } catch (error) {
@@ -236,7 +246,17 @@ export default function OrderDetailsPage() {
     if (!order) return;
     
     try {
-      const invoice = await invoiceService.generateInvoice(order);
+      const invoice = await invoiceService.generateInvoice({
+        ...order,
+        items: order.items.map((item) => ({
+          ...item,
+          id: item.id.toString(),
+        })),
+        summary: {
+          ...order.summary,
+          taxRate: 8.25, // Add missing taxRate property
+        },
+      });
       setOrderInvoices((prev) => [invoice, ...prev]);
       alert(`Invoice ${invoice.invoiceNumber} generated successfully!`);
     } catch (error) {

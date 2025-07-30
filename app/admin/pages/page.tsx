@@ -18,9 +18,43 @@ interface PageSection {
   };
 }
 
+type Language = 'en' | 'pl' | 'it' | 'pt' | 'fr' | 'de';
+
+type LanguageRecord = Record<Language, string>;
+type LanguageBooleanRecord = Record<Language, boolean>;
+
+type PageContent = Record<string, {
+  title?: Record<Language, string>;
+  subtitle?: Record<Language, string>;
+  description?: Record<Language, string>;
+  visibility?: Record<Language, boolean>;
+  [key: string]: any; // Allow for additional dynamic properties
+}>;
+
+interface JobOpening {
+  id: number;
+  title: LanguageRecord;
+  department: string;
+  location: string;
+  type: string;
+  description: LanguageRecord;
+  requirements: Record<Language, string[]>;
+  active: boolean;
+  postedDate: string;
+}
+
+interface PressRelease {
+  id: number;
+  title: LanguageRecord;
+  summary: LanguageRecord;
+  category: string;
+  date: string;
+  visibility: LanguageBooleanRecord;
+}
+
 export default function PagesManagement() {
   const { t, language, changeLanguage } = useTranslation();
-  const [activeLanguage, setActiveLanguage] = useState('en');
+  const [activeLanguage, setActiveLanguage] = useState<Language>('en');
   const [activePage, setActivePage] = useState('about');
   const [showPageEditor, setShowPageEditor] = useState(false);
   const [editingSection, setEditingSection] = useState<PageSection | null>(null);
@@ -116,7 +150,7 @@ export default function PagesManagement() {
     }
   ];
 
-  const [pageContent, setPageContent] = useState({
+  const [pageContent, setPageContent] = useState<Record<string, PageContent>>({
     about: {
       hero: {
         title: { en: 'About Flame Fashion', pl: 'O Flame Fashion', it: 'Chi Siamo', pt: 'Sobre a Flame Fashion', fr: 'À Propos de Flame Fashion', de: 'Über Flame Fashion' },
@@ -178,7 +212,7 @@ export default function PagesManagement() {
     }
   });
 
-  const [jobOpenings, setJobOpenings] = useState([
+  const [jobOpenings, setJobOpenings] = useState<JobOpening[]>([
     {
       id: 1,
       title: {
@@ -213,7 +247,7 @@ export default function PagesManagement() {
     }
   ]);
 
-  const [pressReleases, setPressReleases] = useState([
+  const [pressReleases, setPressReleases] = useState<PressRelease[]>([
     {
       id: 1,
       title: {
@@ -238,7 +272,7 @@ export default function PagesManagement() {
     }
   ]);
 
-  const handleLanguageChange = (langCode: string) => {
+  const handleLanguageChange = (langCode: Language) => {
     setActiveLanguage(langCode);
     changeLanguage(langCode);
   };
@@ -251,7 +285,7 @@ export default function PagesManagement() {
         [section]: {
           ...prev[activePage][section],
           [field]: {
-            ...prev[activePage][section][field],
+            ...(prev[activePage][section][field] as Record<Language, string>),
             [activeLanguage]: value
           }
         }
@@ -265,8 +299,8 @@ export default function PagesManagement() {
       [pageId]: {
         ...prev[pageId],
         visibility: {
-          ...prev[pageId].visibility,
-          [activeLanguage]: !prev[pageId].visibility[activeLanguage]
+          ...(prev[pageId].visibility as Record<Language, boolean>),
+          [activeLanguage]: !(prev[pageId].visibility as Record<Language, boolean>)[activeLanguage as Language]
         }
       }
     }));
@@ -302,14 +336,35 @@ export default function PagesManagement() {
   };
 
   const handleAddJobOpening = () => {
-    const newJob = {
+    const newJob: JobOpening = {
       id: Date.now(),
-      title: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: '' }), {}),
+      title: {
+        en: '',
+        pl: '',
+        it: '',
+        pt: '',
+        fr: '',
+        de: ''
+      },
       department: '',
       location: '',
       type: 'Full-time',
-      description: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: '' }), {}),
-      requirements: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: [] }), {}),
+      description: {
+        en: '',
+        pl: '',
+        it: '',
+        pt: '',
+        fr: '',
+        de: ''
+      },
+      requirements: {
+        en: [],
+        pl: [],
+        it: [],
+        pt: [],
+        fr: [],
+        de: []
+      },
       active: true,
       postedDate: new Date().toISOString().split('T')[0]
     };
@@ -317,13 +372,34 @@ export default function PagesManagement() {
   };
 
   const handleAddPressRelease = () => {
-    const newRelease = {
+    const newRelease: PressRelease = {
       id: Date.now(),
-      title: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: '' }), {}),
-      summary: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: '' }), {}),
+      title: {
+        en: '',
+        pl: '',
+        it: '',
+        pt: '',
+        fr: '',
+        de: ''
+      },
+      summary: {
+        en: '',
+        pl: '',
+        it: '',
+        pt: '',
+        fr: '',
+        de: ''
+      },
       category: 'General',
       date: new Date().toISOString().split('T')[0],
-      visibility: supportedLanguages.reduce((acc, lang) => ({ ...acc, [lang.code]: true }), {})
+      visibility: {
+        en: true,
+        pl: true,
+        it: true,
+        pt: true,
+        fr: true,
+        de: true
+      }
     };
     setPressReleases(prev => [...prev, newRelease]);
   };
@@ -345,7 +421,7 @@ export default function PagesManagement() {
                 <label className="text-sm font-medium text-gray-700">Language:</label>
                 <select
                   value={activeLanguage}
-                  onChange={(e) => handleLanguageChange(e.target.value)}
+                  onChange={(e) => handleLanguageChange(e.target.value as Language)}
                   className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm pr-8"
                 >
                   {supportedLanguages.map(lang => (
@@ -468,7 +544,7 @@ export default function PagesManagement() {
                           <label className="block text-sm font-medium text-gray-700 mb-2">Title</label>
                           <input
                             type="text"
-                            value={pageContent[activePage]?.hero?.title?.[activeLanguage] || ''}
+                            value={(pageContent[activePage]?.hero?.title as Record<Language, string>)?.[activeLanguage] || ''}
                             onChange={(e) => handlePageContentChange('hero', 'title', e.target.value)}
                             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             placeholder="Enter page title"
@@ -477,7 +553,7 @@ export default function PagesManagement() {
                         <div>
                           <label className="block text-sm font-medium text-gray-700 mb-2">Subtitle</label>
                           <textarea
-                            value={pageContent[activePage]?.hero?.subtitle?.[activeLanguage] || ''}
+                            value={(pageContent[activePage]?.hero?.subtitle as Record<Language, string>)?.[activeLanguage] || ''}
                             onChange={(e) => handlePageContentChange('hero', 'subtitle', e.target.value)}
                             rows={3}
                             maxLength={500}
@@ -485,7 +561,7 @@ export default function PagesManagement() {
                             placeholder="Enter page subtitle"
                           />
                           <p className="text-xs text-gray-500 mt-1">
-                            {pageContent[activePage]?.hero?.subtitle?.[activeLanguage]?.length || 0}/500 characters
+                            {(pageContent[activePage]?.hero?.subtitle as Record<Language, string>)?.[activeLanguage]?.length || 0}/500 characters
                           </p>
                         </div>
                       </div>
@@ -499,7 +575,7 @@ export default function PagesManagement() {
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Address</label>
                             <textarea
-                              value={pageContent[activePage]?.contact_info?.address?.[activeLanguage] || ''}
+                              value={(pageContent[activePage]?.contact_info?.address as Record<Language, string>)?.[activeLanguage] || ''}
                               onChange={(e) => handlePageContentChange('contact_info', 'address', e.target.value)}
                               rows={3}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -509,7 +585,7 @@ export default function PagesManagement() {
                             <label className="block text-sm font-medium text-gray-700 mb-2">Business Hours</label>
                             <input
                               type="text"
-                              value={pageContent[activePage]?.contact_info?.hours?.[activeLanguage] || ''}
+                              value={(pageContent[activePage]?.contact_info?.hours as Record<Language, string>)?.[activeLanguage] || ''}
                               onChange={(e) => handlePageContentChange('contact_info', 'hours', e.target.value)}
                               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                             />

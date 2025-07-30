@@ -35,7 +35,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }))
 
   // Dynamic product pages - only published products
-  const products = dynamicPageManager.getProductsForSitemap()
+  const products = dynamicPageManager?.getProductsForSitemap() ?? [];
   const productSitemap = products.map(product => ({
     url: `${baseUrl}/product/${product.id}/${product.slug}`,
     lastModified: product.updatedAt,
@@ -44,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   }))
 
   // Category pages
-  const categories = dynamicPageManager.getAvailableCategories()
+  const categories = dynamicPageManager?.getAvailableCategories() ?? [];
   const categorySitemap = categories.map(category => ({
     url: `${baseUrl}/${category}`,
     lastModified: new Date(),
@@ -55,7 +55,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Subcategory pages
   const subcategorySitemap: any[] = []
   categories.forEach(category => {
-    const subcategories = dynamicPageManager.getAvailableSubcategories(category)
+    const subcategories = dynamicPageManager?.getAvailableSubcategories(category) ?? [];
     subcategories.forEach(subcategory => {
       subcategorySitemap.push({
         url: `${baseUrl}/${category}/${subcategory}`,

@@ -354,13 +354,14 @@ export class DynamicPageManager {
     });
 
     Object.entries(categoryMapping.en).forEach(([categoryKey, categoryData]) => {
-      Object.entries(categoryData.subcategories).forEach(([subcategoryKey, subcategoryName]) => {
+      const typedCategoryData = categoryData as { name: string; subcategories: Record<string, string> };
+      Object.entries(typedCategoryData.subcategories).forEach(([subcategoryKey, subcategoryName]) => {
         const path = `/${categoryKey}/${subcategoryKey}`;
         this.pageConfigs.set(path, {
           category: categoryKey,
           subcategory: subcategoryKey,
-          title: `${subcategoryName} - ${categoryData.name} - Flame Fashion`,
-          description: `Shop ${subcategoryName.toLowerCase()} in our ${categoryData.name.toLowerCase()} collection. Find the perfect pieces for your style.`,
+          title: `${subcategoryName} - ${typedCategoryData.name} - Flame Fashion`,
+          description: `Shop ${subcategoryName.toLowerCase()} in our ${typedCategoryData.name.toLowerCase()} collection. Find the perfect pieces for your style.`,
           path
         });
       });

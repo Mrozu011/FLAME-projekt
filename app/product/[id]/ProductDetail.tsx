@@ -242,6 +242,9 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
     );
   }
 
+  const translatedName = getTranslatedProductName(product);
+  const productName = typeof translatedName === 'string' ? translatedName : translatedName.name ?? '';
+
   return (
     <div className="min-h-screen bg-white">
       <Header />
@@ -285,7 +288,7 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
           <ProductImageGallery
             images={product.images}
-            productName={getTranslatedProductName(product)}
+            productName={productName}
           />
 
           <ProductInfo
@@ -296,7 +299,7 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
             setSelectedColor={setSelectedColor}
             quantity={quantity}
             setQuantity={setQuantity}
-            productName={getTranslatedProductName(product)}
+            productName={productName}
           />
         </div>
 

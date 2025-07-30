@@ -375,7 +375,7 @@ export default function TranslationsPage() {
       }
     };
 
-    return defaults[selectedNamespace] || {};
+    return defaults[selectedNamespace as keyof typeof defaults] || {};
   };
 
   const handleSaveTranslation = (key: string, value: string) => {
@@ -398,7 +398,7 @@ export default function TranslationsPage() {
     // Log the activity
     activityLogger.log(
       'Translation Updated',
-      'translation',
+      'settings',
       `Translation key "${key}" updated for ${selectedLanguage}`,
       {
         resourceId: `${selectedLanguage}-${selectedNamespace}-${key}`,
@@ -428,9 +428,9 @@ export default function TranslationsPage() {
         JSON.stringify(updatedTranslations)
       );
 
-      activityLogger.log(
-        'Translation Deleted',
-        'translation',
+          activityLogger.log(
+      'Translation Deleted',
+      'settings',
         `Translation key "${key}" deleted for ${selectedLanguage}`,
         {
           resourceId: `${selectedLanguage}-${selectedNamespace}-${key}`,
@@ -443,7 +443,7 @@ export default function TranslationsPage() {
   };
 
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files[0];
+    const file = event.target.files?.[0];
     if (!file) return;
 
     if (file.type !== 'application/json') {
@@ -454,7 +454,7 @@ export default function TranslationsPage() {
     const reader = new FileReader();
     reader.onload = (e) => {
       try {
-        const uploadedTranslations = JSON.parse(e.target.result);
+        const uploadedTranslations = JSON.parse(e.target?.result as string);
         setTranslations(uploadedTranslations);
         setIsDirty(true);
 
@@ -465,7 +465,7 @@ export default function TranslationsPage() {
 
         activityLogger.log(
           'Translation File Uploaded',
-          'translation',
+          'settings',
           `Translation file uploaded for ${selectedLanguage}-${selectedNamespace}`,
           {
             resourceId: `${selectedLanguage}-${selectedNamespace}`,
@@ -496,7 +496,7 @@ export default function TranslationsPage() {
 
     activityLogger.log(
       'Translation File Exported',
-      'translation',
+      'settings',
       `Translation file exported for ${selectedLanguage}-${selectedNamespace}`,
       {
         resourceId: `${selectedLanguage}-${selectedNamespace}`,

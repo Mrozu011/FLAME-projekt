@@ -207,7 +207,7 @@ export default function Header() {
         suggestions.push(category.name);
       }
 
-      Object.values(category.subcategories).forEach((subcategory: string) => {
+      (Object.values(category.subcategories) as string[]).forEach((subcategory: string) => {
         if (subcategory.toLowerCase().includes(debouncedSearchQuery.toLowerCase())) {
           suggestions.push(subcategory);
         }
@@ -259,6 +259,8 @@ export default function Header() {
     setIsHeaderMounted(true);
 
     const initializeTheme = () => {
+      if (typeof window === 'undefined' || typeof document === 'undefined') return;
+      
       try {
         const savedTheme = localStorage.getItem('flame-theme');
         const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
@@ -299,6 +301,8 @@ export default function Header() {
 
   // Optimized theme application with minimal DOM manipulation
   const applyThemeToElements = useCallback((isDark: boolean) => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    
     const body = document.body;
     const html = document.documentElement;
 
@@ -315,9 +319,9 @@ export default function Header() {
       }
 
       // Trigger reflow only once after all changes
-      const themeElements = document.querySelectorAll('[class*="theme"], [class*="bg-"], [class*="text-"]');
+      const themeElements = document.querySelectorAll('[class*="theme"], [class*="bg-"], [class*="bg-"], [class*="text-"]');
       themeElements.forEach(element => {
-        element.offsetHeight; // Trigger reflow
+        (element as HTMLElement).offsetHeight; // Trigger reflow
       });
     });
   }, []);
@@ -377,7 +381,7 @@ export default function Header() {
 
   // Optimized theme toggle with immediate UI feedback
   const toggleTheme = useCallback(() => {
-    if (!isHeaderMounted) return;
+    if (!isHeaderMounted || typeof window === 'undefined' || typeof document === 'undefined') return;
 
     const newTheme = isDarkMode ? 'light' : 'dark';
     const newIsDark = !isDarkMode;

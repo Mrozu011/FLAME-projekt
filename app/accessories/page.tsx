@@ -4,30 +4,12 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
+import Link from 'next/link';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryFilter from '@/components/CategoryFilter';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  subcategory: string;
-  size: string[];
-  colors: string[];
-  material: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  popularity: number;
-  tags: string[];
-}
+import type { Product } from '@/lib/types';
 
 function AccessoriesPageContent() {
   const searchParams = useSearchParams();
@@ -57,7 +39,7 @@ function AccessoriesPageContent() {
       reviewCount: 203,
       category: 'Accessories',
       subcategory: 'Bags',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Black', 'Brown', 'Tan', 'Burgundy'],
       material: 'Genuine Leather',
       isNew: false,
@@ -75,7 +57,7 @@ function AccessoriesPageContent() {
       reviewCount: 156,
       category: 'Accessories',
       subcategory: 'Scarves',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Pink', 'Blue', 'Green', 'Purple'],
       material: '100% Silk',
       isNew: true,
@@ -93,7 +75,7 @@ function AccessoriesPageContent() {
       reviewCount: 267,
       category: 'Accessories',
       subcategory: 'Eyewear',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Black', 'Brown', 'Gold'],
       material: 'Acetate Frame',
       isNew: false,
@@ -111,7 +93,7 @@ function AccessoriesPageContent() {
       reviewCount: 134,
       category: 'Accessories',
       subcategory: 'Watches',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Silver', 'Gold', 'Black'],
       material: 'Stainless Steel',
       isNew: true,
@@ -128,7 +110,7 @@ function AccessoriesPageContent() {
       reviewCount: 89,
       category: 'Accessories',
       subcategory: 'Hats',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Gray', 'Black', 'Navy', 'Beige'],
       material: '100% Wool',
       isNew: false,
@@ -146,7 +128,7 @@ function AccessoriesPageContent() {
       reviewCount: 178,
       category: 'Accessories',
       subcategory: 'Jewelry',
-      size: ['One Size'],
+      sizes: ['One Size'],
       colors: ['Gold', 'Silver', 'Rose Gold'],
       material: 'Plated Metal',
       isNew: false,
@@ -193,19 +175,19 @@ function AccessoriesPageContent() {
     // Apply filters
     if (filters.subcategory && filters.subcategory !== 'all') {
       filtered = filtered.filter(product => 
-        product.subcategory.toLowerCase() === filters.subcategory.toLowerCase()
+        product.subcategory?.toLowerCase() === filters.subcategory.toLowerCase()
       );
     }
 
     if (filters.size) {
       filtered = filtered.filter(product => 
-        product.size.includes(filters.size)
+        product.sizes?.includes(filters.size)
       );
     }
 
     if (filters.color) {
       filtered = filtered.filter(product => 
-        product.colors.some(color => 
+        product.colors?.some(color => 
           color.toLowerCase().includes(filters.color.toLowerCase())
         )
       );
@@ -213,7 +195,7 @@ function AccessoriesPageContent() {
 
     if (filters.material) {
       filtered = filtered.filter(product => 
-        product.material.toLowerCase().includes(filters.material.toLowerCase())
+        product.material?.toLowerCase().includes(filters.material.toLowerCase())
       );
     }
 
@@ -224,18 +206,18 @@ function AccessoriesPageContent() {
 
     // Rating filter
     if (filters.rating > 0) {
-      filtered = filtered.filter(product => product.rating >= filters.rating);
+      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
     }
 
     // Review count filter
     if (filters.reviewCount > 0) {
-      filtered = filtered.filter(product => product.reviewCount >= filters.reviewCount);
+      filtered = filtered.filter(product => (product.reviewCount || 0) >= filters.reviewCount);
     }
 
     // Tags filter
     if (filters.tags.length > 0) {
       filtered = filtered.filter(product => 
-        filters.tags.some(tag => product.tags.includes(tag))
+        filters.tags.some(tag => product.tags?.includes(tag))
       );
     }
 
@@ -248,22 +230,22 @@ function AccessoriesPageContent() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'reviews':
-        filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+        filtered.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
         break;
       case 'newest':
         filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
         break;
       case 'popularity':
       default:
-        filtered.sort((a, b) => b.popularity - a.popularity);
+        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
         break;
     }
 
     setFilteredProducts(filtered);
-  }, [products, filters, sortBy]);
+  }, [products, filters, sortBy, mockProducts]);
 
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);
@@ -305,7 +287,7 @@ function AccessoriesPageContent() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 mb-8 text-sm">
-          <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
+          <Link href="/" className="text-gray-600 hover:text-gray-900">Home</Link>
           <i className="ri-arrow-right-s-line text-gray-400"></i>
           <span className="text-gray-900 font-medium">Accessories</span>
           {filters.subcategory && filters.subcategory !== 'all' && (

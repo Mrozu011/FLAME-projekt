@@ -195,7 +195,7 @@ export class DropshippingManager {
       'au': 0.1
     };
 
-    const rate = vatRates[destination.toLowerCase()] || 0;
+    const rate = vatRates[destination.toLowerCase() as keyof typeof vatRates] || 0;
     return value * rate;
   }
 
@@ -233,7 +233,7 @@ export class DropshippingManager {
       'cancelled': 'cancelled'
     };
 
-    return statusMap[supplierStatus.toLowerCase()] || 'processing';
+    return statusMap[supplierStatus.toLowerCase() as keyof typeof statusMap] || 'processing';
   }
 
   private async updateOrderStatus(orderId: string, status: string): Promise<void> {

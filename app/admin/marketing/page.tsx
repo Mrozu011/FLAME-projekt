@@ -76,8 +76,8 @@ export default function MarketingEmail() {
   });
   const [showModal, setShowModal] = useState(false);
   const [modalType, setModalType] = useState<'campaign' | 'template' | 'settings' | 'export'>('campaign');
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | undefined>(undefined);
+  const [selectedTemplate, setSelectedTemplate] = useState<EmailTemplate | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [stats, setStats] = useState({
     totalSubscribers: 0,
@@ -116,7 +116,7 @@ export default function MarketingEmail() {
   };
 
   const handleCreateCampaign = () => {
-    setSelectedCampaign(null);
+    setSelectedCampaign(undefined);
     setModalType('campaign');
     setShowModal(true);
   };
@@ -178,7 +178,7 @@ export default function MarketingEmail() {
   };
 
   const handleCreateTemplate = () => {
-    setSelectedTemplate(null);
+    setSelectedTemplate(undefined);
     setModalType('template');
     setShowModal(true);
   };
@@ -746,7 +746,7 @@ export default function MarketingEmail() {
             {modalType === 'export' && (
               <ExportModal 
                 onClose={() => setShowModal(false)}
-                onExport={handleExportSubscribers}
+                onExport={(format: 'csv' | 'mailchimp' | 'brevo') => handleExportSubscribers(format)}
               />
             )}
           </div>
@@ -1001,7 +1001,7 @@ function TemplateModal({ template, onClose, onSave }: { template?: EmailTemplate
             <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
             <select
               value={formData.category}
-              onChange={(e) => setFormData({...formData, category: e.target.value})}
+              onChange={(e) => setFormData({...formData, category: e.target.value as 'newsletter' | 'promotional' | 'transactional'})}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 pr-8"
             >
               <option value="newsletter">Newsletter</option>
@@ -1095,13 +1095,22 @@ function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () =>
   const [loading, setLoading] = useState(false);
   const [testResults, setTestResults] = useState<MarketingTestResult>({});
 
-  const handleTest = async (platform: string) => {
+  const handleTest = async (platform: 'mailchimp' | 'brevo') => {
     setLoading(true);
     try {
       const result = await emailMarketingService.testIntegration(platform, settings[platform]);
-      setTestResults({...testResults, [platform]: result});
+      setTestResults(prev => ({
+        ...prev,
+        [platform]: result
+      }));
     } catch (error) {
-      console.error('Error testing integration:', error);
+      setTestResults(prev => ({
+        ...prev,
+        [platform]: {
+          success: false,
+          message: 'Test failed'
+        }
+      }));
     } finally {
       setLoading(false);
     }
@@ -1112,7 +1121,14 @@ function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () =>
     setLoading(true);
     
     try {
-      await emailMarketingService.saveSettings(settings);
+      const updatedSettings = {
+        ...settings,
+        autoTranslation: {
+          ...settings.autoTranslation,
+          service: settings.autoTranslation.service as 'azure' | 'google' | 'deepl'
+        }
+      };
+      await emailMarketingService.saveSettings(updatedSettings);
       onSave();
       onClose();
     } catch (error) {
@@ -1305,7 +1321,7 @@ function SettingsModal({ onClose, onSave }: { onClose: () => void; onSave: () =>
   );
 }
 
-function ExportModal({ onClose, onExport }: { onClose: () => void; onExport: (format: string) => void }) {
+function ExportModal({ onClose, onExport }: { onClose: () => void; onExport: (format: 'csv' | 'mailchimp' | 'brevo') => Promise<void> }) {
   const [exportType, setExportType] = useState('csv');
   const [includeFields, setIncludeFields] = useState({
     email: true,
@@ -1317,7 +1333,7 @@ function ExportModal({ onClose, onExport }: { onClose: () => void; onExport: (fo
   });
 
   const handleExport = () => {
-    onExport(exportType, includeFields);
+    onExport(exportType as 'csv' | 'mailchimp' | 'brevo');
     onClose();
   };
 

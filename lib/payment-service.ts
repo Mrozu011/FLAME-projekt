@@ -151,8 +151,8 @@ export class PaymentService {
     try {
       const PayPalApi = require('@paypal/checkout-server-sdk');
       const environment = this.config.paypal?.mode === 'production' 
-        ? new PayPalApi.core.LiveEnvironment(this.config.paypal.clientId, this.config.paypal.clientSecret)
-        : new PayPalApi.core.SandboxEnvironment(this.config.paypal.clientId, this.config.paypal.clientSecret);
+        ? new PayPalApi.core.LiveEnvironment(this.config.paypal?.clientId || '', this.config.paypal?.clientSecret || '')
+        : new PayPalApi.core.SandboxEnvironment(this.config.paypal?.clientId || '', this.config.paypal?.clientSecret || '');
 
       const client = new PayPalApi.core.PayPalHttpClient(environment);
       
@@ -187,8 +187,8 @@ export class PaymentService {
     try {
       const PayPalApi = require('@paypal/checkout-server-sdk');
       const environment = this.config.paypal?.mode === 'production' 
-        ? new PayPalApi.core.LiveEnvironment(this.config.paypal.clientId, this.config.paypal.clientSecret)
-        : new PayPalApi.core.SandboxEnvironment(this.config.paypal.clientId, this.config.paypal.clientSecret);
+        ? new PayPalApi.core.LiveEnvironment(this.config.paypal?.clientId || '', this.config.paypal?.clientSecret || '')
+        : new PayPalApi.core.SandboxEnvironment(this.config.paypal?.clientId || '', this.config.paypal?.clientSecret || '');
 
       const client = new PayPalApi.core.PayPalHttpClient(environment);
       

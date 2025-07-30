@@ -94,7 +94,7 @@ export class AliExpressAPI {
   }
 
   private async makeRequest(endpoint: string, params: Record<string, any>): Promise<any> {
-    const requestParams = {
+    const requestParams: Record<string, any> = {
       ...params,
       app_key: this.apiKey,
       timestamp: Date.now(),
@@ -383,7 +383,7 @@ export class AliExpressAPI {
         const productData = await this.importProduct(productId, customization);
         results.push({ success: true, productId, data: productData });
       } catch (error) {
-        results.push({ success: false, productId, error: error.message });
+        results.push({ success: false, productId, error: error instanceof Error ? error.message : 'Unknown error' });
       }
     }
 

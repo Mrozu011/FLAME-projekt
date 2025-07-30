@@ -4,31 +4,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import PriceDisplay from './PriceDisplay';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  images?: string[];
-  rating: number;
-  reviewCount: number;
-  category: string;
-  subcategory: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  popularity?: number;
-  tags?: string[];
-  has3DModel?: boolean;
-  sizes?: string[];
-  colors?: string[];
-  size?: string[];
-  description?: string;
-  material?: string;
-  stockStatus?: 'in-stock' | 'low-stock' | 'out-of-stock';
-}
+import type { Product } from '@/lib/types';
 
 interface QuickViewModalProps {
   product: Product;
@@ -125,7 +101,6 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart }
 
   const getProductSizes = (product: Product) => {
     if (product.sizes) return product.sizes;
-    if (product.size) return product.size;
     // Default sizes based on category
     if (product.category === 'Women' || product.category === 'Men') {
       return ['XS', 'S', 'M', 'L', 'XL'];
@@ -169,7 +144,8 @@ export default function QuickViewModal({ product, isOpen, onClose, onAddToCart }
     return colorMap[color.toLowerCase()] || '#6B7280';
   };
 
-  const renderStars = (rating: number) => {
+  const renderStars = (rating?: number) => {
+    if (!rating) return null;
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 !== 0;
     const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);

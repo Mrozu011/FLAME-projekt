@@ -157,7 +157,6 @@ export default function MainSlider() {
             <OptimizedImage
               src={slide.image}
               alt={language === 'pl' ? slide.titlePl : slide.title}
-              fill
               priority={index === 0}
               className="object-cover"
               sizes="100vw"

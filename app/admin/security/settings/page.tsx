@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import AdminSidebar from '@/components/admin/AdminSidebar';
-import { securityService, SecuritySettings } from '@/lib/security-service';
+import { securityService } from '@/lib/security-service';
+import type { SecuritySettings } from '@/lib/security-service';
 
 export default function SecuritySettings() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -73,7 +74,7 @@ export default function SecuritySettings() {
     setSettings(prev => ({
       ...prev,
       [parent]: {
-        ...prev[parent as keyof SecuritySettings],
+        ...(prev[parent as keyof SecuritySettings] as Record<string, any>),
         [key]: value
       }
     }));

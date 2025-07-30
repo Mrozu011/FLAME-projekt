@@ -250,25 +250,25 @@ export default function ReviewsManagement() {
 
     if (filterDate !== 'all') {
       const now = new Date();
-      const filterDate = new Date();
+      const filterDateObj = new Date();
 
       switch (filterDate) {
         case 'today':
-          filterDate.setHours(0, 0, 0, 0);
+          filterDateObj.setHours(0, 0, 0, 0);
           break;
         case 'week':
-          filterDate.setDate(now.getDate() - 7);
+          filterDateObj.setDate(now.getDate() - 7);
           break;
         case 'month':
-          filterDate.setMonth(now.getMonth() - 1);
+          filterDateObj.setMonth(now.getMonth() - 1);
           break;
         case 'quarter':
-          filterDate.setMonth(now.getMonth() - 3);
+          filterDateObj.setMonth(now.getMonth() - 3);
           break;
       }
 
       if (filterDate !== 'all') {
-        filtered = filtered.filter(review => new Date(review.date) >= filterDate);
+        filtered = filtered.filter(review => new Date(review.date) >= filterDateObj);
       }
     }
 

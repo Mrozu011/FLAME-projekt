@@ -79,7 +79,6 @@ export class ProductGenerator {
       colors: data.colors,
       material: data.material || 'Not specified',
       tags: data.tags || [],
-      has3DModel: data.has3DModel || false,
       popularity: 50, // Default popularity
       stockStatus: data.stockStatus || 'in-stock',
       isPublished: data.isPublished !== false
@@ -132,7 +131,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: "${seo.title}",
     description: "${seo.description}",
-    keywords: [${seo.keywords.map(k => `"${k}"`).join(', ')}],
+    keywords: [${seo.keywords.map((k: string) => `"${k}"`).join(', ')}],
     authors: [{ name: "Flame Fashion" }],
     robots: "index, follow",
     canonical: "${seo.canonical}",

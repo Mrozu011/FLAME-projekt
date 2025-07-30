@@ -87,7 +87,8 @@ export default function SizeGuide({ isOpen, onClose, productCategory = 'clothing
   };
 
   const getCurrentData = () => {
-    const genderData = sizingData[selectedGender];
+    const genderKey = selectedGender === 'unisex' ? 'women' : selectedGender;
+    const genderData = sizingData[genderKey as keyof typeof sizingData];
     return genderData[productCategory as keyof typeof genderData] || genderData.clothing;
   };
 
@@ -216,18 +217,18 @@ export default function SizeGuide({ isOpen, onClose, productCategory = 'clothing
                       <td className="border border-gray-200 px-4 py-3 font-medium text-gray-900">{size}</td>
                       {productCategory === 'shoes' ? (
                         <td className="border border-gray-200 px-4 py-3 text-gray-700">
-                          {convertMeasurement(measurements.length)}
+                          {convertMeasurement((measurements as { length: number }).length)}
                         </td>
                       ) : (
                         <>
                           <td className="border border-gray-200 px-4 py-3 text-gray-700">
-                            {convertMeasurement(measurements.chest)}
+                            {convertMeasurement((measurements as { chest: number }).chest)}
                           </td>
                           <td className="border border-gray-200 px-4 py-3 text-gray-700">
-                            {convertMeasurement(measurements.waist)}
+                            {convertMeasurement((measurements as { waist: number }).waist)}
                           </td>
                           <td className="border border-gray-200 px-4 py-3 text-gray-700">
-                            {convertMeasurement(measurements.hip)}
+                            {convertMeasurement((measurements as { hip: number }).hip)}
                           </td>
                         </>
                       )}

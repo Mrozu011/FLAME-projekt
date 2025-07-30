@@ -138,7 +138,7 @@ class ErrorHandlerService {
     }
   }
 
-  private async sendErrorToMonitoring(errorInfo: any, retryCount = 0) {
+  private async sendErrorToMonitoring(errorInfo: any, retryCount = 0): Promise<void> {
     try {
       if (typeof window === 'undefined') return;
 

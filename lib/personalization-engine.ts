@@ -145,6 +145,8 @@ export class PersonalizationEngine {
   }
 
   private loadStoredData(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       // 从本地存储加载数据
       const storedBehaviors = localStorage.getItem('flame-personalization-behaviors');
@@ -185,6 +187,8 @@ export class PersonalizationEngine {
   }
 
   private saveToStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       // 保存行为数据
       localStorage.setItem('flame-personalization-behaviors', JSON.stringify(this.behaviors));
@@ -301,8 +305,9 @@ export class PersonalizationEngine {
       const userId = this.getCurrentUserId();
 
       // 跟踪产品点击
-      if (target.closest('[data-product-id]')) {
-        const productId = target.closest('[data-product-id]').getAttribute('data-product-id');
+      const productElement = target.closest('[data-product-id]');
+      if (productElement) {
+        const productId = productElement.getAttribute('data-product-id');
         this.trackBehavior(userId, {
           action: 'product_view',
           timestamp: new Date(),
@@ -313,8 +318,9 @@ export class PersonalizationEngine {
       }
 
       // 跟踪分类浏览
-      if (target.closest('[data-category]')) {
-        const category = target.closest('[data-category]').getAttribute('data-category');
+      const categoryElement = target.closest('[data-category]');
+      if (categoryElement) {
+        const category = categoryElement.getAttribute('data-category');
         this.trackBehavior(userId, {
           action: 'category_browse',
           timestamp: new Date(),

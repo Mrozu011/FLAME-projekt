@@ -5,6 +5,25 @@ import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
+interface Product {
+  id: string;
+  name: string;
+  description: string;
+  sku: string;
+  price: number;
+  originalPrice: number;
+  category: string;
+  subcategory: string;
+  stock: number;
+  weight: number;
+  images: string[];
+  mainImageIndex: number;
+  tags: string[];
+  sizes: string[];
+  colors: string[];
+  [key: string]: any; // Allow for additional dynamic properties
+}
+
 interface ProductVersion {
   id: string;
   timestamp: Date;
@@ -19,8 +38,8 @@ interface ValidationErrors {
 
 export default function EditProduct({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const [product, setProduct] = useState<any>(null);
-  const [originalProduct, setOriginalProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
+  const [originalProduct, setOriginalProduct] = useState<Product | null>(null);
   const [validationErrors, setValidationErrors] = useState<ValidationErrors>({});
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -30,7 +49,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
   const [newTag, setNewTag] = useState('');
   const [activeTab, setActiveTab] = useState('general');
   const [productHistory, setProductHistory] = useState<ProductVersion[]>([]);
-  const [undoHistory, setUndoHistory] = useState<any[]>([]);
+  const [undoHistory, setUndoHistory] = useState<Product[]>([]);
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
 
   const categories = {
@@ -87,7 +106,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     try {
       setIsLoading(true);
 
-      const mockProduct = {
+      const mockProduct: Product = {
         id: params.id,
         name: 'Premium Wireless Headphones',
         description: 'High-quality wireless headphones with active noise cancellation and premium sound quality. Perfect for music lovers and professionals.',
@@ -167,36 +186,36 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     switch (field) {
       case 'name':
         if (!value || value.trim().length < 2) {
-          return 'Product name must be at least 2 characters long';
+          return 'Name must be at least 2 characters long';
         }
         if (value.length > 100) {
-          return 'Product name cannot exceed 100 characters';
+          return 'Name cannot exceed 100 characters';
         }
         break;
 
       case 'price':
-        if (!value || isNaN(value) || parseFloat(value) <= 0) {
+        if (!value || isNaN(Number(value)) || parseFloat(String(value)) <= 0) {
           return 'Price must be a valid positive number';
         }
         break;
 
       case 'originalPrice':
-        if (value && (isNaN(value) || parseFloat(value) <= 0)) {
+        if (value && (isNaN(Number(value)) || parseFloat(String(value)) <= 0)) {
           return 'Original price must be a valid positive number';
         }
-        if (value && product?.price && parseFloat(value) <= parseFloat(product.price)) {
+        if (value && product?.price && parseFloat(String(value)) <= product.price) {
           return 'Original price should be higher than current price';
         }
         break;
 
       case 'stock':
-        if (!value || isNaN(value) || parseInt(value) < 0) {
+        if (!value || isNaN(Number(value)) || parseInt(String(value)) < 0) {
           return 'Stock must be a valid non-negative number';
         }
         break;
 
       case 'weight':
-        if (value && (isNaN(value) || parseFloat(value) <= 0)) {
+        if (value && (isNaN(Number(value)) || parseFloat(String(value)) <= 0)) {
           return 'Weight must be a valid positive number';
         }
         break;
@@ -228,15 +247,18 @@ export default function EditProduct({ params }: { params: { id: string } }) {
     }
     setUndoHistory(prev => [...prev, JSON.parse(JSON.stringify(product))]);
 
-    setProduct(prev => ({
-      ...prev,
-      [field]: value
-    }));
+    setProduct((prev: Product | null) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: value
+      };
+    });
 
     const error = validateField(field, value);
     setValidationErrors(prev => ({
       ...prev,
-      [field]: error
+      [field]: error || ''
     }));
   }, [product, validateField, undoHistory]);
 
@@ -255,19 +277,19 @@ export default function EditProduct({ params }: { params: { id: string } }) {
 
     if (draggedImageIndex === null || draggedImageIndex === dropIndex) return;
 
-    const newImages = [...product.images];
+    const newImages = [...product!.images];
     const draggedImage = newImages[draggedImageIndex];
 
     newImages.splice(draggedImageIndex, 1);
     newImages.splice(dropIndex, 0, draggedImage);
 
-    let newMainImageIndex = product.mainImageIndex;
-    if (draggedImageIndex === product.mainImageIndex) {
+    let newMainImageIndex = product!.mainImageIndex;
+    if (draggedImageIndex === product!.mainImageIndex) {
       newMainImageIndex = dropIndex;
-    } else if (draggedImageIndex < product.mainImageIndex && dropIndex >= product.mainImageIndex) {
-      newMainImageIndex = product.mainImageIndex - 1;
-    } else if (draggedImageIndex > product.mainImageIndex && dropIndex <= product.mainImageIndex) {
-      newMainImageIndex = product.mainImageIndex + 1;
+    } else if (draggedImageIndex < product!.mainImageIndex && dropIndex >= product!.mainImageIndex) {
+      newMainImageIndex = product!.mainImageIndex - 1;
+    } else if (draggedImageIndex > product!.mainImageIndex && dropIndex <= product!.mainImageIndex) {
+      newMainImageIndex = product!.mainImageIndex + 1;
     }
 
     handleFieldChange('images', newImages);
@@ -276,10 +298,10 @@ export default function EditProduct({ params }: { params: { id: string } }) {
   };
 
   const removeImage = (index: number) => {
-    const newImages = product.images.filter((_, i) => i !== index);
-    const newMainImageIndex = index === product.mainImageIndex ? 0 :
-                              index < product.mainImageIndex ? product.mainImageIndex - 1 :
-                              product.mainImageIndex;
+    const newImages = product!.images.filter((_, i) => i !== index);
+    const newMainImageIndex = index === product!.mainImageIndex ? 0 :
+                              index < product!.mainImageIndex ? product!.mainImageIndex - 1 :
+                              product!.mainImageIndex;
 
     handleFieldChange('images', newImages);
     handleFieldChange('mainImageIndex', Math.min(newMainImageIndex, newImages.length - 1));
@@ -292,40 +314,40 @@ export default function EditProduct({ params }: { params: { id: string } }) {
   const addImageUrl = () => {
     const url = prompt('Enter image URL:');
     if (url) {
-      handleFieldChange('images', [...product.images, url]);
+      handleFieldChange('images', [...product!.images, url]);
     }
   };
 
   const addTag = () => {
-    if (newTag.trim() && !product.tags.includes(newTag.trim())) {
-      handleFieldChange('tags', [...product.tags, newTag.trim()]);
+    if (newTag.trim() && !product!.tags.includes(newTag.trim())) {
+      handleFieldChange('tags', [...product!.tags, newTag.trim()]);
       setNewTag('');
     }
   };
 
   const removeTag = (tagToRemove: string) => {
-    handleFieldChange('tags', product.tags.filter(tag => tag !== tagToRemove));
+    handleFieldChange('tags', product!.tags.filter(tag => tag !== tagToRemove));
   };
 
   const togglePredefinedTag = (tag: string) => {
-    if (product.tags.includes(tag)) {
+    if (product!.tags.includes(tag)) {
       removeTag(tag);
     } else {
-      handleFieldChange('tags', [...product.tags, tag]);
+      handleFieldChange('tags', [...product!.tags, tag]);
     }
   };
 
   const handleSizeToggle = (size: string) => {
-    const newSizes = product.sizes.includes(size)
-      ? product.sizes.filter(s => s !== size)
-      : [...product.sizes, size];
+    const newSizes = product!.sizes.includes(size)
+      ? product!.sizes.filter(s => s !== size)
+      : [...product!.sizes, size];
     handleFieldChange('sizes', newSizes);
   };
 
   const handleColorToggle = (color: string) => {
-    const newColors = product.colors.includes(color)
-      ? product.colors.filter(c => c !== color)
-      : [...product.colors, color];
+    const newColors = product!.colors.includes(color)
+      ? product!.colors.filter(c => c !== color)
+      : [...product!.colors, color];
     handleFieldChange('colors', newColors);
   };
 
@@ -340,8 +362,8 @@ export default function EditProduct({ params }: { params: { id: string } }) {
 
   const saveProduct = async () => {
     const errors: ValidationErrors = {};
-    Object.keys(product).forEach(field => {
-      const error = validateField(field, product[field]);
+    Object.keys(product!).forEach(field => {
+      const error = validateField(field, product![field]);
       if (error) errors[field] = error;
     });
 
@@ -356,32 +378,32 @@ export default function EditProduct({ params }: { params: { id: string } }) {
 
     try {
       const formData = new URLSearchParams();
-      formData.append('productId', product.id);
-      formData.append('name', product.name);
-      formData.append('description', product.description);
-      formData.append('sku', product.sku);
-      formData.append('price', product.price.toString());
-      formData.append('originalPrice', product.originalPrice?.toString() || '');
-      formData.append('category', product.category);
-      formData.append('subcategory', product.subcategory);
-      formData.append('stock', product.stock.toString());
-      formData.append('weight', product.weight?.toString() || '');
-      formData.append('dimensions', product.dimensions || '');
-      formData.append('materials', product.materials || '');
-      formData.append('tags', JSON.stringify(product.tags));
-      formData.append('images', JSON.stringify(product.images));
-      formData.append('mainImageIndex', product.mainImageIndex.toString());
-      formData.append('sizes', JSON.stringify(product.sizes));
-      formData.append('colors', JSON.stringify(product.colors));
-      formData.append('isActive', product.isActive.toString());
+      formData.append('productId', product!.id);
+      formData.append('name', product!.name);
+      formData.append('description', product!.description);
+      formData.append('sku', product!.sku);
+      formData.append('price', product!.price.toString());
+      formData.append('originalPrice', product!.originalPrice?.toString() || '');
+      formData.append('category', product!.category);
+      formData.append('subcategory', product!.subcategory);
+      formData.append('stock', product!.stock.toString());
+      formData.append('weight', product!.weight?.toString() || '');
+      formData.append('dimensions', product!.dimensions || '');
+      formData.append('materials', product!.materials || '');
+      formData.append('tags', JSON.stringify(product!.tags));
+      formData.append('images', JSON.stringify(product!.images));
+      formData.append('mainImageIndex', product!.mainImageIndex.toString());
+      formData.append('sizes', JSON.stringify(product!.sizes));
+      formData.append('colors', JSON.stringify(product!.colors));
+      formData.append('isActive', product!.isActive.toString());
       formData.append('action', 'update');
 
-      const changes = {};
-      Object.keys(product).forEach(key => {
-        if (JSON.stringify(product[key]) !== JSON.stringify(originalProduct[key])) {
+      const changes: Record<string, { old: unknown; new: unknown }> = {};
+      Object.keys(product!).forEach(key => {
+        if (JSON.stringify(product![key as keyof Product]) !== JSON.stringify(originalProduct![key as keyof Product])) {
           changes[key] = {
-            old: originalProduct[key],
-            new: product[key]
+            old: originalProduct![key as keyof Product],
+            new: product![key as keyof Product]
           };
         }
       });
@@ -744,7 +766,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
                           disabled={!product.category}
                         >
                           <option value="">Select Subcategory</option>
-                          {product.category && Object.entries(categories[product.category]?.subcategories || {}).map(([key, name]) => (
+                          {product.category && Object.entries(categories[product.category as keyof typeof categories]?.subcategories || {}).map(([key, name]) => (
                             <option key={key} value={key}>
                               {name}
                             </option>

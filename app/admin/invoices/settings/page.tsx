@@ -2,29 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { invoiceService } from '@/lib/invoice-service';
-
-interface InvoiceSettings {
-  companyName: string;
-  companyAddress: string;
-  companyCity: string;
-  companyState: string;
-  companyZipCode: string;
-  companyCountry: string;
-  companyPhone: string;
-  companyEmail: string;
-  companyWebsite?: string;
-  companyTaxId?: string;
-  logo?: string;
-  primaryColor: string;
-  secondaryColor: string;
-  footer: string;
-  invoicePrefix: string;
-  invoiceNumberLength: number;
-  defaultNotes?: string;
-  autoGenerate: boolean;
-  emailToCustomer: boolean;
-}
+import { invoiceService, InvoiceSettings, InvoiceData, Order } from '@/lib/invoice-service';
 
 export default function InvoiceSettingsPage() {
   const [settings, setSettings] = useState<InvoiceSettings | null>(null);
@@ -36,14 +14,118 @@ export default function InvoiceSettingsPage() {
     loadSettings();
   }, []);
 
+  /**
+   * Loads invoice settings and simulates the complete workflow
+   */
   const loadSettings = () => {
     try {
+      console.log('🔄 Loading invoice settings...');
       const loadedSettings = invoiceService.getSettings();
       setSettings(loadedSettings);
       setLoading(false);
+      
+      console.log('✅ Settings loaded successfully:', loadedSettings);
+      
+      // Simulate complete workflow after loading
+      simulateCompleteWorkflow(loadedSettings);
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error('❌ Error loading settings:', error);
       setLoading(false);
+    }
+  };
+
+  /**
+   * Simulates the complete invoice workflow for testing
+   */
+  const simulateCompleteWorkflow = async (currentSettings: InvoiceSettings) => {
+    try {
+      console.log('🧪 Starting complete workflow simulation...');
+      
+      // Step 1: Update settings
+      console.log('📝 Step 1: Updating settings...');
+      const updatedSettings: InvoiceSettings = {
+        ...currentSettings,
+        companyName: 'Flame Fashion (Updated)',
+        primaryColor: '#FF6B35',
+        secondaryColor: '#2E86AB'
+      };
+      invoiceService.updateSettings(updatedSettings);
+      console.log('✅ Settings updated:', updatedSettings);
+      
+      // Step 2: Generate mock order
+      console.log('📦 Step 2: Creating mock order...');
+      const mockOrder: Order = {
+        id: 'WORKFLOW-TEST-001',
+        orderNumber: 'FL-WF-001',
+        orderDate: new Date().toISOString(),
+        status: 'completed',
+        paymentStatus: 'paid',
+        customer: {
+          name: 'Jane Smith',
+          email: 'jane.smith@example.com',
+          phone: '+1 (555) 987-6543'
+        },
+        billing: {
+          address: '456 Oak Avenue',
+          city: 'Los Angeles',
+          state: 'CA',
+          zipCode: '90210',
+          country: 'United States'
+        },
+        items: [
+          {
+            id: '1',
+            name: 'Premium Leather Jacket',
+            sku: 'PLJ-001',
+            quantity: 1,
+            price: 299.99,
+            total: 299.99
+          },
+          {
+            id: '2',
+            name: 'Designer Silk Scarf',
+            sku: 'DSS-002',
+            quantity: 2,
+            price: 89.99,
+            total: 179.98
+          }
+        ],
+        summary: {
+          subtotal: 479.97,
+          tax: 39.60,
+          taxRate: 8.25,
+          shipping: 15.99,
+          discount: 25.00,
+          total: 510.56
+        }
+      };
+      console.log('✅ Mock order created:', mockOrder);
+      
+      // Step 3: Generate invoice
+      console.log('🧾 Step 3: Generating invoice...');
+      const generatedInvoice = await invoiceService.generateInvoice(mockOrder, 'Workflow test invoice');
+      console.log('✅ Invoice generated:', generatedInvoice);
+      
+      // Step 4: Generate HTML
+      console.log('🎨 Step 4: Generating HTML...');
+      const htmlContent = invoiceService.generateHTML(generatedInvoice);
+      console.log('✅ HTML generated (length):', htmlContent.length);
+      
+      // Step 5: Test other methods
+      console.log('🔍 Step 5: Testing other methods...');
+      const allInvoices = invoiceService.getInvoices();
+      const specificInvoice = invoiceService.getInvoice(generatedInvoice.invoiceNumber);
+      const orderInvoices = invoiceService.getInvoicesByOrder(mockOrder.id);
+      
+      console.log('📊 Results:');
+      console.log('- Total invoices:', allInvoices.length);
+      console.log('- Specific invoice found:', !!specificInvoice);
+      console.log('- Order invoices:', orderInvoices.length);
+      
+      console.log('🎉 Complete workflow simulation finished successfully!');
+      
+    } catch (error) {
+      console.error('❌ Workflow simulation failed:', error);
     }
   };
 
@@ -52,11 +134,13 @@ export default function InvoiceSettingsPage() {
 
     try {
       if (settings) {
-        (invoiceService as any).updateSettings(settings);
+        console.log('💾 Saving invoice settings...', settings);
+        invoiceService.updateSettings(settings);
         alert('Settings saved successfully!');
+        console.log('✅ Settings saved successfully');
       }
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('❌ Error saving settings:', error);
       alert('Failed to save settings. Please try again.');
     } finally {
       setSaving(false);
@@ -85,8 +169,8 @@ export default function InvoiceSettingsPage() {
     }
   };
 
-  const generatePreviewInvoice = () => {
-    const mockOrder = {
+  const generatePreviewInvoice = async () => {
+    const mockOrder: Order = {
       id: 'PREVIEW',
       orderNumber: 'FL-PREVIEW',
       orderDate: new Date().toISOString(),
@@ -124,23 +208,33 @@ export default function InvoiceSettingsPage() {
       }
     };
 
-    const tempService = { ...invoiceService };
-    tempService.updateSettings(settings);
+    if (!settings) {
+      throw new Error('Settings not loaded');
+    }
+
+    console.log('🎯 Generating preview invoice...');
+    console.log('- Mock order:', mockOrder);
+    console.log('- Current settings:', settings);
     
-    return tempService.generateInvoice(mockOrder);
+    const previewInvoice = await invoiceService.generateInvoice(mockOrder);
+    console.log('✅ Preview invoice generated:', previewInvoice);
+    
+    return previewInvoice;
   };
 
   const handlePreview = async () => {
     try {
+      console.log('👁️ Opening invoice preview...');
       const previewInvoice = await generatePreviewInvoice();
       const html = invoiceService.generateHTML(previewInvoice);
       const previewWindow = window.open('', '_blank', 'width=800,height=600');
       if (previewWindow) {
         previewWindow.document.write(html);
         previewWindow.document.close();
+        console.log('✅ Preview window opened successfully');
       }
     } catch (error) {
-      console.error('Error generating preview:', error);
+      console.error('❌ Error generating preview:', error);
       alert('Failed to generate preview. Please check your settings.');
     }
   };

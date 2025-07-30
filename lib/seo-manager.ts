@@ -36,11 +36,11 @@ export class SEOManager {
 
     return {
       title: `${product.name} - ${this.config.siteName}`,
-      description: this.truncateDescription(product.description, 160),
+      description: this.truncateDescription(product.description || '', 160),
       keywords,
       ogTitle: product.name,
-      ogDescription: this.truncateDescription(product.description, 200),
-      ogImage: product.images[0] || this.config.defaultImage,
+      ogDescription: this.truncateDescription(product.description || '', 200),
+      ogImage: product.images?.[0] || this.config.defaultImage,
       ogType: 'product',
       structuredData,
       canonical: productUrl,
@@ -63,7 +63,6 @@ export class SEOManager {
       keywords: seo.keywords.join(', '),
       authors: [{ name: this.config.siteName }],
       robots: product.isPublished !== false ? 'index, follow' : 'noindex, nofollow',
-      canonical: seo.canonical,
       alternates: {
         canonical: seo.canonical,
         languages: seo.alternateLanguages || {}
@@ -155,7 +154,7 @@ export class SEOManager {
     }
 
     if (product.originalPrice && product.originalPrice > product.price) {
-      offers.priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+      (offers as any).priceValidUntil = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
     }
 
     const aggregateRating = {
@@ -185,19 +184,19 @@ export class SEOManager {
 
     // Add additional properties if available
     if (product.material) {
-      structuredData.material = product.material
+      (structuredData as any).material = product.material
     }
 
     if (product.colors && product.colors.length > 0) {
-      structuredData.color = product.colors
+      (structuredData as any).color = product.colors
     }
 
     if (product.size && product.size.length > 0) {
-      structuredData.size = product.size
+      (structuredData as any).size = product.size
     }
 
-    if (product.has3DModel) {
-      structuredData.additionalProperty = [
+    if ((product as any).has3DModel) {
+      (structuredData as any).additionalProperty = [
         {
           '@type': 'PropertyValue',
           'name': '3D Model',

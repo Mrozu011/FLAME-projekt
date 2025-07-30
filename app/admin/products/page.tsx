@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useTranslation } from '@/hooks/useTranslation';
 import { activityLogger } from '@/lib/activity-logger';
 
 interface Product {
@@ -40,13 +41,14 @@ interface UploadingProduct {
 }
 
 export default function ProductManagement() {
+  const { t, language, changeLanguage } = useTranslation();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('all');
   const [filterStock, setFilterStock] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [sortBy, setSortBy] = useState('name');
+  const [sortBy, setSortBy] = useState('created_desc');
   const [currentPage, setCurrentPage] = useState(1);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -132,6 +134,7 @@ export default function ProductManagement() {
         category: 'electronics',
         images: ['https://readdy.ai/api/search-image?query=premium%20wireless%20headphones%20product%20photography%2C%20modern%20headphones%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20high%20quality%20audio%20equipment&width=300&height=300&seq=headphones-1&orientation=squarish'],
         createdAt: '2024-01-15',
+        updatedAt: '2024-01-15',
         tags: ['new-arrival', 'bestseller'],
         stockStatus: 'in-stock',
         qualityScore: 95
@@ -147,6 +150,7 @@ export default function ProductManagement() {
         category: 'men',
         images: ['https://readdy.ai/api/search-image?query=designer%20leather%20jacket%20men%20fashion%20photography%2C%20black%20leather%20jacket%2C%20professional%20product%20photography%2C%20clean%20background%2C%20modern%20menswear&width=300&height=300&seq=jacket-1&orientation=squarish'],
         createdAt: '2024-01-10',
+        updatedAt: '2024-01-10',
         tags: ['featured', 'on-sale'],
         stockStatus: 'low-stock',
         qualityScore: 88
@@ -162,6 +166,7 @@ export default function ProductManagement() {
         category: 'electronics',
         images: ['https://readdy.ai/api/search-image?query=smart%20fitness%20watch%20product%20photography%2C%20modern%20smartwatch%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20wearable%20technology&width=300&height=300&seq=watch-1&orientation=squarish'],
         createdAt: '2024-01-08',
+        updatedAt: '2024-01-08',
         tags: ['new-arrival'],
         stockStatus: 'out-of-stock',
         qualityScore: 92
@@ -177,6 +182,7 @@ export default function ProductManagement() {
         category: 'women',
         images: ['https://readdy.ai/api/search-image?query=organic%20cotton%20t-shirt%20women%20fashion%20photography%2C%20basic%20white%20tee%2C%20professional%20product%20photography%2C%20clean%20background%2C%20sustainable%20clothing&width=300&height=300&seq=tshirt-1&orientation=squarish'],
         createdAt: '2024-01-20',
+        updatedAt: '2024-01-20',
         tags: ['bestseller', 'on-sale'],
         stockStatus: 'in-stock',
         qualityScore: 90
@@ -192,6 +198,7 @@ export default function ProductManagement() {
         category: 'electronics',
         images: ['https://readdy.ai/api/search-image?query=bluetooth%20speaker%20product%20photography%2C%20modern%20wireless%20speaker%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20portable%20audio%20device&width=300&height=300&seq=speaker-1&orientation=squarish'],
         createdAt: '2024-01-12',
+        updatedAt: '2024-01-12',
         tags: ['featured'],
         stockStatus: 'in-stock',
         qualityScore: 85
@@ -207,6 +214,7 @@ export default function ProductManagement() {
         category: 'lifestyle',
         images: ['https://readdy.ai/api/search-image?query=eco-friendly%20water%20bottle%20product%20photography%2C%20sustainable%20bottle%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20reusable%20water%20bottle&width=300&height=300&seq=bottle-1&orientation=squarish'],
         createdAt: '2024-01-18',
+        updatedAt: '2024-01-18',
         tags: ['new-arrival', 'bestseller'],
         stockStatus: 'in-stock',
         qualityScore: 87
@@ -222,6 +230,7 @@ export default function ProductManagement() {
         category: 'electronics',
         images: ['https://readdy.ai/api/search-image?query=wireless%20charging%20pad%20product%20photography%2C%20modern%20charging%20pad%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20wireless%20charger&width=300&height=300&seq=charger-1&orientation=squarish'],
         createdAt: '2024-01-05',
+        updatedAt: '2024-01-05',
         tags: ['on-sale'],
         stockStatus: 'low-stock',
         qualityScore: 82
@@ -237,6 +246,7 @@ export default function ProductManagement() {
         category: 'accessories',
         images: ['https://readdy.ai/api/search-image?query=minimalist%20backpack%20product%20photography%2C%20modern%20backpack%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20stylish%20bag&width=300&height=300&seq=backpack-1&orientation=squarish'],
         createdAt: '2024-01-22',
+        updatedAt: '2024-01-22',
         tags: ['featured', 'new-arrival'],
         stockStatus: 'in-stock',
         qualityScore: 93
@@ -252,6 +262,7 @@ export default function ProductManagement() {
         category: 'women',
         images: ['https://readdy.ai/api/search-image?query=summer%20floral%20dress%20women%20fashion%20photography%2C%20elegant%20dress%2C%20professional%20product%20photography%2C%20clean%20background%2C%20summer%20fashion&width=300&height=300&seq=dress-1&orientation=squarish'],
         createdAt: '2024-01-25',
+        updatedAt: '2024-01-25',
         tags: ['bestseller', 'on-sale'],
         stockStatus: 'in-stock',
         qualityScore: 89
@@ -267,6 +278,7 @@ export default function ProductManagement() {
         category: 'accessories',
         images: ['https://readdy.ai/api/search-image?query=classic%20sunglasses%20product%20photography%2C%20designer%20sunglasses%2C%20clean%20white%20background%2C%20professional%20product%20shot%2C%20fashion%20eyewear&width=300&height=300&seq=sunglasses-1&orientation=squarish'],
         createdAt: '2024-01-14',
+        updatedAt: '2024-01-14',
         tags: ['featured'],
         stockStatus: 'in-stock',
         qualityScore: 86
@@ -282,6 +294,7 @@ export default function ProductManagement() {
         category: 'men',
         images: ['https://readdy.ai/api/search-image?query=vintage%20denim%20jacket%20men%20fashion%20photography%2C%20classic%20jacket%2C%20professional%20product%20photography%2C%20clean%20background%2C%20retro%20menswear&width=300&height=300&seq=vintage-jacket-1&orientation=squarish'],
         createdAt: '2024-01-01',
+        updatedAt: '2024-01-01',
         tags: ['discontinued'],
         stockStatus: 'out-of-stock',
         qualityScore: 75
@@ -316,7 +329,7 @@ export default function ProductManagement() {
     }
 
     if (filterStatus !== 'all') {
-      filtered = filtered.filter(product => product.tags.includes(filterStatus));
+      filtered = filtered.filter(product => product.tags?.includes(filterStatus) || false);
     }
 
     filtered.sort((a, b) => {
@@ -334,9 +347,9 @@ export default function ProductManagement() {
         case 'stock_desc':
           return b.stock - a.stock;
         case 'created_desc':
-          return new Date(b.createdAt) - new Date(a.createdAt);
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
         case 'created_asc':
-          return new Date(a.createdAt) - new Date(b.createdAt);
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         default:
           return 0;
       }
@@ -351,14 +364,14 @@ export default function ProductManagement() {
   const currentItems = filteredProducts.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
 
-  const handleDeleteProduct = (product) => {
+  const handleDeleteProduct = (product: Product): void => {
     if (confirm(`Are you sure you want to delete "${product.name}"?`)) {
       setProducts(prev => prev.filter(p => p.id !== product.id));
-      activityLogger.logProductDelete(product.id, product.name);
+      activityLogger.logProductDelete(product.id.toString(), product.name);
     }
   };
 
-  const handleToggleProduct = (product) => {
+  const handleToggleProduct = (product: Product): void => {
     const newStatus = product.status === 'active' ? 'inactive' : 'active';
     setProducts(prev => prev.map(p =>
       p.id === product.id ? { ...p, status: newStatus } : p
@@ -369,7 +382,7 @@ export default function ProductManagement() {
       'product',
       `Product "${product.name}" ${newStatus === 'active' ? 'activated' : 'deactivated'}`,
       {
-        resourceId: product.id,
+        resourceId: product.id.toString(),
         resourceType: 'product',
         changes: { status: { from: product.status, to: newStatus } },
         severity: 'info'
@@ -377,18 +390,26 @@ export default function ProductManagement() {
     );
   };
 
-  const handleUpload3D = (product) => {
-    setUploadingProduct(product);
+  const handleUpload3D = (product: Product): void => {
+    setUploadingProduct({
+      id: product.id,
+      name: product.name,
+      progress: 0
+    });
     setShowUploadModal(true);
     setUploadProgress(0);
   };
 
-  const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    const files = event.target.files;
+    if (!files || files.length === 0) return;
+    
+    const file = files[0];
     if (!file) return;
 
     const allowedTypes = ['.glb', '.gltf', '.usdz', '.obj'];
-    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+    const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
+    if (!fileExtension) return;
 
     if (!allowedTypes.includes(fileExtension)) {
       alert('Please upload a valid 3D model file (.glb, .gltf, .usdz, or .obj)');
@@ -400,13 +421,15 @@ export default function ProductManagement() {
       setUploadProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval);
-          setProducts(prevProducts =>
-            prevProducts.map(p =>
-              p.id === uploadingProduct.id
-                ? { ...p, modelFile: file.name }
-                : p
-            )
-          );
+          if (uploadingProduct) {
+            setProducts(prevProducts =>
+              prevProducts.map(p =>
+                p.id === uploadingProduct.id
+                  ? { ...p, modelFile: file.name }
+                  : p
+              )
+            );
+          }
           setShowUploadModal(false);
           setUploadingProduct(null);
           return 100;
@@ -416,7 +439,7 @@ export default function ProductManagement() {
     }, 200);
   };
 
-  const remove3DModel = (productId) => {
+  const remove3DModel = (productId: number): void => {
     setProducts(products.map(p =>
       p.id === (productId)
         ? { ...p, modelFile: null }
@@ -424,22 +447,22 @@ export default function ProductManagement() {
     ));
   };
 
-  const toggleProductStatus = (productId, status) => {
+  const toggleProductStatus = (productId: number, status: string): void => {
     setProducts(prevProducts =>
       prevProducts.map(p =>
         p.id === productId
           ? {
               ...p,
-              tags: p.tags.includes(status)
+              tags: p.tags?.includes(status)
                 ? p.tags.filter(tag => tag !== status)
-                : [...p.tags, status]
+                : [...(p.tags || []), status]
             }
           : p
       )
     );
   };
 
-  const getStatusBadge = (product) => {
+  const getStatusBadge = (product: Product): string => {
     if (product.stock === 0) {
       return 'bg-red-100 text-red-800';
     } else if (product.stock <= 10) {
@@ -449,7 +472,7 @@ export default function ProductManagement() {
     }
   };
 
-  const getStatusText = (product) => {
+  const getStatusText = (product: Product): string => {
     if (product.stock === 0) {
       return 'Out of Stock';
     } else if (product.stock <= 10) {
@@ -459,11 +482,11 @@ export default function ProductManagement() {
     }
   };
 
-  const getTypeBadge = (type) => {
+  const getTypeBadge = (type: string): string => {
     return type === 'our' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800';
   };
 
-  const getQualityBadge = (score) => {
+  const getQualityBadge = (score: number): string => {
     if (score >= 90) return 'bg-green-100 text-green-800';
     if (score >= 80) return 'bg-yellow-100 text-yellow-800';
     return 'bg-red-100 text-red-800';
@@ -477,7 +500,7 @@ export default function ProductManagement() {
     setSortBy('name');
   };
 
-  const removeProduct = (productId) => {
+  const removeProduct = (productId: number): void => {
     setProducts(products.filter(p => p.id !== productId));
   };
 
@@ -602,8 +625,8 @@ export default function ProductManagement() {
 
                       {/* Enhanced Product Labels */}
                       <div className="absolute top-2 left-2 flex flex-col gap-1">
-                        {product.tags.map((tag) => {
-                          const statusConfig = productStatuses[tag];
+                        {product.tags?.map((tag) => {
+                          const statusConfig = productStatuses[tag as keyof typeof productStatuses];
                           return statusConfig ? (
                             <span key={tag} className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${statusConfig.color}`}>
                               <i className={`${statusConfig.icon} mr-1`}></i>
@@ -665,8 +688,8 @@ export default function ProductManagement() {
 
                       <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
                         <span>Stock: {product.stock}</span>
-                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getQualityBadge(product.qualityScore)}`}>
-                          Quality: {product.qualityScore}%
+                        <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getQualityBadge(product.qualityScore || 0)}`}>
+                          Quality: {product.qualityScore || 0}%
                         </span>
                       </div>
 
@@ -683,7 +706,7 @@ export default function ProductManagement() {
                               key={key}
                               onClick={() => toggleProductStatus(product.id, key)}
                               className={`p-1 rounded-full text-xs transition-colors ${
-                                product.tags.includes(key)
+                                product.tags?.includes(key)
                                   ? status.color
                                   : 'text-gray-400 hover:text-gray-600'
                               }`}
@@ -853,7 +876,12 @@ export default function ProductManagement() {
                 Cancel
               </button>
               <button
-                onClick={handleDeleteProduct}
+                onClick={() => {
+                  if (productToDelete) {
+                    handleDeleteProduct(productToDelete);
+                    setShowDeleteModal(false);
+                  }
+                }}
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors whitespace-nowrap"
               >
                 Delete

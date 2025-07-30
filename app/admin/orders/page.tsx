@@ -331,7 +331,14 @@ export default function OrderManagement() {
     // Auto-generate invoice when status changes to paid
     if (newStatus === 'paid' && oldStatus !== 'paid') {
       try {
-        const invoice = await invoiceService.generateInvoice(selectedOrder);
+        const invoice = await invoiceService.generateInvoice({
+          ...selectedOrder,
+          items: selectedOrder.items.map((item) => ({
+            ...item,
+            id: item.id.toString(),
+            sku: (item as any).sku ?? 'N/A',
+          })),
+        });
         activityLogger.log(
           'Invoice Generated',
           'order',
@@ -386,7 +393,14 @@ export default function OrderManagement() {
 
   const handleGenerateInvoice = async (order: Order) => {
     try {
-      const invoice = await invoiceService.generateInvoice(order);
+      const invoice = await invoiceService.generateInvoice({
+        ...order,
+        items: order.items.map((item) => ({
+          ...item,
+          id: item.id.toString(),
+          sku: (item as any).sku ?? 'N/A',
+        })),
+      });
       showNotification(`Invoice ${invoice.invoiceNumber} generated successfully`, 'success');
       invoiceService.downloadInvoice(invoice);
     } catch (error) {

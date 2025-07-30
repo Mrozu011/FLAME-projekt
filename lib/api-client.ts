@@ -68,7 +68,7 @@ export class ApiClient {
       ...fetchOptions
     } = options;
 
-    let lastError: Error;
+          let lastError: Error | undefined;
     let attempt = 0;
 
     while (attempt < retries) {
@@ -77,9 +77,9 @@ export class ApiClient {
         const timeoutId = setTimeout(() => controller.abort(), timeout);
 
         // Prepare headers
-        const headers = {
+        const headers: Record<string, string> = {
           ...this.defaultHeaders,
-          ...fetchOptions.headers
+          ...(fetchOptions.headers as Record<string, string> || {})
         };
 
         // Add authentication if available and not skipped
@@ -163,7 +163,7 @@ export class ApiClient {
         attempt++;
 
         // Don't retry on certain errors
-        if (error.name === 'AbortError') {
+        if (error instanceof Error && error.name === 'AbortError') {
           return {
             success: false,
             error: 'Request timeout',
@@ -171,7 +171,7 @@ export class ApiClient {
           };
         }
 
-        if (error.message.includes('Failed to fetch')) {
+        if (error instanceof Error && error.message.includes('Failed to fetch')) {
           console.warn(`Network error on attempt ${attempt}/${retries}:`, error.message);
         } else {
           console.error(`API request error on attempt ${attempt}/${retries}:`, error);

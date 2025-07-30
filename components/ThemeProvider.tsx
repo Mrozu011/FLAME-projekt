@@ -49,7 +49,7 @@ export default function ThemeProvider() {
                 console.log('LCP:', Math.round(entry.startTime) + 'ms');
               }
               if (entry.entryType === 'first-input') {
-                console.log('FID:', Math.round(entry.processingStart - entry.startTime) + 'ms');
+                console.log('FID:', Math.round((entry as PerformanceEventTiming).processingStart - entry.startTime) + 'ms');
               }
             });
           });

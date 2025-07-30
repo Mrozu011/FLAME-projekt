@@ -6,7 +6,14 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import OptimizedImage from '@/components/OptimizedImage';
 import { LazySection } from '@/components/LazyComponent';
-import { initializeAdvancedPerformance } from '@/lib/performance';
+// Dynamic import to avoid SSR issues
+const initializeAdvancedPerformance = () => {
+  if (typeof window !== 'undefined') {
+    import('@/lib/performance').then(({ initializeAdvancedPerformance: init }) => {
+      init();
+    });
+  }
+};
 import { useEffect, useState } from 'react';
 
 // Lazy load non-critical components
@@ -38,24 +45,31 @@ const ProductGridSkeleton = () => (
   </div>
 );
 
+declare const gtag: (...args: any[]) => void;
+
+// Force client-side rendering to avoid SSR issues
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [subscribeEmail, setSubscribeEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [subscribeMessage, setSubscribeMessage] = useState('');
 
   useEffect(() => {
-    // Initialize performance optimizations
-    initializeAdvancedPerformance();
-    
-    // Preload critical resources
-    const criticalImages = [
-      'https://readdy.ai/api/search-image?query=premium%20fashion%20hero%20background%2C%20modern%20lifestyle%20photography%2C%20elegant%20clothing%20display%2C%20minimalist%20design%2C%20high-end%20fashion%20photography&width=1920&height=800&seq=hero-bg-1&orientation=landscape',
-    ];
-    
-    criticalImages.forEach(src => {
-      const img = new Image();
-      img.src = src;
-    });
+    // Initialize performance optimizations only on client side
+    if (typeof window !== 'undefined') {
+      initializeAdvancedPerformance();
+      
+      // Preload critical resources
+      const criticalImages = [
+        'https://readdy.ai/api/search-image?query=premium%20fashion%20hero%20background%2C%20modern%20lifestyle%20photography%2C%20elegant%20clothing%20display%2C%20minimalist%20design%2C%20high-end%20fashion%20photography&width=1920&height=800&seq=hero-bg-1&orientation=landscape',
+      ];
+      
+      criticalImages.forEach(src => {
+        const img = new Image();
+        img.src = src;
+      });
+    }
   }, []);
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -68,11 +82,13 @@ export default function Home() {
     }
 
     // Check if already subscribed
-    const existingSubscriptions = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
-    if (existingSubscriptions.includes(subscribeEmail)) {
-      setSubscribeStatus('error');
-      setSubscribeMessage('This email is already subscribed');
-      return;
+    if (typeof window !== 'undefined') {
+      const existingSubscriptions = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
+      if (existingSubscriptions.includes(subscribeEmail)) {
+        setSubscribeStatus('error');
+        setSubscribeMessage('This email is already subscribed');
+        return;
+      }
     }
 
     setSubscribeStatus('loading');
@@ -82,8 +98,11 @@ export default function Home() {
       await new Promise(resolve => setTimeout(resolve, 1000));
       
       // Store subscription locally
-      const updatedSubscriptions = [...existingSubscriptions, subscribeEmail];
-      localStorage.setItem('newsletter_subscribers', JSON.stringify(updatedSubscriptions));
+      if (typeof window !== 'undefined') {
+        const existingSubscriptions = JSON.parse(localStorage.getItem('newsletter_subscribers') || '[]');
+        const updatedSubscriptions = [...existingSubscriptions, subscribeEmail];
+        localStorage.setItem('newsletter_subscribers', JSON.stringify(updatedSubscriptions));
+      }
       
       // Track subscription event
       if (typeof gtag !== 'undefined') {
@@ -197,7 +216,7 @@ export default function Home() {
         {/* Personalized Homepage - Lazy loaded */}
         <LazySection className="py-16">
           <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg mx-4"></div>}>
-            <PersonalizedHomepage />
+            <PersonalizedHomepage defaultProducts={[]} />
           </Suspense>
         </LazySection>
 
@@ -210,7 +229,7 @@ export default function Home() {
             </div>
             
             <Suspense fallback={<ProductGridSkeleton />}>
-              <ProductGrid limit={8} />
+              <ProductGrid products={[]} />
             </Suspense>
           </div>
         </LazySection>
@@ -218,7 +237,7 @@ export default function Home() {
         {/* Recommendations - Lazy loaded */}
         <LazySection className="py-16 bg-gray-50">
           <Suspense fallback={<div className="h-48 bg-gray-100 animate-pulse rounded-lg mx-4"></div>}>
-            <RecommendationSection />
+            <RecommendationSection title="Recommended for You" userId="guest" context={{ type: 'homepage' }} />
           </Suspense>
         </LazySection>
 

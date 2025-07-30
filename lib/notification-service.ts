@@ -156,6 +156,8 @@ export class NotificationService {
   }
 
   private loadFromStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const savedNotifications = localStorage.getItem('flame-notifications');
       if (savedNotifications) {
@@ -186,6 +188,8 @@ export class NotificationService {
   }
 
   private saveToStorage(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('flame-notifications', JSON.stringify(this.notifications));
       localStorage.setItem('flame-notification-rules', JSON.stringify(this.rules));

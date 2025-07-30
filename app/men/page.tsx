@@ -8,26 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryFilter from '@/components/CategoryFilter';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  subcategory: string;
-  size: string[];
-  colors: string[];
-  material: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  popularity: number;
-  tags: string[];
-}
+import type { Product } from '@/lib/types';
 
 function MenPageContent() {
   const searchParams = useSearchParams();
@@ -57,7 +38,7 @@ function MenPageContent() {
       reviewCount: 142,
       category: 'Men',
       subcategory: 'Jackets',
-      size: ['S', 'M', 'L', 'XL', 'XXL'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       colors: ['Blue', 'Black', 'Light Blue'],
       material: '100% Cotton Denim',
       isNew: false,
@@ -75,7 +56,7 @@ function MenPageContent() {
       reviewCount: 256,
       category: 'Men',
       subcategory: 'T-Shirts',
-      size: ['S', 'M', 'L', 'XL', 'XXL'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       colors: ['White', 'Black', 'Navy', 'Gray'],
       material: '100% Organic Cotton',
       isNew: true,
@@ -92,7 +73,7 @@ function MenPageContent() {
       reviewCount: 189,
       category: 'Men',
       subcategory: 'Pants',
-      size: ['30', '32', '34', '36', '38'],
+      sizes: ['30', '32', '34', '36', '38'],
       colors: ['Khaki', 'Navy', 'Black', 'Olive'],
       material: '97% Cotton, 3% Elastane',
       isNew: false,
@@ -110,7 +91,7 @@ function MenPageContent() {
       reviewCount: 98,
       category: 'Men',
       subcategory: 'Sweaters',
-      size: ['S', 'M', 'L', 'XL', 'XXL'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       colors: ['Charcoal', 'Navy', 'Burgundy'],
       material: '60% Wool, 40% Acrylic',
       isNew: true,
@@ -128,7 +109,7 @@ function MenPageContent() {
       reviewCount: 167,
       category: 'Men',
       subcategory: 'Shirts',
-      size: ['S', 'M', 'L', 'XL', 'XXL'],
+      sizes: ['S', 'M', 'L', 'XL', 'XXL'],
       colors: ['White', 'Blue', 'Pink', 'Gray'],
       material: '100% Cotton',
       isNew: false,
@@ -146,7 +127,7 @@ function MenPageContent() {
       reviewCount: 73,
       category: 'Men',
       subcategory: 'Shoes',
-      size: ['40', '41', '42', '43', '44', '45'],
+      sizes: ['40', '41', '42', '43', '44', '45'],
       colors: ['Black', 'Brown', 'Tan'],
       material: 'Genuine Leather',
       isNew: false,
@@ -193,19 +174,19 @@ function MenPageContent() {
     // Apply filters
     if (filters.subcategory && filters.subcategory !== 'all') {
       filtered = filtered.filter(product =>
-        product.subcategory.toLowerCase() === filters.subcategory.toLowerCase()
+        product.subcategory?.toLowerCase() === filters.subcategory.toLowerCase()
       );
     }
 
     if (filters.size) {
       filtered = filtered.filter(product =>
-        product.size.includes(filters.size)
+        product.sizes?.includes(filters.size)
       );
     }
 
     if (filters.color) {
       filtered = filtered.filter(product =>
-        product.colors.some(color =>
+        product.colors?.some(color =>
           color.toLowerCase().includes(filters.color.toLowerCase())
         )
       );
@@ -213,7 +194,7 @@ function MenPageContent() {
 
     if (filters.material) {
       filtered = filtered.filter(product =>
-        product.material.toLowerCase().includes(filters.material.toLowerCase())
+        product.material?.toLowerCase().includes(filters.material.toLowerCase())
       );
     }
 
@@ -224,18 +205,18 @@ function MenPageContent() {
 
     // Rating filter
     if (filters.rating > 0) {
-      filtered = filtered.filter(product => product.rating >= filters.rating);
+      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
     }
 
     // Review count filter
     if (filters.reviewCount > 0) {
-      filtered = filtered.filter(product => product.reviewCount >= filters.reviewCount);
+      filtered = filtered.filter(product => (product.reviewCount || 0) >= filters.reviewCount);
     }
 
     // Tags filter
     if (filters.tags.length > 0) {
       filtered = filtered.filter(product =>
-        filters.tags.some(tag => product.tags.includes(tag))
+        filters.tags.some(tag => product.tags?.includes(tag))
       );
     }
 
@@ -248,17 +229,17 @@ function MenPageContent() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'reviews':
-        filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+        filtered.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
         break;
       case 'newest':
         filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
         break;
       case 'popularity':
       default:
-        filtered.sort((a, b) => b.popularity - a.popularity);
+        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
         break;
     }
 

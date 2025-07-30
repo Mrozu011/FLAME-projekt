@@ -348,7 +348,7 @@ export default function ProductInfo({
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">Color</label>
           <div className="flex space-x-2">
-            {product.colors.map((color) => (
+            {product.colors.map((color: string) => (
               <button
                 key={color}
                 onClick={() => setSelectedColor(color)}
@@ -377,7 +377,7 @@ export default function ProductInfo({
         <div>
           <label className="block text-sm font-medium text-gray-900 mb-2">Size</label>
           <div className="grid grid-cols-6 gap-2">
-            {product.sizes.map((size) => (
+            {product.sizes.map((size: string) => (
               <button
                 key={size}
                 onClick={() => setSelectedSize(size)}

@@ -37,6 +37,8 @@ class ActivityLogger {
   }
 
   private loadLogs() {
+    if (typeof window === 'undefined') return;
+    
     try {
       const stored = localStorage.getItem('admin_activity_logs');
       if (stored) {
@@ -48,6 +50,8 @@ class ActivityLogger {
   }
 
   private saveLogs() {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('admin_activity_logs', JSON.stringify(this.logs));
     } catch (error) {
@@ -84,7 +88,7 @@ class ActivityLogger {
   private getClientInfo() {
     return {
       ipAddress: '192.168.1.100',
-      userAgent: navigator.userAgent
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'Server'
     };
   }
 

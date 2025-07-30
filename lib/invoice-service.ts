@@ -1,4 +1,7 @@
-interface InvoiceData {
+/**
+ * Invoice Data interface representing a complete invoice structure
+ */
+export interface InvoiceData {
   invoiceNumber: string;
   issueDate: string;
   dueDate?: string;
@@ -56,7 +59,10 @@ interface InvoiceData {
   };
 }
 
-interface InvoiceSettings {
+/**
+ * Invoice Settings interface for configuring invoice templates and branding
+ */
+export interface InvoiceSettings {
   companyName: string;
   companyAddress: string;
   companyCity: string;
@@ -78,6 +84,68 @@ interface InvoiceSettings {
   emailToCustomer: boolean;
 }
 
+/**
+ * Order interface for generating invoices from order data
+ */
+export interface Order {
+  id: string;
+  orderNumber?: string;
+  orderDate?: string;
+  date?: string;
+  status: string;
+  paymentStatus?: string;
+  payment?: {
+    status: string;
+  };
+  customer?: {
+    name: string;
+    email: string;
+    phone: string;
+  };
+  billing?: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  shipping?: {
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  items?: Array<{
+    id: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  summary?: {
+    subtotal: number;
+    tax: number;
+    taxRate: number;
+    shipping: number;
+    discount: number;
+    total: number;
+  };
+  subtotal?: number;
+  tax?: number;
+  taxRate?: number;
+  discount?: number;
+  total?: number;
+  amount?: number;
+  email?: string;
+  phone?: string;
+}
+
+/**
+ * Invoice Service class for managing invoice generation, settings, and persistence
+ * Provides methods for creating, updating, and managing invoice data and templates
+ */
 export class InvoiceService {
   private settings: InvoiceSettings;
   private invoiceCounter: number = 1000;
@@ -87,6 +155,10 @@ export class InvoiceService {
     this.loadSettings();
   }
 
+  /**
+   * Creates default invoice settings with Flame Fashion branding
+   * @returns Default InvoiceSettings object with company information
+   */
   private getDefaultSettings(): InvoiceSettings {
     return {
       companyName: 'Flame Fashion',
@@ -110,11 +182,18 @@ export class InvoiceService {
     };
   }
 
+  /**
+   * Loads saved settings from localStorage and merges with defaults
+   * Handles errors gracefully and falls back to default settings
+   */
   private loadSettings(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const saved = localStorage.getItem('flame-invoice-settings');
       if (saved) {
-        this.settings = { ...this.settings, ...JSON.parse(saved) };
+        const parsedSettings = JSON.parse(saved);
+        this.settings = { ...this.settings, ...parsedSettings };
       }
       
       const counter = localStorage.getItem('flame-invoice-counter');
@@ -123,10 +202,18 @@ export class InvoiceService {
       }
     } catch (error) {
       console.error('Error loading invoice settings:', error);
+      // Fall back to default settings
+      this.settings = this.getDefaultSettings();
     }
   }
 
+  /**
+   * Saves current settings to localStorage for persistence
+   * Handles errors gracefully and logs issues
+   */
   private saveSettings(): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('flame-invoice-settings', JSON.stringify(this.settings));
       localStorage.setItem('flame-invoice-counter', this.invoiceCounter.toString());
@@ -135,15 +222,27 @@ export class InvoiceService {
     }
   }
 
+  /**
+   * Retrieves current invoice settings
+   * @returns Copy of current InvoiceSettings object
+   */
   public getSettings(): InvoiceSettings {
     return { ...this.settings };
   }
 
+  /**
+   * Updates invoice settings with new values and persists to storage
+   * @param updates - Partial settings object containing fields to update
+   */
   public updateSettings(updates: Partial<InvoiceSettings>): void {
     this.settings = { ...this.settings, ...updates };
     this.saveSettings();
   }
 
+  /**
+   * Generates a unique invoice number based on current counter and prefix
+   * @returns Formatted invoice number string (e.g., "INV-001000")
+   */
   public generateInvoiceNumber(): string {
     const number = this.invoiceCounter.toString().padStart(this.settings.invoiceNumberLength, '0');
     this.invoiceCounter++;
@@ -151,10 +250,21 @@ export class InvoiceService {
     return `${this.settings.invoicePrefix}-${number}`;
   }
 
-  public async generateInvoice(orderData: any, customNotes?: string): Promise<InvoiceData> {
+  /**
+   * Generates a complete invoice from order data
+   * @param orderData - Order object containing customer, items, and payment information
+   * @param customNotes - Optional custom notes to include in the invoice
+   * @returns Promise resolving to complete InvoiceData object
+   */
+  public async generateInvoice(orderData: Order, customNotes?: string): Promise<InvoiceData> {
     const invoiceNumber = this.generateInvoiceNumber();
     const issueDate = new Date().toISOString().split('T')[0];
     
+    // Validate required order data
+    if (!orderData.id) {
+      throw new Error('Order ID is required');
+    }
+
     const invoice: InvoiceData = {
       invoiceNumber,
       issueDate,
@@ -162,9 +272,9 @@ export class InvoiceService {
       order: {
         id: orderData.id,
         orderNumber: orderData.orderNumber || orderData.id,
-        orderDate: orderData.orderDate || orderData.date,
+        orderDate: orderData.orderDate || orderData.date || new Date().toISOString(),
         status: orderData.status,
-        paymentStatus: orderData.paymentStatus || orderData.payment?.status
+        paymentStatus: orderData.paymentStatus || orderData.payment?.status || 'pending'
       },
       seller: {
         name: this.settings.companyName,
@@ -179,21 +289,21 @@ export class InvoiceService {
         taxId: this.settings.companyTaxId
       },
       buyer: {
-        name: orderData.customer?.name || orderData.customer,
-        email: orderData.customer?.email || orderData.email,
-        phone: orderData.customer?.phone || orderData.phone,
-        address: orderData.billing?.address || orderData.shipping?.address,
-        city: orderData.billing?.city || orderData.shipping?.city,
-        state: orderData.billing?.state || orderData.shipping?.state,
-        zipCode: orderData.billing?.zipCode || orderData.shipping?.zipCode,
-        country: orderData.billing?.country || orderData.shipping?.country
+        name: orderData.customer?.name || 'Unknown Customer',
+        email: orderData.customer?.email || orderData.email || 'no-email@example.com',
+        phone: orderData.customer?.phone || orderData.phone || 'No phone provided',
+        address: orderData.billing?.address || orderData.shipping?.address || 'No address provided',
+        city: orderData.billing?.city || orderData.shipping?.city || 'Unknown',
+        state: orderData.billing?.state || orderData.shipping?.state || 'Unknown',
+        zipCode: orderData.billing?.zipCode || orderData.shipping?.zipCode || '00000',
+        country: orderData.billing?.country || orderData.shipping?.country || 'Unknown'
       },
       items: orderData.items || [],
       summary: orderData.summary || {
         subtotal: orderData.subtotal || 0,
         tax: orderData.tax || 0,
         taxRate: orderData.taxRate || 0,
-        shipping: orderData.shipping || 0,
+        shipping: typeof orderData.shipping === 'number' ? orderData.shipping : 0,
         discount: orderData.discount || 0,
         total: orderData.total || orderData.amount || 0
       },
@@ -212,7 +322,13 @@ export class InvoiceService {
     return invoice;
   }
 
+  /**
+   * Saves an invoice to localStorage for persistence
+   * @param invoice - Complete InvoiceData object to save
+   */
   private saveInvoice(invoice: InvoiceData): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const saved = localStorage.getItem('flame-invoices');
       const invoices = saved ? JSON.parse(saved) : [];
@@ -226,7 +342,13 @@ export class InvoiceService {
     }
   }
 
+  /**
+   * Retrieves all saved invoices from localStorage
+   * @returns Array of InvoiceData objects, empty array if none found
+   */
   public getInvoices(): InvoiceData[] {
+    if (typeof window === 'undefined') return [];
+    
     try {
       const saved = localStorage.getItem('flame-invoices');
       return saved ? JSON.parse(saved) : [];
@@ -236,16 +358,41 @@ export class InvoiceService {
     }
   }
 
+  /**
+   * Retrieves a specific invoice by invoice number
+   * @param invoiceNumber - Unique invoice number to search for
+   * @returns InvoiceData object if found, null otherwise
+   */
   public getInvoice(invoiceNumber: string): InvoiceData | null {
-    const invoices = this.getInvoices();
-    return invoices.find(inv => inv.invoiceNumber === invoiceNumber) || null;
+    try {
+      const invoices = this.getInvoices();
+      return invoices.find(invoice => invoice.invoiceNumber === invoiceNumber) || null;
+    } catch (error) {
+      console.error('Error getting invoice:', error);
+      return null;
+    }
   }
 
+  /**
+   * Retrieves all invoices for a specific order
+   * @param orderId - Order ID to filter invoices by
+   * @returns Array of InvoiceData objects for the specified order
+   */
   public getInvoicesByOrder(orderId: string): InvoiceData[] {
-    const invoices = this.getInvoices();
-    return invoices.filter(inv => inv.order.id === orderId);
+    try {
+      const invoices = this.getInvoices();
+      return invoices.filter(invoice => invoice.order.id === orderId);
+    } catch (error) {
+      console.error('Error getting invoices by order:', error);
+      return [];
+    }
   }
 
+  /**
+   * Generates HTML content for an invoice with styling and layout
+   * @param invoice - Complete InvoiceData object to render
+   * @returns HTML string containing the formatted invoice
+   */
   public generateHTML(invoice: InvoiceData): string {
     const formatCurrency = (amount: number) => `$${amount.toFixed(2)}`;
     const formatDate = (date: string) => new Date(date).toLocaleDateString('en-US', {
@@ -267,371 +414,303 @@ export class InvoiceService {
             padding: 0;
             box-sizing: border-box;
           }
-          
           body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            background: #fff;
-            padding: 20px;
+            background-color: #f8f9fa;
+          }
+          .invoice-container {
             max-width: 800px;
-            margin: 0 auto;
+            margin: 20px auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            border-radius: 8px;
+            overflow: hidden;
           }
-          
-          .invoice-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 3px solid ${invoice.branding?.primaryColor || '#000'};
+          .header {
+            background: linear-gradient(135deg, ${invoice.branding?.primaryColor || '#000000'}, ${invoice.branding?.secondaryColor || '#666666'});
+            color: white;
+            padding: 30px;
+            text-align: center;
           }
-          
-          .company-info {
-            flex: 1;
-          }
-          
-          .company-logo {
-            max-width: 150px;
-            height: auto;
-            margin-bottom: 15px;
-          }
-          
-          .company-name {
-            font-size: 24px;
-            font-weight: bold;
-            color: ${invoice.branding?.primaryColor || '#000'};
+          .header h1 {
+            font-size: 2.5em;
             margin-bottom: 10px;
           }
-          
-          .company-details {
-            color: ${invoice.branding?.secondaryColor || '#666'};
-            font-size: 14px;
+          .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
           }
-          
-          .invoice-info {
-            text-align: right;
-            flex-shrink: 0;
+          .invoice-details {
+            padding: 30px;
+            border-bottom: 2px solid #eee;
           }
-          
-          .invoice-title {
-            font-size: 32px;
-            font-weight: bold;
-            color: ${invoice.branding?.primaryColor || '#000'};
-            margin-bottom: 10px;
-          }
-          
           .invoice-meta {
-            color: ${invoice.branding?.secondaryColor || '#666'};
-            font-size: 14px;
-          }
-          
-          .invoice-meta div {
-            margin-bottom: 5px;
-          }
-          
-          .billing-section {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
           }
-          
-          .billing-info {
-            flex: 1;
-            margin-right: 20px;
+          .invoice-number {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: ${invoice.branding?.primaryColor || '#000000'};
           }
-          
-          .billing-info h3 {
-            color: ${invoice.branding?.primaryColor || '#000'};
-            font-size: 16px;
-            margin-bottom: 10px;
-            font-weight: 600;
+          .invoice-date {
+            color: #666;
           }
-          
-          .billing-info p {
+          .parties {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+          }
+          .party {
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+          }
+          .party h3 {
+            color: ${invoice.branding?.primaryColor || '#000000'};
+            margin-bottom: 15px;
+            border-bottom: 2px solid ${invoice.branding?.secondaryColor || '#666666'};
+            padding-bottom: 5px;
+          }
+          .party p {
             margin-bottom: 5px;
-            color: ${invoice.branding?.secondaryColor || '#666'};
           }
-          
           .items-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 30px;
+            margin: 30px 0;
           }
-          
           .items-table th {
-            background: ${invoice.branding?.primaryColor || '#000'};
+            background: ${invoice.branding?.primaryColor || '#000000'};
             color: white;
-            padding: 12px;
+            padding: 15px;
             text-align: left;
-            font-weight: 600;
           }
-          
           .items-table td {
-            padding: 12px;
+            padding: 15px;
             border-bottom: 1px solid #eee;
           }
-          
           .items-table tr:nth-child(even) {
-            background: #f9f9f9;
+            background: #f8f9fa;
           }
-          
-          .text-right {
-            text-align: right;
-          }
-          
-          .text-center {
-            text-align: center;
-          }
-          
           .summary-section {
-            margin-left: auto;
-            width: 300px;
+            margin: 30px 0;
           }
-          
           .summary-table {
             width: 100%;
             border-collapse: collapse;
           }
-          
           .summary-table td {
-            padding: 8px 12px;
+            padding: 10px;
             border-bottom: 1px solid #eee;
           }
-          
           .summary-table .label {
-            color: ${invoice.branding?.secondaryColor || '#666'};
-            font-weight: 500;
+            font-weight: bold;
+            text-align: right;
+            width: 50%;
           }
-          
           .summary-table .value {
             text-align: right;
-            font-weight: 600;
+            width: 50%;
           }
-          
           .summary-table .total {
-            background: ${invoice.branding?.primaryColor || '#000'};
-            color: white;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 1.2em;
+            background: ${invoice.branding?.primaryColor || '#000000'};
+            color: white;
           }
-          
           .notes-section {
-            margin-top: 40px;
             padding: 20px;
-            background: #f9f9f9;
+            background: #f8f9fa;
             border-radius: 8px;
+            margin: 30px 0;
           }
-          
           .notes-section h3 {
-            color: ${invoice.branding?.primaryColor || '#000'};
+            color: ${invoice.branding?.primaryColor || '#000000'};
             margin-bottom: 10px;
           }
-          
           .footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #eee;
+            background: ${invoice.branding?.secondaryColor || '#666666'};
+            color: white;
             text-align: center;
-            color: ${invoice.branding?.secondaryColor || '#666'};
-            font-size: 14px;
+            padding: 20px;
+            font-size: 0.9em;
           }
-          
-          @media (max-width: 768px) {
-            body {
-              padding: 10px;
-            }
-            
-            .invoice-header {
-              flex-direction: column;
-              text-align: center;
-            }
-            
-            .company-info {
-              margin-bottom: 20px;
-            }
-            
-            .invoice-info {
-              text-align: center;
-            }
-            
-            .invoice-title {
-              font-size: 24px;
-            }
-            
-            .billing-section {
-              flex-direction: column;
-            }
-            
-            .billing-info {
-              margin-right: 0;
-              margin-bottom: 20px;
-            }
-            
-            .items-table {
-              font-size: 14px;
-            }
-            
-            .items-table th,
-            .items-table td {
-              padding: 8px 4px;
-            }
-            
-            .summary-section {
-              width: 100%;
-              margin-left: 0;
-            }
-          }
-          
-          @media (max-width: 480px) {
-            .items-table {
-              font-size: 12px;
-            }
-            
-            .items-table th:nth-child(2),
-            .items-table td:nth-child(2) {
-              display: none;
-            }
-            
-            .invoice-title {
-              font-size: 20px;
-            }
+          @media print {
+            body { background: white; }
+            .invoice-container { box-shadow: none; margin: 0; }
           }
         </style>
       </head>
       <body>
-        <div class="invoice-header">
-          <div class="company-info">
-            ${invoice.branding?.logo ? `<img src="${invoice.branding.logo}" alt="Company Logo" class="company-logo">` : ''}
-            <div class="company-name">${invoice.seller.name}</div>
-            <div class="company-details">
-              <div>${invoice.seller.address}</div>
-              <div>${invoice.seller.city}, ${invoice.seller.state} ${invoice.seller.zipCode}</div>
-              <div>${invoice.seller.country}</div>
-              <div>Phone: ${invoice.seller.phone}</div>
-              <div>Email: ${invoice.seller.email}</div>
-              ${invoice.seller.website ? `<div>Website: ${invoice.seller.website}</div>` : ''}
-              ${invoice.seller.taxId ? `<div>Tax ID: ${invoice.seller.taxId}</div>` : ''}
-            </div>
+        <div class="invoice-container">
+          <div class="header">
+            ${invoice.branding?.logo ? `<img src="${invoice.branding.logo}" alt="Company Logo" style="max-height: 60px; margin-bottom: 20px;">` : ''}
+            <h1>INVOICE</h1>
+            <p>${invoice.seller.name}</p>
           </div>
-          <div class="invoice-info">
-            <div class="invoice-title">INVOICE</div>
+          
+          <div class="invoice-details">
             <div class="invoice-meta">
-              <div><strong>Invoice #:</strong> ${invoice.invoiceNumber}</div>
-              <div><strong>Issue Date:</strong> ${formatDate(invoice.issueDate)}</div>
-              ${invoice.dueDate ? `<div><strong>Due Date:</strong> ${formatDate(invoice.dueDate)}</div>` : ''}
-              <div><strong>Order #:</strong> ${invoice.order.orderNumber}</div>
+              <div>
+                <div class="invoice-number">#${invoice.invoiceNumber}</div>
+                <div class="invoice-date">Issued: ${formatDate(invoice.issueDate)}</div>
+                ${invoice.dueDate ? `<div class="invoice-date">Due: ${formatDate(invoice.dueDate)}</div>` : ''}
+              </div>
+              <div>
+                <h3>Order Details</h3>
+                <p><strong>Order #:</strong> ${invoice.order.orderNumber}</p>
+                <p><strong>Date:</strong> ${formatDate(invoice.order.orderDate)}</p>
+                <p><strong>Status:</strong> ${invoice.order.status}</p>
+                <p><strong>Payment:</strong> ${invoice.order.paymentStatus}</p>
+              </div>
             </div>
-          </div>
-        </div>
+            
+            <div class="parties">
+              <div class="party">
+                <h3>From</h3>
+                <p><strong>${invoice.seller.name}</strong></p>
+                <p>${invoice.seller.address}</p>
+                <p>${invoice.seller.city}, ${invoice.seller.state} ${invoice.seller.zipCode}</p>
+                <p>${invoice.seller.country}</p>
+                <p>Phone: ${invoice.seller.phone}</p>
+                <p>Email: ${invoice.seller.email}</p>
+                ${invoice.seller.website ? `<p>Web: ${invoice.seller.website}</p>` : ''}
+                ${invoice.seller.taxId ? `<p>Tax ID: ${invoice.seller.taxId}</p>` : ''}
+              </div>
+              
+              <div class="party">
+                <h3>To</h3>
+                <p><strong>${invoice.buyer.name}</strong></p>
+                <p>${invoice.buyer.address}</p>
+                <p>${invoice.buyer.city}, ${invoice.buyer.state} ${invoice.buyer.zipCode}</p>
+                <p>${invoice.buyer.country}</p>
+                <p>Phone: ${invoice.buyer.phone}</p>
+                <p>Email: ${invoice.buyer.email}</p>
+              </div>
+            </div>
+            
+            <table class="items-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>SKU</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${invoice.items.map(item => `
+                  <tr>
+                    <td>${item.name}</td>
+                    <td>${item.sku}</td>
+                    <td>${item.quantity}</td>
+                    <td>${formatCurrency(item.price)}</td>
+                    <td>${formatCurrency(item.total)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
 
-        <div class="billing-section">
-          <div class="billing-info">
-            <h3>Bill To:</h3>
-            <p><strong>${invoice.buyer.name}</strong></p>
-            <p>${invoice.buyer.address}</p>
-            <p>${invoice.buyer.city}, ${invoice.buyer.state} ${invoice.buyer.zipCode}</p>
-            <p>${invoice.buyer.country}</p>
-            <p>Email: ${invoice.buyer.email}</p>
-            <p>Phone: ${invoice.buyer.phone}</p>
-          </div>
-          <div class="billing-info">
-            <h3>Order Details:</h3>
-            <p><strong>Order Date:</strong> ${formatDate(invoice.order.orderDate)}</p>
-            <p><strong>Order Status:</strong> ${invoice.order.status}</p>
-            <p><strong>Payment Status:</strong> ${invoice.order.paymentStatus}</p>
-          </div>
-        </div>
+            <div class="summary-section">
+              <table class="summary-table">
+                <tr>
+                  <td class="label">Subtotal:</td>
+                  <td class="value">${formatCurrency(invoice.summary.subtotal)}</td>
+                </tr>
+                ${invoice.summary.discount > 0 ? `
+                <tr>
+                  <td class="label">Discount:</td>
+                  <td class="value">-${formatCurrency(invoice.summary.discount)}</td>
+                </tr>
+                ` : ''}
+                <tr>
+                  <td class="label">Shipping:</td>
+                  <td class="value">${formatCurrency(invoice.summary.shipping)}</td>
+                </tr>
+                <tr>
+                  <td class="label">Tax (${invoice.summary.taxRate}%):</td>
+                  <td class="value">${formatCurrency(invoice.summary.tax)}</td>
+                </tr>
+                <tr class="total">
+                  <td class="label">Total:</td>
+                  <td class="value">${formatCurrency(invoice.summary.total)}</td>
+                </tr>
+              </table>
+            </div>
 
-        <table class="items-table">
-          <thead>
-            <tr>
-              <th>Description</th>
-              <th>SKU</th>
-              <th class="text-center">Qty</th>
-              <th class="text-right">Unit Price</th>
-              <th class="text-right">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${invoice.items.map(item => `
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.sku}</td>
-                <td class="text-center">${item.quantity}</td>
-                <td class="text-right">${formatCurrency(item.price)}</td>
-                <td class="text-right">${formatCurrency(item.total)}</td>
-              </tr>
-            `).join('')}
-          </tbody>
-        </table>
-
-        <div class="summary-section">
-          <table class="summary-table">
-            <tr>
-              <td class="label">Subtotal:</td>
-              <td class="value">${formatCurrency(invoice.summary.subtotal)}</td>
-            </tr>
-            ${invoice.summary.discount > 0 ? `
-            <tr>
-              <td class="label">Discount:</td>
-              <td class="value">-${formatCurrency(invoice.summary.discount)}</td>
-            </tr>
+            ${invoice.notes ? `
+            <div class="notes-section">
+              <h3>Notes:</h3>
+              <p>${invoice.notes}</p>
+            </div>
             ` : ''}
-            <tr>
-              <td class="label">Shipping:</td>
-              <td class="value">${formatCurrency(invoice.summary.shipping)}</td>
-            </tr>
-            <tr>
-              <td class="label">Tax (${invoice.summary.taxRate}%):</td>
-              <td class="value">${formatCurrency(invoice.summary.tax)}</td>
-            </tr>
-            <tr class="total">
-              <td>Total:</td>
-              <td class="value">${formatCurrency(invoice.summary.total)}</td>
-            </tr>
-          </table>
-        </div>
+          </div>
 
-        ${invoice.notes ? `
-        <div class="notes-section">
-          <h3>Notes:</h3>
-          <p>${invoice.notes}</p>
-        </div>
-        ` : ''}
-
-        <div class="footer">
-          <p>${invoice.branding?.footer || 'Thank you for your business!'}</p>
+          <div class="footer">
+            <p>${invoice.branding?.footer || 'Thank you for your business!'}</p>
+          </div>
         </div>
       </body>
       </html>
     `;
   }
 
+  /**
+   * Downloads an invoice as an HTML file
+   * @param invoice - Complete InvoiceData object to download
+   */
   public downloadInvoice(invoice: InvoiceData): void {
-    const html = this.generateHTML(invoice);
-    const blob = new Blob([html], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `invoice-${invoice.invoiceNumber}.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  public printInvoice(invoice: InvoiceData): void {
-    const html = this.generateHTML(invoice);
-    const printWindow = window.open('', '_blank');
-    if (printWindow) {
-      printWindow.document.write(html);
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const html = this.generateHTML(invoice);
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `invoice-${invoice.invoiceNumber}.html`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error('Error downloading invoice:', error);
     }
   }
 
+  /**
+   * Opens an invoice in a new window for printing
+   * @param invoice - Complete InvoiceData object to print
+   */
+  public printInvoice(invoice: InvoiceData): void {
+    if (typeof window === 'undefined') return;
+    
+    try {
+      const html = this.generateHTML(invoice);
+      const printWindow = window.open('', '_blank');
+      if (printWindow) {
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+      }
+    } catch (error) {
+      console.error('Error printing invoice:', error);
+    }
+  }
+
+  /**
+   * Sends an invoice via email (simulated)
+   * @param invoice - Complete InvoiceData object to send
+   * @param recipientEmail - Email address of the recipient
+   * @returns Promise resolving to boolean indicating success
+   */
   public async emailInvoice(invoice: InvoiceData, recipientEmail: string): Promise<boolean> {
     try {
       // Simulate email sending

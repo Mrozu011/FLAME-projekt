@@ -71,7 +71,7 @@ export default function DashboardCharts({ analyticsData, timeRange }: DashboardC
     'Cancelled': '#EF4444'
   };
 
-  const CustomTooltip = ({ active, payload, label }) => {
+  const CustomTooltip = ({ active, payload, label }: { active?: boolean; payload?: any[]; label?: string }) => {
     if (active && payload && payload.length) {
       return (
         <div className="bg-white p-3 border border-gray-200 rounded-lg shadow-lg">
@@ -306,13 +306,13 @@ export default function DashboardCharts({ analyticsData, timeRange }: DashboardC
                   cx="50%"
                   cy="50%"
                   labelLine={false}
-                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  label={({ name, percent }) => `${name} ${((percent ?? 0) * 100).toFixed(0)}%`}
                   outerRadius={80}
                   fill="#8884d8"
                   dataKey="count"
                 >
                   {analyticsData.ordersByStatus.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={statusColors[entry.status]} />
+                    <Cell key={`cell-${index}`} fill={statusColors[entry.status as keyof typeof statusColors]} />
                   ))}
                 </Pie>
                 <Tooltip 

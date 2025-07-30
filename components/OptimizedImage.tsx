@@ -108,6 +108,10 @@ export default function OptimizedImage({
   const getBlurDataURL = () => {
     if (blurDataURL) return blurDataURL;
     
+    if (typeof document === 'undefined') {
+      return 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAiIGhlaWdodD0iMTAiIHZpZXdCb3g9IjAgMCAxMCAxMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjZjNmNGY2Ii8+Cjwvc3ZnPgo=';
+    }
+    
     // Generate a simple blur placeholder
     const canvas = document.createElement('canvas');
     canvas.width = 10;

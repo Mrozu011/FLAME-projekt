@@ -289,8 +289,8 @@ class PerformanceBudgetMonitor {
     }
 
     // Send to analytics (if available)
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'performance_violation', {
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'performance_violation', {
         event_category: 'Performance',
         event_label: violation.metric,
         value: Math.round(violation.actual),
@@ -332,7 +332,13 @@ class PerformanceBudgetMonitor {
     return { ...this.budget };
   }
 
-  getViolations(): typeof this.violations {
+  getViolations(): Array<{
+    metric: string;
+    expected: number;
+    actual: number;
+    timestamp: number;
+    severity: 'warning' | 'critical';
+  }> {
     return [...this.violations];
   }
 
@@ -372,7 +378,13 @@ class PerformanceBudgetMonitor {
     score: number;
     metrics: Partial<PerformanceBudget>;
     budget: PerformanceBudget;
-    violations: typeof this.violations;
+    violations: Array<{
+      metric: string;
+      expected: number;
+      actual: number;
+      timestamp: number;
+      severity: 'warning' | 'critical';
+    }>;
     recommendations: string[];
   } {
     const score = this.getPerformanceScore();

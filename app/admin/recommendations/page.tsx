@@ -18,6 +18,7 @@ export default function RecommendationsPage() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('settings');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const loadData = async () => {
@@ -78,7 +79,7 @@ export default function RecommendationsPage() {
     return (
       <div className="min-h-screen bg-theme-primary transition-theme">
         <div className="flex">
-          <AdminSidebar />
+          <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
           <div className="flex-1 p-6">
             <div className="animate-pulse">
               <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
@@ -97,7 +98,7 @@ export default function RecommendationsPage() {
   return (
     <div className="min-h-screen bg-theme-primary transition-theme">
       <div className="flex">
-        <AdminSidebar />
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         
         <div className="flex-1 p-6">
           <div className="mb-6">

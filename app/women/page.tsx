@@ -8,26 +8,7 @@ import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import ProductGrid from '@/components/ProductGrid';
 import CategoryFilter from '@/components/CategoryFilter';
-
-interface Product {
-  id: string;
-  name: string;
-  price: number;
-  originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  category: string;
-  subcategory: string;
-  size: string[];
-  colors: string[];
-  material: string;
-  isNew?: boolean;
-  isOnSale?: boolean;
-  discount?: number;
-  popularity: number;
-  tags: string[];
-}
+import type { Product } from '@/lib/types';
 
 function WomenPageContent() {
   const searchParams = useSearchParams();
@@ -57,7 +38,7 @@ function WomenPageContent() {
       reviewCount: 128,
       category: 'Women',
       subcategory: 'Dresses',
-      size: ['XS', 'S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['Black', 'Navy', 'Red'],
       material: '95% Polyester, 5% Elastane',
       isNew: true,
@@ -75,7 +56,7 @@ function WomenPageContent() {
       reviewCount: 95,
       category: 'Women',
       subcategory: 'Tops',
-      size: ['XS', 'S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['White', 'Light Blue', 'Pink'],
       material: '70% Cotton, 30% Polyester',
       isNew: false,
@@ -93,7 +74,7 @@ function WomenPageContent() {
       reviewCount: 156,
       category: 'Women',
       subcategory: 'Jeans',
-      size: ['XS', 'S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['Dark Blue', 'Black', 'Light Blue'],
       material: '98% Cotton, 2% Elastane',
       isNew: false,
@@ -111,7 +92,7 @@ function WomenPageContent() {
       reviewCount: 67,
       category: 'Women',
       subcategory: 'Tops',
-      size: ['XS', 'S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['Beige', 'Black', 'Navy'],
       material: '100% Cashmere',
       isNew: true,
@@ -128,7 +109,7 @@ function WomenPageContent() {
       reviewCount: 89,
       category: 'Women',
       subcategory: 'Skirts',
-      size: ['XS', 'S', 'M', 'L', 'XL'],
+      sizes: ['XS', 'S', 'M', 'L', 'XL'],
       colors: ['Pink', 'Blue', 'Green'],
       material: '100% Polyester',
       isNew: false,
@@ -146,7 +127,7 @@ function WomenPageContent() {
       reviewCount: 134,
       category: 'Women',
       subcategory: 'Shoes',
-      size: ['36', '37', '38', '39', '40', '41'],
+      sizes: ['36', '37', '38', '39', '40', '41'],
       colors: ['Black', 'Brown', 'Tan'],
       material: 'Genuine Leather',
       isNew: false,
@@ -192,19 +173,19 @@ function WomenPageContent() {
     // Apply filters
     if (filters.subcategory && filters.subcategory !== 'all') {
       filtered = filtered.filter(product => 
-        product.subcategory.toLowerCase() === filters.subcategory.toLowerCase()
+        product.subcategory?.toLowerCase() === filters.subcategory.toLowerCase()
       );
     }
 
     if (filters.size) {
       filtered = filtered.filter(product => 
-        product.size.includes(filters.size)
+        product.sizes?.includes(filters.size)
       );
     }
 
     if (filters.color) {
       filtered = filtered.filter(product => 
-        product.colors.some(color => 
+        product.colors?.some(color => 
           color.toLowerCase().includes(filters.color.toLowerCase())
         )
       );
@@ -212,7 +193,7 @@ function WomenPageContent() {
 
     if (filters.material) {
       filtered = filtered.filter(product => 
-        product.material.toLowerCase().includes(filters.material.toLowerCase())
+        product.material?.toLowerCase().includes(filters.material.toLowerCase())
       );
     }
 
@@ -223,18 +204,18 @@ function WomenPageContent() {
 
     // Rating filter
     if (filters.rating > 0) {
-      filtered = filtered.filter(product => product.rating >= filters.rating);
+      filtered = filtered.filter(product => (product.rating || 0) >= filters.rating);
     }
 
     // Review count filter
     if (filters.reviewCount > 0) {
-      filtered = filtered.filter(product => product.reviewCount >= filters.reviewCount);
+      filtered = filtered.filter(product => (product.reviewCount || 0) >= filters.reviewCount);
     }
 
     // Tags filter
     if (filters.tags.length > 0) {
       filtered = filtered.filter(product => 
-        filters.tags.some(tag => product.tags.includes(tag))
+        filters.tags.some(tag => product.tags?.includes(tag))
       );
     }
 
@@ -247,17 +228,17 @@ function WomenPageContent() {
         filtered.sort((a, b) => b.price - a.price);
         break;
       case 'rating':
-        filtered.sort((a, b) => b.rating - a.rating);
+        filtered.sort((a, b) => (b.rating || 0) - (a.rating || 0));
         break;
       case 'reviews':
-        filtered.sort((a, b) => b.reviewCount - a.reviewCount);
+        filtered.sort((a, b) => (b.reviewCount || 0) - (a.reviewCount || 0));
         break;
       case 'newest':
         filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
         break;
       case 'popularity':
       default:
-        filtered.sort((a, b) => b.popularity - a.popularity);
+        filtered.sort((a, b) => (b.popularity || 0) - (a.popularity || 0));
         break;
     }
 

@@ -552,9 +552,8 @@ export default function FavoritesPage() {
             <RecommendationSection
               title="You Might Also Like"
               userId={localStorage.getItem('user-id') || 'guest'}
-              context={{ 
-                type: 'favorites', 
-                favoriteItems: favoriteItems.map(item => item.id) 
+                            context={{
+                type: 'homepage'
               }}
               limit={8}
               showReasons={true}

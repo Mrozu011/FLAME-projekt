@@ -43,7 +43,8 @@ export default function SecurityDashboard() {
     timeWindow: 15,
     action: 'flag' as SecurityRule['action'],
     severity: 'medium' as SecurityRule['severity'],
-    enabled: true
+    enabled: true,
+    conditions: {}
   });
 
   useEffect(() => {
@@ -86,6 +87,11 @@ export default function SecurityDashboard() {
     loadSecurityData();
   };
 
+  const handleBlockSpecificIP = (ip: string) => {
+    securityService.blockIP(ip, 'Blocked due to suspicious activity', undefined, false);
+    loadSecurityData();
+  };
+
   const handleCreateRule = () => {
     securityService.addSecurityRule(newRule);
     setNewRule({
@@ -95,7 +101,8 @@ export default function SecurityDashboard() {
       timeWindow: 15,
       action: 'flag',
       severity: 'medium',
-      enabled: true
+      enabled: true,
+      conditions: {}
     });
     setShowRuleModal(false);
     loadSecurityData();
@@ -604,7 +611,7 @@ export default function SecurityDashboard() {
                         Review
                       </button>
                       <button 
-                        onClick={() => handleBlockIP(activity.ipAddress)}
+                        onClick={() => handleBlockSpecificIP(activity.ipAddress)}
                         className="text-red-600 hover:text-red-800"
                       >
                         Block IP

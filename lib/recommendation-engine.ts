@@ -34,7 +34,7 @@ interface UserProfile {
   cartItems: string[];
 }
 
-interface RecommendationWeight {
+export interface RecommendationWeight {
   categoryMatch: number;
   popularity: number;
   priceCompatibility: number;
@@ -653,7 +653,7 @@ export class RecommendationEngine {
 
   private areComplementary(product1: Product, product2: Product): boolean {
     // Define complementary product rules
-    const complementaryRules = {
+    const complementaryRules: Record<string, string[]> = {
       'Tops': ['Bottoms', 'Outerwear'],
       'Bottoms': ['Tops', 'Outerwear'],
       'Outerwear': ['Tops', 'Bottoms'],
@@ -661,7 +661,7 @@ export class RecommendationEngine {
       'Knitwear': ['Bottoms', 'Outerwear']
     };
 
-    return complementaryRules[product1.subcategory]?.includes(product2.subcategory) || false;
+    return product1.subcategory && product2.subcategory && complementaryRules[product1.subcategory as keyof typeof complementaryRules]?.includes(product2.subcategory) || false;
   }
 
   private areSimilar(product1: Product, product2: Product): boolean {

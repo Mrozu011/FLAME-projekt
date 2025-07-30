@@ -189,12 +189,14 @@ const UserDropdown = memo(function UserDropdown() {
       }
     };
 
-    if (isDropdownOpen) {
+    if (isDropdownOpen && typeof document !== 'undefined') {
       document.addEventListener('mousedown', handleClickOutside, { passive: true });
     }
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      if (typeof document !== 'undefined') {
+        document.removeEventListener('mousedown', handleClickOutside);
+      }
     };
   }, [isDropdownOpen, setIsDropdownOpen, setActiveDropdown]);
 

@@ -288,7 +288,7 @@ export class AuthService {
       return isValid;
     } catch (error) {
       console.error('Token validation error:', error);
-      this.logSecurityEvent('invalid_token_attempt', { error: error.message });
+      this.logSecurityEvent('invalid_token_attempt', { error: error instanceof Error ? error.message : 'Unknown error' });
       return false;
     }
   }
@@ -299,9 +299,9 @@ export class AuthService {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        const headers = {
+        const headers: Record<string, string> = {
           'Content-Type': 'application/json',
-          ...options.headers,
+          ...(options.headers as Record<string, string> || {}),
         };
 
         if (this.token) {
@@ -311,7 +311,6 @@ export class AuthService {
         const response = await fetch(url, {
           ...options,
           headers,
-          timeout: 10000, 
         });
 
         if (response.status === 401) {
@@ -567,6 +566,8 @@ export class AuthService {
   }
 
   private storeSecurityLog(logEntry: any): void {
+    if (typeof window === 'undefined') return;
+    
     try {
       const existingLogs = JSON.parse(localStorage.getItem('security-logs') || '[]');
       existingLogs.push(logEntry);
@@ -579,6 +580,8 @@ export class AuthService {
   }
 
   getSecurityLogs(): any[] {
+    if (typeof window === 'undefined') return [];
+    
     try {
       return JSON.parse(localStorage.getItem('security-logs') || '[]');
     } catch {
@@ -587,6 +590,8 @@ export class AuthService {
   }
 
   clearSecurityLogs(): void {
+    if (typeof window === 'undefined') return;
+    
     localStorage.removeItem('security-logs');
   }
 

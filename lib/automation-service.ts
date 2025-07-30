@@ -307,7 +307,7 @@ export class AutomationService {
     } catch (error) {
       logEntry.status = 'failed';
       logEntry.message = `Rule execution failed: ${rule.name}`;
-      logEntry.error = error.message;
+      logEntry.error = error instanceof Error ? error.message : 'Unknown error';
       logEntry.executionTime = Date.now() - startTime;
       
       console.error(`Automation rule ${rule.id} failed:`, error);

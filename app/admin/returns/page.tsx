@@ -37,6 +37,7 @@ export default function ReturnsManagement() {
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showRefundModal, setShowRefundModal] = useState(false);
   const [selectedReturns, setSelectedReturns] = useState<string[]>([]);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [refundAmount, setRefundAmount] = useState('');
   const [refundMethod, setRefundMethod] = useState('original');
   const [adminNotes, setAdminNotes] = useState('');
@@ -393,13 +394,13 @@ export default function ReturnsManagement() {
       'changed': 'Changed Mind',
       'other': 'Other'
     };
-    return reasons[reason] || reason;
+    return reasons[reason as keyof typeof reasons] || reason;
   };
 
   if (loading) {
     return (
       <div className="flex h-screen bg-gray-100">
-        <AdminSidebar />
+        <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
         <div className="flex-1 flex items-center justify-center">
           <div className="text-center">
             <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
@@ -412,7 +413,7 @@ export default function ReturnsManagement() {
 
   return (
     <div className="flex h-screen bg-gray-100">
-      <AdminSidebar />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       <div className="flex-1 overflow-auto">
         <div className="p-8">

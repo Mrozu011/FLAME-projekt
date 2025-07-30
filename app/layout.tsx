@@ -26,6 +26,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://flamestore.com'),
   title: 'Flame Store - Premium Fashion & Lifestyle',
   description: 'Discover premium fashion and lifestyle products with personalized shopping experience',
   keywords: 'fashion, clothing, lifestyle, premium, shopping, ecommerce',
@@ -124,7 +125,6 @@ export default function RootLayout({
           rel="preload"
           href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" 
           as="style"
-          onLoad="this.onload=null;this.rel='stylesheet'"
         />
         <noscript>
           <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
@@ -135,7 +135,6 @@ export default function RootLayout({
           rel="preload"
           href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" 
           as="style"
-          onLoad="this.onload=null;this.rel='stylesheet'"
         />
         <noscript>
           <link href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" rel="stylesheet" />

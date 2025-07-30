@@ -71,6 +71,8 @@ class ChatbotService {
   }
 
   private loadData() {
+    if (typeof window === 'undefined') return;
+    
     try {
       const sessionsData = localStorage.getItem('chatbot-sessions');
       if (sessionsData) {
@@ -107,6 +109,8 @@ class ChatbotService {
   }
 
   private saveData() {
+    if (typeof window === 'undefined') return;
+    
     try {
       localStorage.setItem('chatbot-sessions', JSON.stringify(Array.from(this.sessions.values())));
       localStorage.setItem('chatbot-training', JSON.stringify(this.trainingData));
@@ -225,13 +229,19 @@ class ChatbotService {
     const response = await this.processMessage(content, session);
     
     // Add bot response
+    type ChatMessageType = 'text' | 'quick_reply' | 'product_card' | 'order_status';
+    const allowedTypes: ChatMessageType[] = ['text', 'quick_reply', 'product_card', 'order_status'];
+    const type: ChatMessageType = allowedTypes.includes(response.type as ChatMessageType)
+      ? (response.type as ChatMessageType)
+      : 'text';
+
     const botMessage: ChatMessage = {
       id: `msg_${Date.now() + 1}`,
       content: response.content,
       sender: 'bot',
       timestamp: new Date(),
       sessionId,
-      type: response.type || 'text',
+      type,
       metadata: response.metadata
     };
 

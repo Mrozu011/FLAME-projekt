@@ -25,6 +25,9 @@ interface Lead {
   submittedAt: string;
   status: string;
   source: string;
+  priority?: string;
+  formName?: string;
+  product?: string;
 }
 
 interface FormData {
@@ -100,7 +103,6 @@ export default function LeadCollectionPage() {
       {
         id: 1,
         formId: 1,
-        formName: 'Newsletter Signup',
         name: 'John Smith',
         email: 'john@example.com',
         phone: '+1 (555) 123-4567',
@@ -114,7 +116,6 @@ export default function LeadCollectionPage() {
       {
         id: 2,
         formId: 2,
-        formName: 'Contact Form',
         name: 'Sarah Johnson',
         email: 'sarah@example.com',
         phone: '+1 (555) 987-6543',
@@ -127,7 +128,6 @@ export default function LeadCollectionPage() {
       {
         id: 3,
         formId: 3,
-        formName: 'Product Inquiry',
         name: 'Mike Chen',
         email: 'mike@example.com',
         phone: '+1 (555) 456-7890',
@@ -181,7 +181,7 @@ export default function LeadCollectionPage() {
   };
 
   const getStatusBadge = (status: string) => {
-    const statusConfig = {
+    const statusConfig: Record<string, string> = {
       new: 'bg-blue-100 text-blue-800',
       contacted: 'bg-yellow-100 text-yellow-800',
       qualified: 'bg-green-100 text-green-800',
@@ -193,7 +193,7 @@ export default function LeadCollectionPage() {
   };
 
   const getPriorityBadge = (priority: string) => {
-    const priorityConfig = {
+    const priorityConfig: Record<string, string> = {
       low: 'bg-gray-100 text-gray-800',
       medium: 'bg-yellow-100 text-yellow-800',
       high: 'bg-red-100 text-red-800'
@@ -203,7 +203,7 @@ export default function LeadCollectionPage() {
   };
 
   const getFormStatusBadge = (status: string) => {
-    const statusConfig = {
+    const statusConfig: Record<string, string> = {
       active: 'bg-green-100 text-green-800',
       draft: 'bg-yellow-100 text-yellow-800',
       inactive: 'bg-gray-100 text-gray-800'
@@ -423,7 +423,7 @@ export default function LeadCollectionPage() {
                           </div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="text-sm text-gray-900">{lead.formName}</div>
+                          <div className="text-sm text-gray-900">{lead.formName || 'N/A'}</div>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
                           <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(lead.status)}`}>
@@ -431,8 +431,8 @@ export default function LeadCollectionPage() {
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(lead.priority)}`}>
-                            {lead.priority}
+                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(lead.priority || '')}`}>
+                            {lead.priority || 'N/A'}
                           </span>
                         </td>
                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -623,7 +623,7 @@ export default function LeadCollectionPage() {
                   <h4 className="font-medium text-gray-900 mb-2">Lead Information</h4>
                   <div className="space-y-2">
                     <p className="text-sm text-gray-600">
-                      <strong>Form:</strong> {selectedLead.formName}
+                      <strong>Form:</strong> {selectedLead.formName || 'N/A'}
                     </p>
                     <p className="text-sm text-gray-600">
                       <strong>Source:</strong> {selectedLead.source}
@@ -654,8 +654,8 @@ export default function LeadCollectionPage() {
                   <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(selectedLead.status)}`}>
                     {selectedLead.status}
                   </span>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(selectedLead.priority)}`}>
-                    {selectedLead.priority}
+                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(selectedLead.priority || '')}`}>
+                    {selectedLead.priority || 'N/A'}
                   </span>
                 </div>
                 

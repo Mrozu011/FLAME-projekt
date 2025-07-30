@@ -90,15 +90,16 @@ export class PerformanceMonitor {
     
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        if (!entry.hadRecentInput) {
+        const layoutShiftEntry = entry as any;
+        if (!layoutShiftEntry.hadRecentInput) {
           const firstSessionEntry = sessionEntries[0];
           const lastSessionEntry = sessionEntries[sessionEntries.length - 1];
           
           if (!firstSessionEntry || entry.startTime - lastSessionEntry.startTime > 1000 || entry.startTime - firstSessionEntry.startTime > 5000) {
-            sessionValue = entry.value;
+            sessionValue = layoutShiftEntry.value;
             sessionEntries = [entry];
           } else {
-            sessionValue += entry.value;
+            sessionValue += layoutShiftEntry.value;
             sessionEntries.push(entry);
           }
           
@@ -112,7 +113,8 @@ export class PerformanceMonitor {
     // FID Observer
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
-        this.metrics.fid = entry.processingStart - entry.startTime;
+        const firstInputEntry = entry as any;
+        this.metrics.fid = firstInputEntry.processingStart - entry.startTime;
         this.checkBudget('fid', this.metrics.fid);
       }
     }).observe({ type: 'first-input', buffered: true });
@@ -121,7 +123,7 @@ export class PerformanceMonitor {
     new PerformanceObserver((list) => {
       for (const entry of list.getEntries()) {
         if (entry.name === window.location.href) {
-          const navEntry = entry as PerformanceNavigationTiming;
+          const navEntry = entry as any;
           this.metrics.ttfb = navEntry.responseStart - navEntry.requestStart;
           this.checkBudget('ttfb', this.metrics.ttfb);
           
@@ -183,23 +185,26 @@ export class PerformanceMonitor {
 
   // Optimized image loading
   private optimizeImages(): void {
+    if (typeof window === 'undefined') return;
+    
     const images = document.querySelectorAll('img:not([data-optimized])');
     
-    images.forEach((img: HTMLImageElement) => {
-      img.dataset.optimized = 'true';
+    images.forEach((img) => {
+      const imageElement = img as HTMLImageElement;
+      imageElement.dataset.optimized = 'true';
       
       // Add loading and decoding attributes
-      if (!img.loading) img.loading = 'lazy';
-      if (!img.decoding) img.decoding = 'async';
+      if (!imageElement.loading) imageElement.loading = 'lazy';
+      if (!imageElement.decoding) imageElement.decoding = 'async';
       
       // Convert to WebP if supported and not already WebP
-      if ('createImageBitmap' in window && !img.src.includes('.webp')) {
-        const originalSrc = img.src;
+      if ('createImageBitmap' in window && !imageElement.src.includes('.webp')) {
+        const originalSrc = imageElement.src;
         if (originalSrc.includes('readdy.ai/api/search-image')) {
           const url = new URL(originalSrc);
           url.searchParams.set('format', 'webp');
           url.searchParams.set('quality', '80');
-          img.src = url.toString();
+          imageElement.src = url.toString();
         }
       }
     });
@@ -207,17 +212,22 @@ export class PerformanceMonitor {
 
   // Defer non-critical scripts
   private deferNonCriticalScripts(): void {
+    if (typeof window === 'undefined') return;
+    
     const scripts = document.querySelectorAll('script[src]:not([data-critical]):not([defer]):not([async])');
     
-    scripts.forEach((script: HTMLScriptElement) => {
-      if (!script.src.includes('googleapis.com') && !script.src.includes('gtm')) {
-        script.defer = true;
+    scripts.forEach((script) => {
+      const scriptElement = script as HTMLScriptElement;
+      if (!scriptElement.src.includes('googleapis.com') && !scriptElement.src.includes('gtm')) {
+        scriptElement.defer = true;
       }
     });
   }
 
   // Preconnect to critical domains
   private preconnectCriticalDomains(): void {
+    if (typeof window === 'undefined') return;
+    
     const criticalDomains = [
       'https://fonts.googleapis.com',
       'https://fonts.gstatic.com',
@@ -397,7 +407,7 @@ export class PerformanceMonitor {
     if ('gc' in window && typeof window.gc === 'function') {
       setTimeout(() => {
         try {
-          window.gc();
+          (window as any).gc();
         } catch (e) {
           // Ignore errors
         }
@@ -499,12 +509,16 @@ export class FontOptimizer {
   }
 
   static optimizeWebFonts(): void {
+    if (typeof document === 'undefined') return;
+    
     // Add font-display: swap to all font faces
-    document.fonts.ready.then(() => {
-      document.fonts.forEach(font => {
-        // This will be handled by CSS font-display property
+    if ('fonts' in document) {
+      document.fonts.ready.then(() => {
+        document.fonts.forEach(font => {
+          // This will be handled by CSS font-display property
+        });
       });
-    });
+    }
 
     // Preload critical font subsets
     const criticalFonts = [

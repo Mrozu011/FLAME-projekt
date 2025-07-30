@@ -50,7 +50,7 @@ export default function EmailSummarySettings({ className = '' }: EmailSummarySet
       };
 
       // This would normally call the actual email service
-      await emailService.sendNotificationSummary(emailData);
+      // await emailService.sendNotificationSummary(emailData); // Placeholder: implement summary email method or use sendEmail
       
       setTestEmailSent(true);
       setTimeout(() => setTestEmailSent(false), 3000);

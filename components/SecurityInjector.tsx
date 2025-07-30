@@ -8,7 +8,7 @@ export default function SecurityInjector() {
   useEffect(() => {
     let isComponentMounted = true;
     
-    const initializeSecurity = async () => {
+    const initializeSecurity = () => {
       try {
         if (!isComponentMounted) return;
 
@@ -51,7 +51,7 @@ export default function SecurityInjector() {
 
             window.fetch = async (...args) => {
               try {
-                const url = typeof args[0] === 'string' ? args[0] : args[0].url;
+                const url = typeof args[0] === 'string' ? args[0] : args[0] instanceof URL ? args[0].href : args[0].url;
                 const now = Date.now();
                 const requestKey = `${url}_${Math.floor(now / 60000)}`; // Per minute
 

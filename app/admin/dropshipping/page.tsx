@@ -4,6 +4,87 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { aliExpressAPI } from '@/lib/aliexpress-api';
 
+// Customization Form Component
+function CustomizationForm({ 
+  product, 
+  onSave, 
+  onCancel 
+}: { 
+  product: ImportedProduct; 
+  onSave: (id: string, customizations: any) => void; 
+  onCancel: () => void; 
+}) {
+  const [customTitle, setCustomTitle] = useState(product.customizations?.title || product.title);
+  const [customPrice, setCustomPrice] = useState(product.customizations?.price || product.price);
+  const [customDescription, setCustomDescription] = useState(product.customizations?.description || '');
+
+  const handleSave = () => {
+    onSave(product.id, {
+      title: customTitle,
+      price: customPrice,
+      description: customDescription
+    });
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Product Title
+        </label>
+        <input
+          type="text"
+          value={customTitle}
+          onChange={(e) => setCustomTitle(e.target.value)}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Price ($)
+        </label>
+        <input
+          type="number"
+          value={customPrice}
+          onChange={(e) => setCustomPrice(parseFloat(e.target.value))}
+          step="0.01"
+          min="0"
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Description
+        </label>
+        <textarea
+          value={customDescription}
+          onChange={(e) => setCustomDescription(e.target.value)}
+          rows={3}
+          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="Add custom description..."
+        />
+      </div>
+
+      <div className="flex justify-end space-x-4">
+        <button
+          onClick={onCancel}
+          className="px-4 py-2 text-gray-600 hover:text-gray-800"
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleSave}
+          className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
+        >
+          Save Changes
+        </button>
+      </div>
+    </div>
+  );
+}
+
 interface ImportedProduct {
   id: string;
   title: string;
@@ -485,74 +566,12 @@ export default function DropshippingImport() {
               const product = searchResults.find(p => p.id === showCustomization);
               if (!product) return null;
 
-              const [customTitle, setCustomTitle] = useState(product.customizations?.title || product.title);
-              const [customPrice, setCustomPrice] = useState(product.customizations?.price || product.price);
-              const [customDescription, setCustomDescription] = useState(product.customizations?.description || '');
-
-              const handleSave = () => {
-                handleCustomizeProduct(product.id, {
-                  title: customTitle,
-                  price: customPrice,
-                  description: customDescription
-                });
-              };
-
               return (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Product Title
-                    </label>
-                    <input
-                      type="text"
-                      value={customTitle}
-                      onChange={(e) => setCustomTitle(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Price ($)
-                    </label>
-                    <input
-                      type="number"
-                      value={customPrice}
-                      onChange={(e) => setCustomPrice(parseFloat(e.target.value))}
-                      step="0.01"
-                      min="0"
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Description
-                    </label>
-                    <textarea
-                      value={customDescription}
-                      onChange={(e) => setCustomDescription(e.target.value)}
-                      rows={3}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      placeholder="Add custom description..."
-                    />
-                  </div>
-
-                  <div className="flex justify-end space-x-4">
-                    <button
-                      onClick={() => setShowCustomization(null)}
-                      className="px-4 py-2 text-gray-600 hover:text-gray-800"
-                    >
-                      Cancel
-                    </button>
-                    <button
-                      onClick={handleSave}
-                      className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                    >
-                      Save Changes
-                    </button>
-                  </div>
-                </div>
+                <CustomizationForm 
+                  product={product}
+                  onSave={handleCustomizeProduct}
+                  onCancel={() => setShowCustomization(null)}
+                />
               );
             })()}
           </div>

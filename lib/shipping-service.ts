@@ -288,7 +288,7 @@ export class ShippingService {
     };
 
     if (request.options?.pickupPoint) {
-      payload.custom_attributes = {
+      (payload as any).custom_attributes = {
         target_point: request.options.pickupPoint
       };
     }
@@ -460,29 +460,29 @@ export class ShippingService {
     }
   }
 
-  async getShippingRates(from: ShippingAddress, to: ShippingAddress, package: ShippingPackage): Promise<ShippingRate[]> {
+  async getShippingRates(from: ShippingAddress, to: ShippingAddress, pkg: ShippingPackage): Promise<ShippingRate[]> {
     const rates: ShippingRate[] = [];
 
     // Get rates from each carrier
     if (this.config.packeta) {
-      const packetaRates = await this.getPacketaRates(from, to, package);
+      const packetaRates = await this.getPacketaRates(from, to, pkg);
       rates.push(...packetaRates);
     }
 
     if (this.config.dpd) {
-      const dpdRates = await this.getDpdRates(from, to, package);
+      const dpdRates = await this.getDpdRates(from, to, pkg);
       rates.push(...dpdRates);
     }
 
     if (this.config.inpost) {
-      const inpostRates = await this.getInpostRates(from, to, package);
+      const inpostRates = await this.getInpostRates(from, to, pkg);
       rates.push(...inpostRates);
     }
 
     return rates.sort((a, b) => a.cost - b.cost);
   }
 
-  private async getPacketaRates(from: ShippingAddress, to: ShippingAddress, package: ShippingPackage): Promise<ShippingRate[]> {
+  private async getPacketaRates(from: ShippingAddress, to: ShippingAddress, pkg: ShippingPackage): Promise<ShippingRate[]> {
     // Mock implementation - in reality, call Packeta API
     return [
       {
@@ -504,7 +504,7 @@ export class ShippingService {
     ];
   }
 
-  private async getDpdRates(from: ShippingAddress, to: ShippingAddress, package: ShippingPackage): Promise<ShippingRate[]> {
+  private async getDpdRates(from: ShippingAddress, to: ShippingAddress, pkg: ShippingPackage): Promise<ShippingRate[]> {
     // Mock implementation - in reality, call DPD API
     return [
       {
@@ -526,7 +526,7 @@ export class ShippingService {
     ];
   }
 
-  private async getInpostRates(from: ShippingAddress, to: ShippingAddress, package: ShippingPackage): Promise<ShippingRate[]> {
+  private async getInpostRates(from: ShippingAddress, to: ShippingAddress, pkg: ShippingPackage): Promise<ShippingRate[]> {
     // Mock implementation - in reality, call InPost API
     return [
       {
