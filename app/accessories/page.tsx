@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -28,7 +28,7 @@ function AccessoriesPageContent() {
   const [sortBy, setSortBy] = useState('popularity');
   const [loading, setLoading] = useState(true);
 
-  const mockProducts: Product[] = [
+  const mockProducts: Product[] = useMemo(() => [
     {
       id: '13',
       name: 'Leather Crossbody Bag',
@@ -137,7 +137,7 @@ function AccessoriesPageContent() {
       popularity: 83,
       tags: ['statement', 'jewelry', 'elegant']
     }
-  ];
+  ], []);
 
   const subcategories = [
     { id: 'all', name: 'All Products', count: mockProducts.length },

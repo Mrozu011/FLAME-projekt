@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 
 interface OptimizedImageProps {
   src: string;
@@ -52,7 +52,7 @@ export default function OptimizedImage({
   };
 
   // Convert to WebP if supported
-  const getOptimizedSrc = (originalSrc: string) => {
+  const getOptimizedSrc = useCallback((originalSrc: string) => {
     if (originalSrc.includes('readdy.ai/api/search-image')) {
       const url = new URL(originalSrc);
       url.searchParams.set('format', 'webp');
@@ -62,7 +62,7 @@ export default function OptimizedImage({
       return url.toString();
     }
     return originalSrc;
-  };
+  }, [quality, width, height]);
 
   // Lazy loading with Intersection Observer
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function OptimizedImage({
     return () => {
       if (img) observer.unobserve(img);
     };
-  }, [src, priority, quality, width, height]);
+  }, [src, priority, getOptimizedSrc]);
 
   const handleLoad = () => {
     setIsLoaded(true);

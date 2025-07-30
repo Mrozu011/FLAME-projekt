@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import Link from 'next/link';
 import { usePersonalization } from '@/components/PersonalizationProvider';
 import { useCurrency } from '@/hooks/useCurrency';
@@ -23,13 +23,7 @@ export default function PersonalizedHomepage({ defaultProducts }: PersonalizedHo
   const [categoriesLayout, setCategoriesLayout] = useState<any>(null);
   const [shippingOptions, setShippingOptions] = useState<any[]>([]);
 
-  useEffect(() => {
-    if (personalization && !isLoading) {
-      applyPersonalization();
-    }
-  }, [personalization, isLoading]);
-
-  const applyPersonalization = () => {
+  const applyPersonalization = useCallback(() => {
     if (!personalization) return;
 
     // Apply personalized homepage layout
@@ -52,9 +46,17 @@ export default function PersonalizedHomepage({ defaultProducts }: PersonalizedHo
 
     // Personalize products
     personalizeProducts();
-  };
+  }, [personalization]);
 
-  const personalizeProducts = () => {
+  useEffect(() => {
+    if (personalization && !isLoading) {
+      applyPersonalization();
+    }
+  }, [personalization, isLoading, applyPersonalization]);
+
+
+
+  const personalizeProducts = useCallback(() => {
     if (!personalization) return;
 
     const { recommendations, layoutConfig } = personalization;
@@ -76,7 +78,7 @@ export default function PersonalizedHomepage({ defaultProducts }: PersonalizedHo
     }
 
     setFeaturedProducts(personalizedProducts);
-  };
+  }, [personalization, defaultProducts]);
 
   const handleCategoryClick = (category: string) => {
     trackBehavior('category_browse', { category });

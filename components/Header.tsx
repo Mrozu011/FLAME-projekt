@@ -589,12 +589,10 @@ export default function Header() {
             {hoveredElement === 'megamenu' && (
               <div
                 ref={megaMenuRef}
-                className={`absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl z-50 transition-all duration-200 ease-out`}
+                className={`absolute top-full left-1/2 transform -translate-x-1/2 mt-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-2xl z-50 transition-all duration-200 ease-out`}
                 style={{
-                  maxWidth: '1200px',
-                  width: '100vw',
-                  left: '50%',
-                  transform: 'translateX(-50%)',
+                  maxWidth: '1000px',
+                  width: '90vw',
                   backdropFilter: 'blur(16px)',
                   willChange: 'transform, opacity'
                 }}
@@ -667,7 +665,7 @@ export default function Header() {
               </div>
 
               <button className={`relative z-20 w-10 h-10 flex items-center justify-center transition-colors ${themeStyles.textSecondary} hover:${themeStyles.text}`}>
-                <i className="ri-search-line text-xl"></i>
+                🔍
               </button>
 
               {/* Optimized Search Suggestions */}
@@ -703,7 +701,7 @@ export default function Header() {
               className={`w-10 h-10 flex items-center justify-center transition-colors ${themeStyles.textSecondary} hover:${themeStyles.text}`}
               aria-label="Toggle theme"
             >
-              <i className={`${isDarkMode ? 'ri-sun-line' : 'ri-moon-line'} text-xl`}></i>
+              {isDarkMode ? '☀️' : '🌙'}
             </button>
 
             <UserDropdown />

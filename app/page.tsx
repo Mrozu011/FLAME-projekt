@@ -175,44 +175,6 @@ export default function Home() {
           </Suspense>
         </LazySection>
 
-        {/* Features Section */}
-        <LazySection className="py-16 md:py-20 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12 md:mb-16">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 mb-4">Why Choose Flame Store</h2>
-              <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-                Experience premium shopping with our commitment to quality, style, and exceptional service
-              </p>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12">
-              <div className="text-center group">
-                <div className="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-blue-200 transition-all duration-300 group-hover:scale-110">
-                  <i className="ri-truck-line text-3xl text-blue-600"></i>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Free Shipping</h3>
-                <p className="text-gray-600 leading-relaxed">Complimentary shipping on all orders over $50. Fast and reliable delivery worldwide.</p>
-              </div>
-              
-              <div className="text-center group">
-                <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-green-200 transition-all duration-300 group-hover:scale-110">
-                  <i className="ri-shield-check-line text-3xl text-green-600"></i>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Quality Guarantee</h3>
-                <p className="text-gray-600 leading-relaxed">Premium materials and craftsmanship backed by our satisfaction guarantee.</p>
-              </div>
-              
-              <div className="text-center group">
-                <div className="w-20 h-20 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-purple-200 transition-all duration-300 group-hover:scale-110">
-                  <i className="ri-customer-service-line text-3xl text-purple-600"></i>
-                </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">24/7 Support</h3>
-                <p className="text-gray-600 leading-relaxed">Dedicated customer support team available around the clock to assist you.</p>
-              </div>
-            </div>
-          </div>
-        </LazySection>
-
         {/* Personalized Homepage - Lazy loaded */}
         <LazySection className="py-16">
           <Suspense fallback={<div className="h-64 bg-gray-100 animate-pulse rounded-lg mx-4"></div>}>
@@ -363,20 +325,44 @@ export default function Home() {
           </div>
         </section>
 
-        {/* CTA Section */}
-        <LazySection className="py-20 md:py-24 bg-gray-900 text-white">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-5xl lg:text-6xl font-bold mb-6">
-              Ready to Elevate Your Style?
-            </h2>
-            <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
-              Join thousands of satisfied customers who have discovered their perfect style with Flame Store
-            </p>
-            <button className="bg-blue-600 text-white px-10 py-4 rounded-lg text-lg font-medium hover:bg-blue-700 transition-all duration-200 hover:scale-105 active:scale-95 whitespace-nowrap">
-              Start Shopping Now
-            </button>
+        {/* Features Section - Above Footer */}
+        <section className="py-16 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+              <div className="text-center">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="ri-truck-line text-2xl text-blue-600"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Free Shipping</h3>
+                <p className="text-sm text-gray-600">On orders over $50</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="ri-shield-check-line text-2xl text-green-600"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Quality Guarantee</h3>
+                <p className="text-sm text-gray-600">Premium materials</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="ri-customer-service-line text-2xl text-purple-600"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">24/7 Support</h3>
+                <p className="text-sm text-gray-600">Always here to help</p>
+              </div>
+              
+              <div className="text-center">
+                <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <i className="ri-return-line text-2xl text-orange-600"></i>
+                </div>
+                <h3 className="text-lg font-semibold text-gray-900 mb-2">Easy Returns</h3>
+                <p className="text-sm text-gray-600">30-day return policy</p>
+              </div>
+            </div>
           </div>
-        </LazySection>
+        </section>
       </main>
       
       <Footer />

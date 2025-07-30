@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePersonalization } from '@/components/PersonalizationProvider';
 import { personalizationEngine } from '@/lib/personalization-engine';
 
@@ -20,12 +20,7 @@ export default function PersonalizationSettings() {
   const [analytics, setAnalytics] = useState<any>(null);
   const [exportLoading, setExportLoading] = useState(false);
 
-  useEffect(() => {
-    loadUserData();
-    loadGdprConsent();
-  }, []);
-
-  const loadUserData = () => {
+  const loadUserData = useCallback(() => {
     const userId = localStorage.getItem('user-id') || 'guest';
     const profile = personalizationEngine.getUserProfile(userId);
     setUserProfile(profile);
@@ -39,7 +34,14 @@ export default function PersonalizationSettings() {
       };
       setAnalytics(userAnalytics);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    loadUserData();
+    loadGdprConsent();
+  }, [loadUserData]);
+
+
 
   const loadGdprConsent = () => {
     const saved = localStorage.getItem('gdpr-consent');

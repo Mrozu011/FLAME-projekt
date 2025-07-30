@@ -38,12 +38,12 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-theme-secondary border-t border-theme-primary transition-theme">
+    <footer className="bg-gray-900 text-white border-t border-gray-700">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           {/* Help Links */}
           <div>
-            <h3 className="text-sm font-semibold text-theme-primary uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               {t('help')}
             </h3>
             <ul className="space-y-3">
@@ -51,7 +51,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-theme-secondary hover:text-theme-primary transition-colors"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -62,7 +62,7 @@ export default function Footer() {
 
           {/* Company Links */}
           <div>
-            <h3 className="text-sm font-semibold text-theme-primary uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               {t('company')}
             </h3>
             <ul className="space-y-3">
@@ -70,7 +70,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-theme-secondary hover:text-theme-primary transition-colors"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -81,7 +81,7 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h3 className="text-sm font-semibold text-theme-primary uppercase tracking-wider mb-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-wider mb-4">
               {t('legal')}
             </h3>
             <ul className="space-y-3">
@@ -89,7 +89,7 @@ export default function Footer() {
                 <li key={link.name}>
                   <Link
                     href={link.href}
-                    className="text-sm text-theme-secondary hover:text-theme-primary transition-colors"
+                    className="text-sm text-gray-300 hover:text-white transition-colors"
                   >
                     {link.name}
                   </Link>
@@ -102,29 +102,29 @@ export default function Footer() {
           <div className="lg:col-span-2 space-y-6">
             {/* Brand */}
             <div>
-              <Link href="/" className="text-2xl font-bold text-theme-primary hover:text-theme-secondary transition-colors">
+              <Link href="/" className="text-2xl font-bold text-white hover:text-gray-300 transition-colors">
                 <span style={{ fontFamily: 'Pacifico, serif' }}>FLAME</span>
               </Link>
-              <p className="mt-3 text-theme-secondary text-sm leading-relaxed max-w-sm">
-                {t('footerBrandDescription')}
+              <p className="mt-3 text-gray-300 text-sm leading-relaxed max-w-sm">
+                Premium fashion and lifestyle products with exceptional quality and style.
               </p>
             </div>
             
             {/* Contact Information */}
             <div className="space-y-3">
-              <div className="flex items-center text-sm text-theme-secondary">
+              <div className="flex items-center text-sm text-gray-300">
                 <div className="w-5 h-5 flex items-center justify-center mr-3">
                   <i className="ri-phone-line text-base"></i>
                 </div>
                 <span>+48 123 456 789</span>
               </div>
-              <div className="flex items-center text-sm text-theme-secondary">
+              <div className="flex items-center text-sm text-gray-300">
                 <div className="w-5 h-5 flex items-center justify-center mr-3">
                   <i className="ri-mail-line text-base"></i>
                 </div>
                 <span>hello@flame-fashion.eu</span>
               </div>
-              <div className="flex items-start text-sm text-theme-secondary">
+              <div className="flex items-start text-sm text-gray-300">
                 <div className="w-5 h-5 flex items-center justify-center mr-3 mt-0.5">
                   <i className="ri-map-pin-line text-base"></i>
                 </div>
@@ -134,7 +134,7 @@ export default function Footer() {
 
             {/* Social Links */}
             <div>
-              <h4 className="text-sm font-medium text-theme-primary mb-4">
+              <h4 className="text-sm font-medium text-white mb-4">
                 {t('followUs')}
               </h4>
               <div className="flex flex-wrap gap-3">
@@ -142,7 +142,7 @@ export default function Footer() {
                   <a
                     key={social.name}
                     href={social.href}
-                    className="w-10 h-10 flex items-center justify-center bg-theme-primary/10 hover:bg-theme-accent text-theme-secondary hover:text-white rounded-lg transition-all duration-300 hover:scale-105"
+                    className="w-10 h-10 flex items-center justify-center bg-gray-700 hover:bg-blue-600 text-gray-300 hover:text-white rounded-lg transition-all duration-300 hover:scale-105"
                     aria-label={social.name}
                   >
                     <i className={`${social.icon} text-lg`}></i>
@@ -154,23 +154,23 @@ export default function Footer() {
         </div>
 
         {/* Bottom Section */}
-        <div className="mt-12 pt-8 border-t border-theme-primary">
+        <div className="mt-12 pt-8 border-t border-gray-700">
           <div className="flex flex-col lg:flex-row justify-between items-center">
-            <p className="text-sm text-theme-secondary text-center lg:text-left">
-              © {new Date().getFullYear()} Flame Fashion. {t('allRightsReserved')}
+            <p className="text-sm text-gray-300 text-center lg:text-left">
+              © {new Date().getFullYear()} Flame Fashion. All rights reserved.
             </p>
             <div className="mt-4 lg:mt-0 flex flex-wrap items-center justify-center lg:justify-end space-x-6">
               <div className="flex items-center space-x-2">
-                <i className="ri-secure-payment-line text-theme-secondary"></i>
-                <span className="text-sm text-theme-secondary">{t('securePayment')}</span>
+                <i className="ri-secure-payment-line text-gray-300"></i>
+                <span className="text-sm text-gray-300">Secure Payment</span>
               </div>
               <div className="flex items-center space-x-2">
-                <i className="ri-truck-line text-theme-secondary"></i>
-                <span className="text-sm text-theme-secondary">{t('freeShipping')}</span>
+                <i className="ri-truck-line text-gray-300"></i>
+                <span className="text-sm text-gray-300">Free Shipping</span>
               </div>
               <div className="flex items-center space-x-2">
-                <i className="ri-shield-check-line text-theme-secondary"></i>
-                <span className="text-sm text-theme-secondary">{t('qualityGuarantee')}</span>
+                <i className="ri-shield-check-line text-gray-300"></i>
+                <span className="text-sm text-gray-300">Quality Guarantee</span>
               </div>
             </div>
           </div>

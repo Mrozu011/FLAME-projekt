@@ -15,7 +15,7 @@ export default function NotFound() {
             </div>
             <h1 className="text-4xl font-bold text-gray-900 mb-4">Page Not Found</h1>
             <p className="text-xl text-gray-600 mb-8">
-              The page you're looking for doesn't exist or has been moved.
+              The page you&apos;re looking for doesn&apos;t exist or has been moved.
             </p>
           </div>
 
@@ -27,7 +27,7 @@ export default function NotFound() {
                   <i className="ri-search-2-line text-blue-600 text-xl"></i>
                 </div>
                 <h3 className="font-medium text-gray-900 mb-2">Search Products</h3>
-                <p className="text-sm text-gray-600">Find what you're looking for</p>
+                <p className="text-sm text-gray-600">Find what you&apos;re looking for</p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
@@ -58,13 +58,13 @@ export default function NotFound() {
                 href="/women"
                 className="bg-pink-600 text-white px-8 py-3 rounded-lg hover:bg-pink-700 transition-colors font-medium"
               >
-                Women's Fashion
+                Women&apos;s Fashion
               </Link>
               <Link
                 href="/men"
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium"
               >
-                Men's Fashion
+                Men&apos;s Fashion
               </Link>
               <Link
                 href="/"

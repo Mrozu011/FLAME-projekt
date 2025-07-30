@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { personalizationEngine } from '@/lib/personalization-engine';
 
 interface PersonalizationContextType {
@@ -25,11 +25,7 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
   const [isPersonalizationEnabled, setIsPersonalizationEnabled] = useState(true);
   const [userId, setUserId] = useState<string>('');
 
-  useEffect(() => {
-    initializePersonalization();
-  }, []);
-
-  const initializePersonalization = async () => {
+  const initializePersonalization = useCallback(async () => {
     try {
       // 获取或创建用户ID
       let currentUserId = localStorage.getItem('user-id') || localStorage.getItem('flame-user-session');
@@ -74,7 +70,13 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    initializePersonalization();
+  }, [initializePersonalization]);
+
+
 
   const generateAnonymousId = () => {
     return 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -144,7 +146,7 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
     }
   };
 
-  const trackBehavior = (action: string, data: any) => {
+  const trackBehavior = useCallback((action: string, data: any) => {
     if (userId && isPersonalizationEnabled) {
       personalizationEngine.trackBehavior(userId, {
         action: action as any,
@@ -156,7 +158,7 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
         }
       });
     }
-  };
+  }, [userId, isPersonalizationEnabled]);
 
   const togglePersonalization = (enabled: boolean) => {
     setIsPersonalizationEnabled(enabled);
@@ -277,7 +279,7 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
       window.removeEventListener('themeChanged', handleThemeChange);
       window.removeEventListener('languageChanged', handleLanguageChange);
     };
-  }, [isPersonalizationEnabled, userId]);
+  }, [isPersonalizationEnabled, userId, trackBehavior]);
 
   const value = {
     personalization,

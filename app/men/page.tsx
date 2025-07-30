@@ -2,6 +2,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Header from '@/components/Header';
@@ -286,7 +287,7 @@ function MenPageContent() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb */}
         <nav className="flex items-center space-x-2 mb-8 text-sm">
-          <a href="/" className="text-gray-600 hover:text-gray-900">Home</a>
+          <Link href="/" className="text-gray-600 hover:text-gray-900">Home</Link>
           <i className="ri-arrow-right-s-line text-gray-400"></i>
           <span className="text-gray-900 font-medium">Men</span>
           {filters.subcategory && filters.subcategory !== 'all' && (

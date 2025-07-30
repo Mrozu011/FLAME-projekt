@@ -120,15 +120,7 @@ export default function RootLayout({
         <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="X-XSS-Protection" content="1;mode=block" />
         
-        {/* Preload critical fonts with resource hints */}
-        <link 
-          rel="preload"
-          href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" 
-          as="style"
-        />
-        <noscript>
-          <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
-        </noscript>
+
         
         {/* Preload icons with deferred loading */}
         <link 
