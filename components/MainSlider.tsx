@@ -4,7 +4,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from '@/hooks/useTranslation';
-import OptimizedImage from './OptimizedImage';
+import Image from 'next/image';
 
 interface Slide {
   id: number;
@@ -22,7 +22,7 @@ interface Slide {
   isActive?: boolean;
 }
 
-// Enhanced slides data with better multilingual support and admin-configurable structure
+// Enhanced slides data with modern design focus
 const slides: Slide[] = [
   {
     id: 1,
@@ -32,7 +32,7 @@ const slides: Slide[] = [
     subtitle: 'Odkryj najnowsze trendy modowe w naszej ekskluzywnej kolekcji',
     subtitleEn: 'Discover the latest fashion trends in our exclusive collection',
     subtitleIt: 'Scopri le ultime tendenze della moda nella nostra collezione esclusiva',
-    image: 'https://readdy.ai/api/search-image?query=elegant%20fashion%20model%20wearing%20premium%20clothing%20in%20modern%20studio%2C%20professional%20fashion%20photography%2C%20clean%20minimalist%20background%2C%20high-end%20brand%20aesthetic%2C%20dramatic%20lighting&width=1920&height=800&seq=hero-slide-1&orientation=landscape',
+    image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
     buttonText: 'Kup Teraz',
     buttonTextEn: 'Shop Now',
     buttonTextIt: 'Acquista Ora',
@@ -47,7 +47,7 @@ const slides: Slide[] = [
     subtitle: 'Każdy produkt wykonany z dbałością o najdrobniejsze szczegóły',
     subtitleEn: 'Every product crafted with attention to the finest details',
     subtitleIt: 'Ogni prodotto realizzato con attenzione ai minimi dettagli',
-    image: 'https://readdy.ai/api/search-image?query=luxury%20fashion%20accessories%20and%20clothing%20displayed%20elegantly%2C%20premium%20materials%2C%20sophisticated%20product%20photography%2C%20clean%20studio%20background%2C%20high-end%20fashion%20brand%20aesthetic&width=1920&height=800&seq=hero-slide-2&orientation=landscape',
+    image: 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2074&q=80',
     buttonText: 'Odkryj',
     buttonTextEn: 'Explore',
     buttonTextIt: 'Esplora',
@@ -59,10 +59,10 @@ const slides: Slide[] = [
     title: 'Limitowana Edycja',
     titleEn: 'Limited Edition',
     titleIt: 'Edizione Limitata',
-    subtitle: 'Ekskluzywne produkty dla wymagających klientów - tylko przez ograniczony czas',
-    subtitleEn: 'Exclusive pieces for discerning customers - available for limited time only',
-    subtitleIt: 'Pezzi esclusivi per clienti esigenti - disponibili solo per un tempo limitato',
-    image: 'https://readdy.ai/api/search-image?query=exclusive%20limited%20edition%20fashion%20collection%20showcase%2C%20luxury%20clothing%20items%2C%20elegant%20fashion%20photography%2C%20sophisticated%20studio%20setting%2C%20premium%20brand%20aesthetic&width=1920&height=800&seq=hero-slide-3&orientation=landscape',
+    subtitle: 'Ekskluzywne produkty dla wymagających klientów',
+    subtitleEn: 'Exclusive pieces for discerning customers',
+    subtitleIt: 'Pezzi esclusivi per clienti esigenti',
+    image: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
     buttonText: 'Zobacz Kolekcję',
     buttonTextEn: 'View Collection',
     buttonTextIt: 'Vedi Collezione',
@@ -74,10 +74,10 @@ const slides: Slide[] = [
     title: 'Wyprzedaż -50%',
     titleEn: 'Sale -50%',
     titleIt: 'Saldi -50%',
-    subtitle: 'Wyjątkowe rabaty na wybrane produkty - nie przegap okazji!',
-    subtitleEn: 'Exceptional discounts on selected products - don\'t miss out!',
-    subtitleIt: 'Sconti eccezionali su prodotti selezionati - non perdere l\'occasione!',
-    image: 'https://readdy.ai/api/search-image?query=fashion%20sale%20promotion%20with%20discounted%20clothing%2C%20attractive%20sale%20display%2C%20professional%20retail%20photography%2C%20modern%20boutique%20setting%2C%20vibrant%20promotional%20aesthetic&width=1920&height=800&seq=hero-slide-4&orientation=landscape',
+    subtitle: 'Wyjątkowe rabaty na wybrane produkty',
+    subtitleEn: 'Exceptional discounts on selected products',
+    subtitleIt: 'Sconti eccezionali su prodotti selezionati',
+    image: 'https://images.unsplash.com/photo-1445205170230-053b83016050?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80',
     buttonText: 'Sprawdź Ofertę',
     buttonTextEn: 'Check Offers',
     buttonTextIt: 'Controlla Offerte',
@@ -98,13 +98,16 @@ export default function MainSlider() {
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
   // Filter active slides
-  const activeSlides = useMemo(() => slides.filter(slide => slide.isActive), []);
+  const activeSlides = useMemo(() => 
+    slides.filter(slide => slide.isActive), 
+    []
+  );
 
-  // Get current slide data with language support
+  // Get current slide data with fallback
   const currentSlideData = useMemo(() => {
-    if (!activeSlides[currentSlide]) return null;
-    
     const slide = activeSlides[currentSlide];
+    if (!slide) return null;
+    
     return {
       ...slide,
       title: language === 'pl' ? slide.title : language === 'en' ? slide.titleEn : slide.titleIt,
@@ -200,23 +203,10 @@ export default function MainSlider() {
     router.push(link);
   }, [router]);
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        handlePrevSlide();
-      } else if (e.key === 'ArrowRight') {
-        handleNextSlide();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [handlePrevSlide, handleNextSlide]);
-
-  if (!isClient || activeSlides.length === 0) {
+  // Loading state
+  if (!isClient || !currentSlideData) {
     return (
-      <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 animate-pulse">
+      <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 dark:bg-gray-800 animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -224,72 +214,55 @@ export default function MainSlider() {
     );
   }
 
-  if (!currentSlideData) return null;
-
   return (
     <section 
-      className="relative w-full h-[400px] md:h-[500px] lg:h-[600xl overflow-hidden bg-gray-900"
+      className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-gray-100 dark:bg-gray-800"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      role="region"
-      aria-label="Featured content slider"
     >
-      {/* Slide Images */}
-      <div className="relative w-full h-full">
-        {activeSlides.map((slide, index) => (
-          <div
-            key={slide.id}
-            className={`absolute inset-0 transition-all duration-500 ease-in-out ${
-              index === currentSlide 
-                ? 'opacity-100 scale-100' 
-                : 'opacity-0 scale-105 pointer-events-none'
-            }`}
-          >
-            <OptimizedImage
-              src={slide.image}
-              alt={language === 'pl' ? slide.title : language === 'en' ? slide.titleEn : slide.titleIt}
-              width={1920}
-              height={600}
-              priority={index === 0}
-              className="w-full h-full object-cover object-center"
-              sizes="100vw"
-            />
-            
-            {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
-          </div>
-        ))}
+      {/* Background Image */}
+      <div className="absolute inset-0">
+        <Image
+          src={currentSlideData.image}
+          alt={currentSlideData.title}
+          fill
+          className={`object-cover transition-all duration-500 ${
+            isTransitioning ? 'scale-105 opacity-80' : 'scale-100 opacity-100'
+          }`}
+          priority
+          sizes="100vw"
+        />
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-black/40"></div>
       </div>
 
-      {/* Content Overlay */}
-      <div className="absolute inset-0 flex items-center">
-        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-2xl">
-            <div className={`transition-all duration-500 ease-in-out ${
-              isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
-            }`}>
-              {/* Title */}
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-                {currentSlideData.title}
-              </h1>
-              
-              {/* Subtitle */}
-              <p className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed max-w-xl">
-                {currentSlideData.subtitle}
-              </p>
-              
-              {/* CTA Button */}
-              <button
-                onClick={() => handleButtonClick(currentSlideData.buttonLink)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/50"
-                aria-label={currentSlideData.buttonText}
-              >
-                {currentSlideData.buttonText}
-              </button>
-            </div>
+      {/* Content */}
+      <div className="relative z-10 h-full flex items-center justify-center">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className={`transform transition-all duration-500 ${
+            isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
+          }`}>
+            {/* Title */}
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
+              {currentSlideData.title}
+            </h1>
+            
+            {/* Subtitle */}
+            <p className="text-lg md:text-xl lg:text-2xl text-white/90 mb-8 md:mb-10 max-w-2xl mx-auto leading-relaxed">
+              {currentSlideData.subtitle}
+            </p>
+            
+            {/* CTA Button */}
+            <button
+              onClick={() => handleButtonClick(currentSlideData.buttonLink)}
+              className="inline-flex items-center px-8 py-4 md:px-10 md:py-5 bg-white text-gray-900 font-semibold text-lg md:text-xl rounded-full hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-xl transform"
+            >
+              {currentSlideData.buttonText}
+              <i className="ri-arrow-right-line ml-2 text-xl"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -297,69 +270,55 @@ export default function MainSlider() {
       {/* Navigation Arrows */}
       {activeSlides.length > 1 && (
         <>
+          {/* Previous Arrow */}
           <button
             onClick={handlePrevSlide}
             disabled={isTransitioning}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            className="absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Previous slide"
           >
-            <i className="ri-arrow-left-line text-xl"></i>
+            <i className="ri-arrow-left-line text-xl md:text-2xl"></i>
           </button>
-          
+
+          {/* Next Arrow */}
           <button
             onClick={handleNextSlide}
             disabled={isTransitioning}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            className="absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             aria-label="Next slide"
           >
-            <i className="ri-arrow-right-line text-xl"></i>
+            <i className="ri-arrow-right-line text-xl md:text-2xl"></i>
           </button>
         </>
       )}
 
       {/* Slide Indicators */}
       {activeSlides.length > 1 && (
-        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+        <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
           {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               disabled={isTransitioning}
-              className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:cursor-not-allowed ${
+              className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 ${
                 index === currentSlide
-                  ? 'bg-white shadow-lg scale-125'
-                  : 'bg-white/50 hover:bg-white/70 hover:scale-110'
-              }`}
+                  ? 'bg-white scale-125'
+                  : 'bg-white/50 hover:bg-white/70'
+              } disabled:cursor-not-allowed`}
               aria-label={`Go to slide ${index + 1}`}
             />
           ))}
         </div>
       )}
 
-      {/* Auto-play Indicator */}
-      {activeSlides.length > 1 && (
-        <div className="absolute top-4 right-4 z-10">
-          <button
-            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-            className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30"
-            aria-label={isAutoPlaying ? 'Pause slideshow' : 'Play slideshow'}
-          >
-            <i className={`${isAutoPlaying ? 'ri-pause-line' : 'ri-play-line'} text-lg`}></i>
-          </button>
-        </div>
-      )}
-
-      {/* Progress Bar */}
-      {activeSlides.length > 1 && isAutoPlaying && (
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
-          <div 
-            className="h-full bg-white transition-all duration-100 ease-linear"
-            style={{
-              width: `${((currentSlide + 1) / activeSlides.length) * 100}%`
-            }}
-          />
-        </div>
-      )}
+      {/* Auto-play Toggle */}
+      <button
+        onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+        className="absolute top-4 md:top-6 right-4 md:right-6 z-20 w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
+        aria-label={isAutoPlaying ? 'Pause autoplay' : 'Start autoplay'}
+      >
+        <i className={`${isAutoPlaying ? 'ri-pause-line' : 'ri-play-line'} text-lg md:text-xl`}></i>
+      </button>
     </section>
   );
 }
