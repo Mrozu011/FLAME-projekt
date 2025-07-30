@@ -4,17 +4,98 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { invoiceService } from '@/lib/invoice-service';
 
+// Use the same interfaces as defined in the invoice service
+interface InvoiceData {
+  invoiceNumber: string;
+  issueDate: string;
+  dueDate?: string;
+  order: {
+    id: string;
+    orderNumber: string;
+    orderDate: string;
+    status: string;
+    paymentStatus: string;
+  };
+  seller: {
+    name: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+    phone: string;
+    email: string;
+    website?: string;
+    taxId?: string;
+  };
+  buyer: {
+    name: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    zipCode: string;
+    country: string;
+  };
+  items: Array<{
+    id: string;
+    name: string;
+    sku: string;
+    quantity: number;
+    price: number;
+    total: number;
+  }>;
+  summary: {
+    subtotal: number;
+    tax: number;
+    taxRate: number;
+    shipping: number;
+    discount: number;
+    total: number;
+  };
+  notes?: string;
+  branding?: {
+    logo?: string;
+    primaryColor?: string;
+    secondaryColor?: string;
+    footer?: string;
+  };
+}
+
+interface InvoiceSettings {
+  companyName: string;
+  companyAddress: string;
+  companyCity: string;
+  companyState: string;
+  companyZipCode: string;
+  companyCountry: string;
+  companyPhone: string;
+  companyEmail: string;
+  companyWebsite?: string;
+  companyTaxId?: string;
+  logo?: string;
+  primaryColor: string;
+  secondaryColor: string;
+  footer: string;
+  invoicePrefix: string;
+  invoiceNumberLength: number;
+  defaultNotes?: string;
+  autoGenerate: boolean;
+  emailToCustomer: boolean;
+}
+
 export default function InvoicesPage() {
-  const [invoices, setInvoices] = useState([]);
-  const [filteredInvoices, setFilteredInvoices] = useState([]);
+  const [invoices, setInvoices] = useState<InvoiceData[]>([]);
+  const [filteredInvoices, setFilteredInvoices] = useState<InvoiceData[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedInvoices, setSelectedInvoices] = useState([]);
+  const [selectedInvoices, setSelectedInvoices] = useState<string[]>([]);
   const [showBulkActions, setShowBulkActions] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [settings, setSettings] = useState(null);
+  const [settings, setSettings] = useState<InvoiceSettings | null>(null);
 
   const itemsPerPage = 10;
 
@@ -86,7 +167,7 @@ export default function InvoicesPage() {
     setCurrentPage(1);
   };
 
-  const handleBulkAction = async (action) => {
+  const handleBulkAction = async (action: string) => {
     if (selectedInvoices.length === 0) return;
 
     try {
@@ -126,15 +207,15 @@ export default function InvoicesPage() {
     setShowBulkActions(false);
   };
 
-  const handleDownloadInvoice = (invoice) => {
+  const handleDownloadInvoice = (invoice: InvoiceData) => {
     invoiceService.downloadInvoice(invoice);
   };
 
-  const handlePrintInvoice = (invoice) => {
+  const handlePrintInvoice = (invoice: InvoiceData) => {
     invoiceService.printInvoice(invoice);
   };
 
-  const handleEmailInvoice = async (invoice) => {
+  const handleEmailInvoice = async (invoice: InvoiceData) => {
     try {
       const success = await invoiceService.emailInvoice(invoice, invoice.buyer.email);
       if (success) {
@@ -148,7 +229,7 @@ export default function InvoicesPage() {
     }
   };
 
-  const toggleInvoiceSelection = (invoiceId) => {
+  const toggleInvoiceSelection = (invoiceId: string) => {
     setSelectedInvoices(prev =>
       prev.includes(invoiceId)
         ? prev.filter(id => id !== invoiceId)
@@ -164,8 +245,8 @@ export default function InvoicesPage() {
     );
   };
 
-  const getStatusBadge = (status) => {
-    const statusConfig = {
+  const getStatusBadge = (status: string) => {
+    const statusConfig: Record<string, string> = {
       'paid': 'bg-green-100 text-green-800',
       'pending': 'bg-yellow-100 text-yellow-800',
       'failed': 'bg-red-100 text-red-800',
@@ -175,7 +256,7 @@ export default function InvoicesPage() {
     return statusConfig[status] || 'bg-gray-100 text-gray-800';
   };
 
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
@@ -183,7 +264,7 @@ export default function InvoicesPage() {
     });
   };
 
-  const formatCurrency = (amount) => {
+  const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD'
