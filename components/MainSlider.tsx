@@ -118,17 +118,6 @@ export default function MainSlider() {
     setIsClient(true);
   }, []);
 
-  // Auto-play functionality
-  useEffect(() => {
-    if (!isClient || !isAutoPlaying || activeSlides.length <= 1) return;
-
-    const interval = setInterval(() => {
-      handleNextSlide();
-    }, 5000); // 5 seconds
-
-    return () => clearInterval(interval);
-  }, [isClient, isAutoPlaying, activeSlides.length, currentSlide]);
-
   // Navigation handlers
   const handleNextSlide = useCallback(() => {
     if (isTransitioning || activeSlides.length <= 1) return;
@@ -159,6 +148,17 @@ export default function MainSlider() {
     setTimeout(() => setIsAutoPlaying(true), 10000);
     setTimeout(() => setIsTransitioning(false), 500);
   }, [isTransitioning, currentSlide, activeSlides.length]);
+
+  // Auto-play functionality
+  useEffect(() => {
+    if (!isClient || !isAutoPlaying || activeSlides.length <= 1) return;
+
+    const interval = setInterval(() => {
+      handleNextSlide();
+    }, 5000); // 5 seconds
+
+    return () => clearInterval(interval);
+  }, [isClient, isAutoPlaying, activeSlides.length, handleNextSlide]);
 
   // Touch/swipe handlers for mobile
   const handleTouchStart = useCallback((e: React.TouchEvent) => {

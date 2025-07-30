@@ -8,6 +8,7 @@ import OptimizedImage from '@/components/OptimizedImage';
 import { LazySection } from '@/components/LazyComponent';
 import { useEffect, useState } from 'react';
 import { useTranslation } from '@/hooks/useTranslation';
+import { Product } from '@/lib/types';
 
 // Dynamic import to avoid SSR issues
 const initializeAdvancedPerformance = () => {
@@ -121,8 +122,8 @@ export default function Home() {
     }, 5000);
   };
 
-  // Featured products data with proper badges and multilingual support
-  const featuredProducts = [
+  // Featured products data with proper typing for Product interface
+  const featuredProducts: Product[] = [
     {
       id: '1',
       name: language === 'pl' ? 'Elegancka Letnia Sukienka' : language === 'en' ? 'Elegant Summer Dress' : 'Vestito Estivo Elegante',
@@ -141,8 +142,8 @@ export default function Home() {
       discount: 25,
       popularity: 95,
       tags: ['summer', 'elegant', 'casual'],
-      stockStatus: 'in-stock',
-      badges: ['Nowy', '3D', '-25%']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '2',
@@ -160,8 +161,8 @@ export default function Home() {
       isOnSale: false,
       popularity: 88,
       tags: ['classic', 'business', 'elegant'],
-      stockStatus: 'in-stock',
-      badges: ['3D']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '3',
@@ -181,8 +182,8 @@ export default function Home() {
       discount: 33,
       popularity: 92,
       tags: ['leather', 'jacket', 'casual'],
-      stockStatus: 'in-stock',
-      badges: ['3D', '-33%']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '4',
@@ -200,8 +201,8 @@ export default function Home() {
       isOnSale: false,
       popularity: 85,
       tags: ['handbag', 'luxury', 'designer'],
-      stockStatus: 'in-stock',
-      badges: ['Nowy', '3D']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '5',
@@ -221,8 +222,7 @@ export default function Home() {
       discount: 21,
       popularity: 78,
       tags: ['sneakers', 'casual', 'comfortable'],
-      stockStatus: 'in-stock',
-      badges: ['-21%']
+      stockStatus: 'in-stock' as const
     },
     {
       id: '6',
@@ -240,8 +240,8 @@ export default function Home() {
       isOnSale: false,
       popularity: 82,
       tags: ['silk', 'luxury', 'colorful'],
-      stockStatus: 'in-stock',
-      badges: ['Nowy', '3D']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '7',
@@ -261,8 +261,8 @@ export default function Home() {
       discount: 31,
       popularity: 91,
       tags: ['formal', 'business', 'elegant'],
-      stockStatus: 'in-stock',
-      badges: ['3D', '-31%']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     },
     {
       id: '8',
@@ -280,8 +280,8 @@ export default function Home() {
       isOnSale: false,
       popularity: 87,
       tags: ['jeans', 'casual', 'denim'],
-      stockStatus: 'in-stock',
-      badges: ['3D']
+      stockStatus: 'in-stock' as const,
+      has3DModel: true
     }
   ];
 
