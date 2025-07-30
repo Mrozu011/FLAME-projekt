@@ -23,39 +23,6 @@ export default function PersonalizedHomepage({ defaultProducts }: PersonalizedHo
   const [categoriesLayout, setCategoriesLayout] = useState<any>(null);
   const [shippingOptions, setShippingOptions] = useState<any[]>([]);
 
-  const applyPersonalization = useCallback(() => {
-    if (!personalization) return;
-
-    // Apply personalized homepage layout
-    const { layoutConfig, contentConfig } = personalization;
-
-    // Set hero section content
-    const heroSectionData = layoutConfig.homepageSections.find((s: any) => s.type === 'hero');
-    if (heroSectionData) {
-      setHeroSection(heroSectionData.content);
-    }
-
-    // Set categories layout
-    const categoriesSection = layoutConfig.homepageSections.find((s: any) => s.type === 'categories');
-    if (categoriesSection) {
-      setCategoriesLayout(categoriesSection.content);
-    }
-
-    // Set shipping options
-    setShippingOptions(contentConfig.shippingOptions || []);
-
-    // Personalize products
-    personalizeProducts();
-  }, [personalization]);
-
-  useEffect(() => {
-    if (personalization && !isLoading) {
-      applyPersonalization();
-    }
-  }, [personalization, isLoading, applyPersonalization]);
-
-
-
   const personalizeProducts = useCallback(() => {
     if (!personalization) return;
 
@@ -79,6 +46,38 @@ export default function PersonalizedHomepage({ defaultProducts }: PersonalizedHo
 
     setFeaturedProducts(personalizedProducts);
   }, [personalization, defaultProducts]);
+
+  const applyPersonalization = useCallback(() => {
+    if (!personalization) return;
+
+    // Apply personalized homepage layout
+    const { layoutConfig, contentConfig } = personalization;
+
+    // Set hero section content
+    const heroSectionData = layoutConfig.homepageSections.find((s: any) => s.type === 'hero');
+    if (heroSectionData) {
+      setHeroSection(heroSectionData.content);
+    }
+
+    // Set categories layout
+    const categoriesSection = layoutConfig.homepageSections.find((s: any) => s.type === 'categories');
+    if (categoriesSection) {
+      setCategoriesLayout(categoriesSection.content);
+    }
+
+    // Set shipping options
+    setShippingOptions(contentConfig.shippingOptions || []);
+
+    // Personalize products
+    personalizeProducts();
+  }, [personalization, personalizeProducts]);
+
+  useEffect(() => {
+    if (personalization && !isLoading) {
+      applyPersonalization();
+    }
+  }, [personalization, isLoading, applyPersonalization]);
+
 
   const handleCategoryClick = (category: string) => {
     trackBehavior('category_browse', { category });

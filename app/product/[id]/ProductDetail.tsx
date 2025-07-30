@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import Link from 'next/link';
@@ -93,7 +93,7 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
     tags: ['wireless', 'noise-cancelling', 'premium', 'electronics']
   };
 
-  const mockProducts: Product[] = [
+  const mockProducts: Product[] = useMemo(() => [
     mockProduct,
     {
       id: '2',
@@ -126,7 +126,7 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
       ],
       tags: ['bluetooth', 'portable', 'speaker']
     }
-  ];
+  ], []);
 
   useEffect(() => {
     const foundProduct = mockProducts.find(p => p.id === productId);
@@ -142,7 +142,7 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
       setSelectedSize(urlSize && foundProduct.sizes.includes(urlSize) ? urlSize : foundProduct.sizes[0]);
     }
     setLoading(false);
-  }, [productId, searchParams]);
+  }, [productId, searchParams, mockProducts]);
 
   const handleAddToCart = () => {
     if (!product) return;

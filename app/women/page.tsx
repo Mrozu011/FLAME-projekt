@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -28,7 +28,7 @@ function WomenPageContent() {
   const [sortBy, setSortBy] = useState('popularity');
   const [loading, setLoading] = useState(true);
 
-  const mockProducts: Product[] = [
+  const mockProducts: Product[] = useMemo(() => [
     {
       id: '1',
       name: 'Elegant Summer Dress',
@@ -137,7 +137,7 @@ function WomenPageContent() {
       popularity: 91,
       tags: ['leather', 'boots', 'ankle']
     }
-  ];
+  ], []);
 
   const subcategories = [
     { id: 'all', name: 'All Products', count: mockProducts.length },
@@ -166,7 +166,7 @@ function WomenPageContent() {
     }));
 
     setLoading(false);
-  }, [searchParams]);
+  }, [searchParams, mockProducts]);
 
   useEffect(() => {
     let filtered = [...products];

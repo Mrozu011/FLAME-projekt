@@ -245,7 +245,7 @@ function AccessoriesPageContent() {
     }
 
     setFilteredProducts(filtered);
-  }, [products, filters, sortBy, mockProducts]);
+  }, [products, filters, sortBy]);
 
   const handleFilterChange = (newFilters: any) => {
     setFilters(newFilters);

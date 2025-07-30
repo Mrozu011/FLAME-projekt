@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import ExpandableSection from './ExpandableSection';
 
@@ -48,7 +48,7 @@ export default function ProductReviews({ productId, rating, reviewCount }: Produ
   const [submitStatus, setSubmitStatus] = useState({ type: '', message: '' });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const mockReviews: Review[] = [
+  const mockReviews: Review[] = useMemo(() => [
     {
       id: '1',
       userId: 'user1',
@@ -119,7 +119,7 @@ export default function ProductReviews({ productId, rating, reviewCount }: Produ
       size: 'M',
       color: 'Black'
     }
-  ];
+  ], []);
 
   useEffect(() => {
     setReviews(mockReviews);

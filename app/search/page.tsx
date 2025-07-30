@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
@@ -38,7 +38,7 @@ function SearchContent() {
   });
 
   // Mock products data
-  const mockProducts: Product[] = [
+  const mockProducts: Product[] = useMemo(() => [
     {
       id: '1',
       name: 'Elegant Summer Dress',
@@ -148,7 +148,7 @@ function SearchContent() {
       discount: 22,
       tags: ['jeans', 'casual', 'denim', 'comfortable', 'everyday', 'versatile']
     }
-  ];
+  ], []);
 
   useEffect(() => {
     const searchProducts = () => {
@@ -211,7 +211,7 @@ function SearchContent() {
     };
 
     searchProducts();
-  }, [query, sortBy, filters]);
+  }, [query, sortBy, filters, mockProducts]);
 
   const handleFilterChange = (filterType: string, value: string | boolean) => {
     setFilters(prev => ({

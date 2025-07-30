@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
@@ -28,7 +28,7 @@ function SalePageContent() {
   const [sortBy, setSortBy] = useState('discount');
   const [loading, setLoading] = useState(true);
 
-  const mockProducts: Product[] = [
+  const mockProducts: Product[] = useMemo(() => [
     {
       id: '1',
       name: 'Elegant Summer Dress',
@@ -200,7 +200,7 @@ function SalePageContent() {
       popularity: 83,
       tags: ['statement', 'jewelry', 'elegant']
     }
-  ];
+  ], []);
 
   const categories = [
     { id: 'all', name: 'All Categories', count: mockProducts.length },
@@ -236,7 +236,7 @@ function SalePageContent() {
     }));
     
     setLoading(false);
-  }, [searchParams]);
+  }, [searchParams, mockProducts]);
 
   useEffect(() => {
     let filtered = [...products];

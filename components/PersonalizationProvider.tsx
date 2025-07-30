@@ -59,12 +59,6 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
         applyPersonalizationSettings(personalizationData);
       }
 
-      // 跟踪页面访问
-      trackBehavior('page_view', {
-        page: window.location.pathname,
-        timestamp: new Date()
-      });
-
     } catch (error) {
       console.error('个性化初始化失败:', error);
     } finally {
@@ -76,7 +70,29 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
     initializePersonalization();
   }, [initializePersonalization]);
 
+  const trackBehavior = useCallback((action: string, data: any) => {
+    if (userId && isPersonalizationEnabled) {
+      personalizationEngine.trackBehavior(userId, {
+        action: action as any,
+        timestamp: new Date(),
+        data: {
+          ...data,
+          deviceType: getDeviceType(),
+          sessionId: getSessionId()
+        }
+      });
+    }
+  }, [userId, isPersonalizationEnabled]);
 
+  // Track page view after initialization
+  useEffect(() => {
+    if (userId && isPersonalizationEnabled) {
+      trackBehavior('page_view', {
+        page: window.location.pathname,
+        timestamp: new Date()
+      });
+    }
+  }, [userId, isPersonalizationEnabled, trackBehavior]);
 
   const generateAnonymousId = () => {
     return 'anon_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
@@ -145,20 +161,6 @@ export default function PersonalizationProvider({ children }: PersonalizationPro
       }));
     }
   };
-
-  const trackBehavior = useCallback((action: string, data: any) => {
-    if (userId && isPersonalizationEnabled) {
-      personalizationEngine.trackBehavior(userId, {
-        action: action as any,
-        timestamp: new Date(),
-        data: {
-          ...data,
-          deviceType: getDeviceType(),
-          sessionId: getSessionId()
-        }
-      });
-    }
-  }, [userId, isPersonalizationEnabled]);
 
   const togglePersonalization = (enabled: boolean) => {
     setIsPersonalizationEnabled(enabled);
