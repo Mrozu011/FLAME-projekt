@@ -1,0 +1,14 @@
+# Ignore build output
+.next/
+out/
+dist/
+build/
+.cache/
+
+# Ignore dependencies
+node_modules/
+
+# Ignore OS and IDE junk
+.DS_Store
+Thumbs.db
+.vscode/
