@@ -394,11 +394,11 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
         {products.map((product) => (
           <div
             key={product.id}
-            className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-md transition-shadow relative"
+            className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 relative"
           >
             <Link href={`/product/${product.id}`} className="block">
               <div className="aspect-square bg-gray-100 relative overflow-hidden">
@@ -463,25 +463,25 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
               </div>
             </Link>
 
-            <div className="p-4">
-              <Link href={`/product/${product.id}`} className="block">
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 group-hover:text-blue-600 transition-colors">
-                  {product.name}
-                </h3>
-              </Link>
+            <div className="p-4 space-y-3">
+                              <Link href={`/product/${product.id}`} className="block">
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors line-clamp-2">
+                    {product.name}
+                  </h3>
+                </Link>
 
-              {/* Rating */}
-              {product.rating && (
-                <div className="flex items-center space-x-2 mb-2">
-                  {renderStars(product.rating)}
-                  <span className="text-sm text-gray-500">
-                    {product.rating} ({product.reviewCount || 0})
-                  </span>
-                </div>
-              )}
+                {/* Rating */}
+                {product.rating && (
+                  <div className="flex items-center space-x-2">
+                    {renderStars(product.rating)}
+                    <span className="text-sm text-gray-500">
+                      {product.rating} ({product.reviewCount || 0})
+                    </span>
+                  </div>
+                )}
 
               {/* Price */}
-              <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
                   <PriceDisplay
                     price={product.price}
@@ -497,29 +497,29 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
               </div>
 
               {/* Category and Stock Status */}
-              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400 mb-3">
-                <span>Category: {product.category}</span>
+              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <span className="truncate">{product.category}</span>
                 <span className={`font-medium ${getStockStatusColor(product.stockStatus)}`}>
                   {getStockStatusText(product.stockStatus)}
                 </span>
               </div>
 
               {/* Selectable Options */}
-              <div className="space-y-2 mb-3">
+              <div className="space-y-2">
                 {product.colors && product.colors.length > 0 && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Colors:</span>
+                    <span className="text-xs text-gray-500">Colors:</span>
                     <div className="flex space-x-1">
-                      {product.colors.slice(0, 5).map((color, index) => (
+                      {product.colors.slice(0, 4).map((color, index) => (
                         <div
                           key={index}
-                          className="w-5 h-5 rounded-full border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
+                          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
                           style={{ backgroundColor: getColorStyle(color) }}
                           title={color}
                         />
                       ))}
-                      {product.colors.length > 5 && (
-                        <span className="text-xs text-gray-500 ml-1">+{product.colors.length - 5}</span>
+                      {product.colors.length > 4 && (
+                        <span className="text-xs text-gray-500 ml-1">+{product.colors.length - 4}</span>
                       )}
                     </div>
                   </div>
@@ -527,19 +527,19 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
                 {product.sizes && product.sizes.length > 0 && (
                   <div className="flex items-center space-x-2">
-                    <span className="text-sm text-gray-600 dark:text-gray-400">Sizes:</span>
+                    <span className="text-xs text-gray-500">Sizes:</span>
                     <div className="flex space-x-1">
-                      {product.sizes.slice(0, 5).map((size, index) => (
+                      {product.sizes.slice(0, 4).map((size, index) => (
                         <span
                           key={index}
-                          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
                           title={size}
                         >
                           {size}
                         </span>
                       ))}
-                      {product.sizes.length > 5 && (
-                        <span className="text-xs text-gray-500 ml-1">+{product.sizes.length - 5}</span>
+                      {product.sizes.length > 4 && (
+                        <span className="text-xs text-gray-500 ml-1">+{product.sizes.length - 4}</span>
                       )}
                     </div>
                   </div>
@@ -554,10 +554,10 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                   handleAddToCart(e, product);
                 }}
                 disabled={product.stockStatus === 'out-of-stock'}
-                className={`w-full py-2 px-4 rounded-lg font-medium transition-colors whitespace-nowrap ${
+                className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 whitespace-nowrap ${
                   product.stockStatus === 'out-of-stock'
                     ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-gray-800'
+                    : 'bg-black text-white hover:bg-gray-800 hover:scale-105 active:scale-95'
                 }`}
               >
                 {product.stockStatus === 'out-of-stock' ? 'Out of Stock' : 'Add to Cart'}
