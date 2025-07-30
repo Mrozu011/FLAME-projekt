@@ -9,266 +9,357 @@ import OptimizedImage from './OptimizedImage';
 interface Slide {
   id: number;
   title: string;
-  titlePl: string;
+  titleEn: string;
+  titleIt: string;
   subtitle: string;
-  subtitlePl: string;
+  subtitleEn: string;
+  subtitleIt: string;
   image: string;
   buttonText: string;
-  buttonTextPl: string;
+  buttonTextEn: string;
+  buttonTextIt: string;
   buttonLink: string;
+  isActive?: boolean;
 }
 
-// Memoized slides data for better performance
+// Enhanced slides data with better multilingual support and admin-configurable structure
 const slides: Slide[] = [
   {
     id: 1,
-    title: 'New Collection',
-    titlePl: 'Nowa Kolekcja',
-    subtitle: 'Discover the latest fashion trends',
-    subtitlePl: 'Odkryj najnowsze trendy modowe',
-    image: 'https://readdy.ai/api/search-image?query=fashion%20model%20wearing%20elegant%20dress%20in%20modern%20studio%20setting%2C%20professional%20fashion%20photography%2C%20clean%20minimalist%20background%2C%20high-end%20fashion%20brand%20aesthetic%2C%20premium%20clothing%20showcase&width=1920&height=1080&seq=main-slide-1&orientation=landscape',
-    buttonText: 'Shop Now',
-    buttonTextPl: 'Kup Teraz',
-    buttonLink: '/women'
+    title: 'Nowa Kolekcja',
+    titleEn: 'New Collection',
+    titleIt: 'Nuova Collezione',
+    subtitle: 'Odkryj najnowsze trendy modowe w naszej ekskluzywnej kolekcji',
+    subtitleEn: 'Discover the latest fashion trends in our exclusive collection',
+    subtitleIt: 'Scopri le ultime tendenze della moda nella nostra collezione esclusiva',
+    image: 'https://readdy.ai/api/search-image?query=elegant%20fashion%20model%20wearing%20premium%20clothing%20in%20modern%20studio%2C%20professional%20fashion%20photography%2C%20clean%20minimalist%20background%2C%20high-end%20brand%20aesthetic%2C%20dramatic%20lighting&width=1920&height=800&seq=hero-slide-1&orientation=landscape',
+    buttonText: 'Kup Teraz',
+    buttonTextEn: 'Shop Now',
+    buttonTextIt: 'Acquista Ora',
+    buttonLink: '/women',
+    isActive: true
   },
   {
     id: 2,
-    title: 'Premium Quality',
-    titlePl: 'Najwyższa Jakość',
-    subtitle: 'Crafted with attention to detail',
-    subtitlePl: 'Wykonane z dbałością o szczegóły',
-    image: 'https://readdy.ai/api/search-image?query=luxury%20fashion%20items%20displayed%20elegantly%2C%20premium%20clothing%20and%20accessories%2C%20sophisticated%20product%20photography%2C%20clean%20studio%20background%2C%20high-end%20fashion%20brand%20aesthetic&width=1920&height=1080&seq=main-slide-2&orientation=landscape',
-    buttonText: 'Explore',
-    buttonTextPl: 'Odkryj',
-    buttonLink: '/about'
+    title: 'Jakość Premium',
+    titleEn: 'Premium Quality',
+    titleIt: 'Qualità Premium',
+    subtitle: 'Każdy produkt wykonany z dbałością o najdrobniejsze szczegóły',
+    subtitleEn: 'Every product crafted with attention to the finest details',
+    subtitleIt: 'Ogni prodotto realizzato con attenzione ai minimi dettagli',
+    image: 'https://readdy.ai/api/search-image?query=luxury%20fashion%20accessories%20and%20clothing%20displayed%20elegantly%2C%20premium%20materials%2C%20sophisticated%20product%20photography%2C%20clean%20studio%20background%2C%20high-end%20fashion%20brand%20aesthetic&width=1920&height=800&seq=hero-slide-2&orientation=landscape',
+    buttonText: 'Odkryj',
+    buttonTextEn: 'Explore',
+    buttonTextIt: 'Esplora',
+    buttonLink: '/about',
+    isActive: true
   },
   {
     id: 3,
-    title: 'Limited Edition',
-    titlePl: 'Limitowana Edycja',
-    subtitle: 'Exclusive pieces for discerning customers',
-    subtitlePl: 'Ekskluzywne produkty dla wymagających klientów',
-    image: 'https://readdy.ai/api/search-image?query=exclusive%20fashion%20collection%20showcase%2C%20limited%20edition%20clothing%20items%2C%20luxury%20fashion%20photography%2C%20elegant%20studio%20setting%2C%20premium%20brand%20aesthetic&width=1920&height=1080&seq=main-slide-3&orientation=landscape',
-    buttonText: 'View Collection',
-    buttonTextPl: 'Zobacz Kolekcję',
-    buttonLink: '/sale'
+    title: 'Limitowana Edycja',
+    titleEn: 'Limited Edition',
+    titleIt: 'Edizione Limitata',
+    subtitle: 'Ekskluzywne produkty dla wymagających klientów - tylko przez ograniczony czas',
+    subtitleEn: 'Exclusive pieces for discerning customers - available for limited time only',
+    subtitleIt: 'Pezzi esclusivi per clienti esigenti - disponibili solo per un tempo limitato',
+    image: 'https://readdy.ai/api/search-image?query=exclusive%20limited%20edition%20fashion%20collection%20showcase%2C%20luxury%20clothing%20items%2C%20elegant%20fashion%20photography%2C%20sophisticated%20studio%20setting%2C%20premium%20brand%20aesthetic&width=1920&height=800&seq=hero-slide-3&orientation=landscape',
+    buttonText: 'Zobacz Kolekcję',
+    buttonTextEn: 'View Collection',
+    buttonTextIt: 'Vedi Collezione',
+    buttonLink: '/sale',
+    isActive: true
+  },
+  {
+    id: 4,
+    title: 'Wyprzedaż -50%',
+    titleEn: 'Sale -50%',
+    titleIt: 'Saldi -50%',
+    subtitle: 'Wyjątkowe rabaty na wybrane produkty - nie przegap okazji!',
+    subtitleEn: 'Exceptional discounts on selected products - don\'t miss out!',
+    subtitleIt: 'Sconti eccezionali su prodotti selezionati - non perdere l\'occasione!',
+    image: 'https://readdy.ai/api/search-image?query=fashion%20sale%20promotion%20with%20discounted%20clothing%2C%20attractive%20sale%20display%2C%20professional%20retail%20photography%2C%20modern%20boutique%20setting%2C%20vibrant%20promotional%20aesthetic&width=1920&height=800&seq=hero-slide-4&orientation=landscape',
+    buttonText: 'Sprawdź Ofertę',
+    buttonTextEn: 'Check Offers',
+    buttonTextIt: 'Controlla Offerte',
+    buttonLink: '/sale',
+    isActive: true
   }
 ];
 
 export default function MainSlider() {
   const { t, language } = useTranslation();
   const router = useRouter();
+  
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isClient, setIsClient] = useState(false);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
-  // Memoized slide content for performance
-  const currentSlideData = useMemo(() => slides[currentSlide], [currentSlide]);
+  // Filter active slides
+  const activeSlides = useMemo(() => slides.filter(slide => slide.isActive), []);
 
-  // Optimized client-side rendering check
+  // Get current slide data with language support
+  const currentSlideData = useMemo(() => {
+    if (!activeSlides[currentSlide]) return null;
+    
+    const slide = activeSlides[currentSlide];
+    return {
+      ...slide,
+      title: language === 'pl' ? slide.title : language === 'en' ? slide.titleEn : slide.titleIt,
+      subtitle: language === 'pl' ? slide.subtitle : language === 'en' ? slide.subtitleEn : slide.subtitleIt,
+      buttonText: language === 'pl' ? slide.buttonText : language === 'en' ? slide.buttonTextEn : slide.buttonTextIt
+    };
+  }, [currentSlide, language, activeSlides]);
+
+  // Initialize client-side rendering
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  // Optimized auto-play with cleanup
+  // Auto-play functionality
   useEffect(() => {
-    if (!isClient || !isAutoPlaying) return;
+    if (!isClient || !isAutoPlaying || activeSlides.length <= 1) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % slides.length);
-    }, 5000);
+      handleNextSlide();
+    }, 5000); // 5 seconds
 
     return () => clearInterval(interval);
-  }, [isClient, isAutoPlaying]);
+  }, [isClient, isAutoPlaying, activeSlides.length, currentSlide]);
 
-  // Memoized navigation handlers
+  // Navigation handlers
+  const handleNextSlide = useCallback(() => {
+    if (isTransitioning || activeSlides.length <= 1) return;
+    
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev + 1) % activeSlides.length);
+    
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, [isTransitioning, activeSlides.length]);
+
+  const handlePrevSlide = useCallback(() => {
+    if (isTransitioning || activeSlides.length <= 1) return;
+    
+    setIsTransitioning(true);
+    setCurrentSlide((prev) => (prev - 1 + activeSlides.length) % activeSlides.length);
+    
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, [isTransitioning, activeSlides.length]);
+
   const goToSlide = useCallback((index: number) => {
+    if (isTransitioning || index === currentSlide || activeSlides.length <= 1) return;
+    
+    setIsTransitioning(true);
     setCurrentSlide(index);
     setIsAutoPlaying(false);
     
     // Resume auto-play after 10 seconds
     setTimeout(() => setIsAutoPlaying(true), 10000);
+    setTimeout(() => setIsTransitioning(false), 500);
+  }, [isTransitioning, currentSlide, activeSlides.length]);
+
+  // Touch/swipe handlers for mobile
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
   }, []);
 
-  const nextSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    if (!touchStartX || !touchEndX) return;
+    
+    const distance = touchStartX - touchEndX;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      handleNextSlide();
+    } else if (isRightSwipe) {
+      handlePrevSlide();
+    }
+
+    setTouchStartX(null);
+    setTouchEndX(null);
+  }, [touchStartX, touchEndX, handleNextSlide, handlePrevSlide]);
+
+  // Pause auto-play on hover
+  const handleMouseEnter = useCallback(() => {
     setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
   }, []);
 
-  const prevSlide = useCallback(() => {
-    setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-    setIsAutoPlaying(false);
-    setTimeout(() => setIsAutoPlaying(true), 10000);
+  const handleMouseLeave = useCallback(() => {
+    setIsAutoPlaying(true);
   }, []);
 
-  const handleButtonClick = useCallback((buttonLink: string) => {
-    router.push(buttonLink);
+  // Button click handler
+  const handleButtonClick = useCallback((link: string) => {
+    router.push(link);
   }, [router]);
 
   // Keyboard navigation
   useEffect(() => {
-    if (!isClient) return;
-
-    const handleKeyPress = (e: KeyboardEvent) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
-        prevSlide();
+        handlePrevSlide();
       } else if (e.key === 'ArrowRight') {
-        nextSlide();
-      } else if (e.key >= '1' && e.key <= '3') {
-        goToSlide(parseInt(e.key) - 1);
+        handleNextSlide();
       }
     };
 
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isClient, prevSlide, nextSlide, goToSlide]);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handlePrevSlide, handleNextSlide]);
 
-  // Performance optimized loading state
-  if (!isClient) {
+  if (!isClient || activeSlides.length === 0) {
     return (
-      <div className="relative h-[60vh] md:h-[70vh] lg:h-[80vh] bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-800 dark:to-gray-900 flex items-center justify-center">
-        <div className="text-center space-y-4 animate-pulse">
-          <div className="h-12 bg-gray-300 dark:bg-gray-600 rounded w-96 mx-auto"></div>
-          <div className="h-6 bg-gray-300 dark:bg-gray-600 rounded w-64 mx-auto"></div>
-          <div className="h-10 bg-gray-300 dark:bg-gray-600 rounded w-32 mx-auto"></div>
+      <div className="relative w-full h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 animate-pulse">
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
       </div>
     );
   }
 
+  if (!currentSlideData) return null;
+
   return (
-    <section
-      className="relative h-[60vh] md:h-[70vh] lg:h-[80vh] overflow-hidden bg-black"
-      role="banner"
-      aria-label="Main slider"
+    <section 
+      className="relative w-full h-[400px] md:h-[500px] lg:h-[600xl overflow-hidden bg-gray-900"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      role="region"
+      aria-label="Featured content slider"
     >
-      {/* Slides */}
-      {slides.map((slide, index) => (
-        <div
-          key={slide.id}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            index === currentSlide ? 'opacity-100' : 'opacity-0 pointer-events-none'
-          }`}
-          aria-hidden={index !== currentSlide}
-        >
-          {/* Background Image with Optimization */}
-          <div className="absolute inset-0">
+      {/* Slide Images */}
+      <div className="relative w-full h-full">
+        {activeSlides.map((slide, index) => (
+          <div
+            key={slide.id}
+            className={`absolute inset-0 transition-all duration-500 ease-in-out ${
+              index === currentSlide 
+                ? 'opacity-100 scale-100' 
+                : 'opacity-0 scale-105 pointer-events-none'
+            }`}
+          >
             <OptimizedImage
               src={slide.image}
-              alt={language === 'pl' ? slide.titlePl : slide.title}
+              alt={language === 'pl' ? slide.title : language === 'en' ? slide.titleEn : slide.titleIt}
+              width={1920}
+              height={600}
               priority={index === 0}
-              className="object-cover"
+              className="w-full h-full object-cover object-center"
               sizes="100vw"
-              quality={85}
             />
             
             {/* Gradient Overlay */}
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/30 to-black/50"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/30 to-transparent"></div>
           </div>
+        ))}
+      </div>
 
-          {/* Content */}
-          <div className="absolute inset-0 flex items-center justify-center z-10">
-            <div className="text-center max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-              <h1 
-                className="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white drop-shadow-lg animate-fade-in"
-                style={{
-                  textShadow: '0 2px 4px rgba(0,0,0,0.5)',
-                  animationDelay: '0.2s',
-                  animationFillMode: 'both'
-                }}
-              >
-                {language === 'pl' ? slide.titlePl : slide.title}
+      {/* Content Overlay */}
+      <div className="absolute inset-0 flex items-center">
+        <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="max-w-2xl">
+            <div className={`transition-all duration-500 ease-in-out ${
+              isTransitioning ? 'opacity-0 transform translate-y-4' : 'opacity-100 transform translate-y-0'
+            }`}>
+              {/* Title */}
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
+                {currentSlideData.title}
               </h1>
               
-              <p 
-                className="text-xl md:text-2xl lg:text-3xl mb-8 text-white/90 drop-shadow animate-fade-in"
-                style={{
-                  textShadow: '0 1px 3px rgba(0,0,0,0.5)',
-                  animationDelay: '0.4s',
-                  animationFillMode: 'both'
-                }}
-              >
-                {language === 'pl' ? slide.subtitlePl : slide.subtitle}
+              {/* Subtitle */}
+              <p className="text-base md:text-lg lg:text-xl text-gray-200 mb-8 leading-relaxed max-w-xl">
+                {currentSlideData.subtitle}
               </p>
               
-              <button 
-                onClick={() => handleButtonClick(slide.buttonLink)}
-                className="bg-white text-black px-8 py-4 rounded-lg font-semibold hover:bg-gray-100 transition-all duration-300 text-lg whitespace-nowrap cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-105 animate-fade-in"
-                style={{
-                  animationDelay: '0.6s',
-                  animationFillMode: 'both'
-                }}
-                aria-label={`${language === 'pl' ? slide.buttonTextPl : slide.buttonText} - ${language === 'pl' ? slide.titlePl : slide.title}`}
+              {/* CTA Button */}
+              <button
+                onClick={() => handleButtonClick(currentSlideData.buttonLink)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-medium text-lg transition-all duration-200 hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-blue-500/50"
+                aria-label={currentSlideData.buttonText}
               >
-                {language === 'pl' ? slide.buttonTextPl : slide.buttonText}
+                {currentSlideData.buttonText}
               </button>
             </div>
           </div>
         </div>
-      ))}
-
-      {/* Navigation Controls */}
-      <button
-        onClick={prevSlide}
-        className="absolute left-4 top-1/2 transform -translate-y-1/2 w-14 h-14 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full text-white transition-all duration-300 cursor-pointer backdrop-blur-sm hover:scale-110 z-20"
-        aria-label="Previous slide"
-      >
-        <i className="ri-arrow-left-line text-2xl"></i>
-      </button>
-
-      <button
-        onClick={nextSlide}
-        className="absolute right-4 top-1/2 transform -translate-y-1/2 w-14 h-14 flex items-center justify-center bg-white/20 hover:bg-white/30 rounded-full text-white transition-all duration-300 cursor-pointer backdrop-blur-sm hover:scale-110 z-20"
-        aria-label="Next slide"
-      >
-        <i className="ri-arrow-right-line text-2xl"></i>
-      </button>
-
-      {/* Slide Indicators */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-3 z-20">
-        {slides.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => goToSlide(index)}
-            className={`w-4 h-4 rounded-full transition-all duration-300 cursor-pointer ${
-              index === currentSlide 
-                ? 'bg-white scale-110 shadow-lg' 
-                : 'bg-white/50 hover:bg-white/75 hover:scale-105'
-            }`}
-            aria-label={`Go to slide ${index + 1}`}
-          />
-        ))}
       </div>
 
+      {/* Navigation Arrows */}
+      {activeSlides.length > 1 && (
+        <>
+          <button
+            onClick={handlePrevSlide}
+            disabled={isTransitioning}
+            className="absolute left-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            aria-label="Previous slide"
+          >
+            <i className="ri-arrow-left-line text-xl"></i>
+          </button>
+          
+          <button
+            onClick={handleNextSlide}
+            disabled={isTransitioning}
+            className="absolute right-4 top-1/2 transform -translate-y-1/2 w-12 h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30 disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            aria-label="Next slide"
+          >
+            <i className="ri-arrow-right-line text-xl"></i>
+          </button>
+        </>
+      )}
+
+      {/* Slide Indicators */}
+      {activeSlides.length > 1 && (
+        <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 flex space-x-3 z-10">
+          {activeSlides.map((_, index) => (
+            <button
+              key={index}
+              onClick={() => goToSlide(index)}
+              disabled={isTransitioning}
+              className={`w-3 h-3 rounded-full transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/50 disabled:cursor-not-allowed ${
+                index === currentSlide
+                  ? 'bg-white shadow-lg scale-125'
+                  : 'bg-white/50 hover:bg-white/70 hover:scale-110'
+              }`}
+              aria-label={`Go to slide ${index + 1}`}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Auto-play Indicator */}
+      {activeSlides.length > 1 && (
+        <div className="absolute top-4 right-4 z-10">
+          <button
+            onClick={() => setIsAutoPlaying(!isAutoPlaying)}
+            className="w-10 h-10 bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110 focus:outline-none focus:ring-4 focus:ring-white/30"
+            aria-label={isAutoPlaying ? 'Pause slideshow' : 'Play slideshow'}
+          >
+            <i className={`${isAutoPlaying ? 'ri-pause-line' : 'ri-play-line'} text-lg`}></i>
+          </button>
+        </div>
+      )}
+
       {/* Progress Bar */}
-      {isAutoPlaying && (
-        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20 z-20">
+      {activeSlides.length > 1 && isAutoPlaying && (
+        <div className="absolute bottom-0 left-0 w-full h-1 bg-white/20">
           <div 
             className="h-full bg-white transition-all duration-100 ease-linear"
             style={{
-              width: `${((currentSlide + 1) / slides.length) * 100}%`
+              width: `${((currentSlide + 1) / activeSlides.length) * 100}%`
             }}
           />
         </div>
       )}
-
-      <style jsx>{`
-        @keyframes fade-in {
-          from {
-            opacity: 0;
-            transform: translateY(30px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        
-        .animate-fade-in {
-          animation: fade-in 0.8s ease-out;
-        }
-      `}</style>
     </section>
   );
 }
