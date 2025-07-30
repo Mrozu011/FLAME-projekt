@@ -256,322 +256,311 @@ export default function Header() {
   const availableCurrencies = getAvailableCurrencies();
 
   return (
-    <header className="sticky top-0 z-50 bg-white dark:bg-gray-900 shadow-sm border-b border-gray-200 dark:border-gray-700">
-      <div className="max-w-7xl mx-auto">
-        {/* Main Header */}
-        <div className="flex items-center justify-between px-4 sm:px-6 lg:px-8 h-16">
-          {/* Left Side - Logo & Menu */}
-          <div className="flex items-center space-x-4">
-            {/* Logo */}
-            <Link 
-              href="/" 
-              className="flex items-center space-x-2 group"
-              onMouseEnter={handleMegaMenuEnter}
-              onMouseLeave={handleMegaMenuLeave}
-            >
-              <div className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
-                FLAME
-              </div>
-            </Link>
-            
-            {/* 3x3 Cube Menu Icon */}
-            <button
-              className="p-2 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-              onMouseEnter={handleMegaMenuEnter}
-              onMouseLeave={handleMegaMenuLeave}
-              aria-label="Menu"
-            >
-              <div className="grid grid-cols-3 gap-1 w-6 h-6">
-                {[...Array(9)].map((_, i) => (
-                  <div 
-                    key={i} 
-                    className="w-1.5 h-1.5 bg-current rounded-sm"
-                  />
-                ))}
-              </div>
-            </button>
-          </div>
-
-          {/* Right Side - Utility Icons */}
-          <div className="flex items-center space-x-1">
-            {/* Desktop Icons */}
-            <div className="hidden lg:flex items-center space-x-1">
-              {/* Search */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsSearchOpen(!isSearchOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  aria-label="Search"
-                >
-                  <i className="ri-search-line text-xl"></i>
-                </button>
-                
-                {isSearchOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
-                    <form onSubmit={handleSearchSubmit}>
-                      <input
-                        ref={searchInputRef}
-                        type="text"
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        placeholder={t('search.placeholder')}
-                        className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
-                        autoFocus
-                      />
-                    </form>
-                  </div>
-                )}
-              </div>
-
-              {/* Theme Toggle */}
-              <button
-                onClick={toggleTheme}
-                className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-              >
-                <i className={isDarkMode ? 'ri-sun-line text-xl' : 'ri-moon-line text-xl'}></i>
-              </button>
-
-              {/* Language Switcher */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  aria-label="Language"
-                >
-                  <i className="ri-global-line text-xl"></i>
-                </button>
-                
-                {isLanguageOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
-                    {availableLanguages.map((lang) => (
-                      <button
-                        key={lang.code}
-                        onClick={() => {
-                          changeLanguage(lang.code);
-                          setIsLanguageOpen(false);
-                        }}
-                        className={`w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                          language === lang.code ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
-                        }`}
-                      >
-                        <span className="mr-3 text-lg">{lang.flag}</span>
-                        <span>{lang.name}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Currency Switcher */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                  aria-label="Currency"
-                >
-                  <span className="text-sm font-medium">{currency}</span>
-                </button>
-                
-                {isCurrencyOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
-                    {availableCurrencies.map((curr) => (
-                      <button
-                        key={curr.code}
-                        onClick={() => {
-                          changeCurrency(curr.code);
-                          setIsCurrencyOpen(false);
-                        }}
-                        className={`w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
-                          currency === curr.code ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
-                        }`}
-                      >
-                        <span className="mr-2">{curr.symbol}</span>
-                        <span>{curr.code}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* Favorites */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors relative"
-                  aria-label="Favorites"
-                >
-                  <i className="ri-heart-line text-xl"></i>
-                  {favoriteCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {favoriteCount}
-                    </span>
-                  )}
-                </button>
-                
-                {isFavoritesOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                      {t('favorites.title')}
-                    </h3>
-                    {favorites.length === 0 ? (
-                      <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                        {t('favorites.empty')}
-                      </p>
-                    ) : (
-                      <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {favorites.slice(0, 3).map((item) => (
-                          <div key={item.id} className="flex items-center space-x-3">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              width={48}
-                              height={48}
-                              className="rounded-lg object-cover"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {item.name}
-                              </p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {format(item.price)}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => removeFromFavorites(item.id)}
-                              className="text-red-500 hover:text-red-700 p-1"
-                            >
-                              <i className="ri-close-line"></i>
-                            </button>
-                          </div>
-                        ))}
-                        {favorites.length > 3 && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                            +{favorites.length - 3} więcej
-                          </p>
-                        )}
-                        <Link
-                          href="/favorites"
-                          className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                          onClick={() => setIsFavoritesOpen(false)}
-                        >
-                          Zobacz wszystkie
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Cart */}
-              <div className="relative">
-                <button
-                  onClick={() => setIsCartOpen(!isCartOpen)}
-                  className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors relative"
-                  aria-label="Cart"
-                >
-                  <i className="ri-shopping-bag-line text-xl"></i>
-                  {cartItemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                      {cartItemCount}
-                    </span>
-                  )}
-                </button>
-                
-                {isCartOpen && (
-                  <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50">
-                    <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
-                      {t('cart.title')}
-                    </h3>
-                    {cartItems.length === 0 ? (
-                      <p className="text-gray-500 dark:text-gray-400 text-center py-4">
-                        {t('cart.empty')}
-                      </p>
-                    ) : (
-                      <div className="space-y-3 max-h-64 overflow-y-auto">
-                        {cartItems.slice(0, 3).map((item) => (
-                          <div key={item.id} className="flex items-center space-x-3">
-                            <Image
-                              src={item.image}
-                              alt={item.name}
-                              width={48}
-                              height={48}
-                              className="rounded-lg object-cover"
-                            />
-                            <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
-                                {item.name}
-                              </p>
-                              <p className="text-xs text-gray-500 dark:text-gray-400">
-                                {item.size && `Rozmiar: ${item.size}`}
-                                {item.color && `, Kolor: ${item.color}`}
-                              </p>
-                              <p className="text-sm text-gray-500 dark:text-gray-400">
-                                {item.quantity}x {format(item.price)}
-                              </p>
-                            </div>
-                            <button
-                              onClick={() => removeFromCart(item.id)}
-                              className="text-red-500 hover:text-red-700 p-1"
-                            >
-                              <i className="ri-close-line"></i>
-                            </button>
-                          </div>
-                        ))}
-                        {cartItems.length > 3 && (
-                          <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
-                            +{cartItems.length - 3} więcej
-                          </p>
-                        )}
-                        <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
-                          <div className="flex justify-between items-center mb-3">
-                            <span className="font-medium text-gray-900 dark:text-white">Razem:</span>
-                            <span className="font-bold text-gray-900 dark:text-white">
-                              {format(cartTotal)}
-                            </span>
-                          </div>
-                          <Link
-                            href="/cart"
-                            className="block w-full bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                            onClick={() => setIsCartOpen(false)}
-                          >
-                            Zobacz koszyk
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* User */}
-              <UserDropdown />
+    <header className="header">
+      <div className="header-container">
+        {/* Left Side - Logo & Menu Cube */}
+        <div className="header-left">
+          {/* Logo */}
+          <Link href="/" className="logo">
+            FLAME
+          </Link>
+          
+          {/* 3x3 Cube Menu Toggle */}
+          <button
+            className="menu-toggle"
+            onMouseEnter={handleMegaMenuEnter}
+            onMouseLeave={handleMegaMenuLeave}
+            aria-label="Menu"
+          >
+            <div className="grid grid-cols-3 gap-0.5 w-4 h-4">
+              {[...Array(9)].map((_, i) => (
+                <div 
+                  key={i} 
+                  className="w-1 h-1 bg-current rounded-sm"
+                />
+              ))}
             </div>
+          </button>
+        </div>
 
-            {/* Mobile Search Icon */}
-            <div className="lg:hidden">
+        {/* Right Side - Utility Icons */}
+        <div className="header-right">
+          {/* Desktop Icons */}
+          <div className="hidden lg:flex items-center gap-2">
+            {/* Search */}
+            <div className="relative">
               <button
                 onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                className="header-icon"
                 aria-label="Search"
               >
-                <i className="ri-search-line text-xl"></i>
+                <i className="ri-search-line text-lg"></i>
               </button>
+              
+              {isSearchOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
+                  <form onSubmit={handleSearchSubmit}>
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                      placeholder={t('search.placeholder')}
+                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      autoFocus
+                    />
+                  </form>
+                </div>
+              )}
             </div>
 
-            {/* Mobile User Panel Toggle */}
-            <div className="lg:hidden">
+            {/* Theme Toggle */}
+            <button
+              onClick={toggleTheme}
+              className="header-icon"
+              aria-label={isDarkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              <i className={isDarkMode ? 'ri-sun-line text-lg' : 'ri-moon-line text-lg'}></i>
+            </button>
+
+            {/* Language Switcher */}
+            <div className="relative">
               <button
-                onClick={() => setIsMobileUserPanelOpen(!isMobileUserPanelOpen)}
-                className="p-3 text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors relative"
-                aria-label="User menu"
+                onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+                className="header-icon"
+                aria-label="Language"
               >
-                <i className="ri-user-line text-xl"></i>
-                {(cartItemCount > 0 || favoriteCount > 0) && (
-                  <span className="absolute -top-1 -right-1 bg-blue-500 w-2 h-2 rounded-full"></span>
+                <i className="ri-global-line text-lg"></i>
+              </button>
+              
+              {isLanguageOpen && (
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+                  {availableLanguages.map((lang) => (
+                    <button
+                      key={lang.code}
+                      onClick={() => {
+                        changeLanguage(lang.code);
+                        setIsLanguageOpen(false);
+                      }}
+                      className={`w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                        language === lang.code ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
+                      <span className="mr-3 text-lg">{lang.flag}</span>
+                      <span>{lang.name}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Currency Switcher */}
+            <div className="relative">
+              <button
+                onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+                className="header-icon"
+                aria-label="Currency"
+              >
+                <span className="text-sm font-medium">{currency}</span>
+              </button>
+              
+              {isCurrencyOpen && (
+                <div className="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+                  {availableCurrencies.map((curr) => (
+                    <button
+                      key={curr.code}
+                      onClick={() => {
+                        changeCurrency(curr.code);
+                        setIsCurrencyOpen(false);
+                      }}
+                      className={`w-full flex items-center px-4 py-2 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                        currency === curr.code ? 'text-blue-600 dark:text-blue-400' : 'text-gray-900 dark:text-white'
+                      }`}
+                    >
+                      <span className="mr-2">{curr.symbol}</span>
+                      <span>{curr.code}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Favorites */}
+            <div className="relative">
+              <button
+                onClick={() => setIsFavoritesOpen(!isFavoritesOpen)}
+                className="header-icon"
+                aria-label="Favorites"
+              >
+                <i className="ri-heart-line text-lg"></i>
+                {favoriteCount > 0 && (
+                  <span className="badge">
+                    {favoriteCount}
+                  </span>
                 )}
               </button>
+              
+              {isFavoritesOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    {t('favorites.title')}
+                  </h3>
+                  {favorites.length === 0 ? (
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                      {t('favorites.empty')}
+                    </p>
+                  ) : (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {favorites.slice(0, 3).map((item) => (
+                        <div key={item.id} className="flex items-center space-x-3">
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={48}
+                            height={48}
+                            className="rounded-lg object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {item.name}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {format(item.price)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => removeFromFavorites(item.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <i className="ri-close-line"></i>
+                          </button>
+                        </div>
+                      ))}
+                      {favorites.length > 3 && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                          +{favorites.length - 3} więcej
+                        </p>
+                      )}
+                      <Link
+                        href="/favorites"
+                        className="btn btn-primary w-full text-center"
+                        onClick={() => setIsFavoritesOpen(false)}
+                      >
+                        Zobacz wszystkie
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
+
+            {/* Cart */}
+            <div className="relative">
+              <button
+                onClick={() => setIsCartOpen(!isCartOpen)}
+                className="header-icon"
+                aria-label="Cart"
+              >
+                <i className="ri-shopping-bag-line text-lg"></i>
+                {cartItemCount > 0 && (
+                  <span className="badge">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+              
+              {isCartOpen && (
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
+                  <h3 className="font-semibold text-gray-900 dark:text-white mb-3">
+                    {t('cart.title')}
+                  </h3>
+                  {cartItems.length === 0 ? (
+                    <p className="text-gray-500 dark:text-gray-400 text-center py-4">
+                      {t('cart.empty')}
+                    </p>
+                  ) : (
+                    <div className="space-y-3 max-h-64 overflow-y-auto">
+                      {cartItems.slice(0, 3).map((item) => (
+                        <div key={item.id} className="flex items-center space-x-3">
+                          <Image
+                            src={item.image}
+                            alt={item.name}
+                            width={48}
+                            height={48}
+                            className="rounded-lg object-cover"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+                              {item.name}
+                            </p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">
+                              {item.size && `Rozmiar: ${item.size}`}
+                              {item.color && `, Kolor: ${item.color}`}
+                            </p>
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                              {item.quantity}x {format(item.price)}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="text-red-500 hover:text-red-700 p-1"
+                          >
+                            <i className="ri-close-line"></i>
+                          </button>
+                        </div>
+                      ))}
+                      {cartItems.length > 3 && (
+                        <p className="text-xs text-gray-500 dark:text-gray-400 text-center">
+                          +{cartItems.length - 3} więcej
+                        </p>
+                      )}
+                      <div className="border-t border-gray-200 dark:border-gray-600 pt-3 mt-3">
+                        <div className="flex justify-between items-center mb-3">
+                          <span className="font-medium text-gray-900 dark:text-white">Razem:</span>
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {format(cartTotal)}
+                          </span>
+                        </div>
+                        <Link
+                          href="/cart"
+                          className="btn btn-primary w-full text-center"
+                          onClick={() => setIsCartOpen(false)}
+                        >
+                          Zobacz koszyk
+                        </Link>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* User */}
+            <UserDropdown />
+          </div>
+
+          {/* Mobile Icons */}
+          <div className="flex lg:hidden items-center gap-2">
+            {/* Mobile Search */}
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="header-icon"
+              aria-label="Search"
+            >
+              <i className="ri-search-line text-lg"></i>
+            </button>
+
+            {/* Mobile User Panel Toggle */}
+            <button
+              onClick={() => setIsMobileUserPanelOpen(!isMobileUserPanelOpen)}
+              className="header-icon"
+              aria-label="User menu"
+            >
+              <i className="ri-user-line text-lg"></i>
+              {(cartItemCount > 0 || favoriteCount > 0) && (
+                <span className="absolute -top-1 -right-1 bg-blue-500 w-2 h-2 rounded-full"></span>
+              )}
+            </button>
           </div>
         </div>
 
@@ -678,14 +667,14 @@ export default function Header() {
                   <div className="flex space-x-2">
                     <Link
                       href="/login"
-                      className="flex-1 bg-blue-600 text-white text-center py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
+                      className="btn btn-primary flex-1 text-center"
                       onClick={() => setIsMobileUserPanelOpen(false)}
                     >
                       Zaloguj
                     </Link>
                     <Link
                       href="/register"
-                      className="flex-1 border border-blue-600 text-blue-600 dark:text-blue-400 text-center py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-sm"
+                      className="btn btn-outline flex-1 text-center"
                       onClick={() => setIsMobileUserPanelOpen(false)}
                     >
                       Rejestracja
@@ -700,11 +689,11 @@ export default function Header() {
         {/* Mega Menu */}
         {isMegaMenuOpen && (
           <div
-            className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg border-t border-gray-200 dark:border-gray-700 z-40"
+            className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
             onMouseEnter={handleMegaMenuEnter}
             onMouseLeave={handleMegaMenuLeave}
           >
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="container py-8">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {localizedMegaMenuCategories.map((category) => (
                   <div key={category.id} className="space-y-4">
@@ -737,7 +726,7 @@ export default function Header() {
 
         {/* Language Dropdown for Mobile */}
         {isLanguageOpen && (
-          <div className="lg:hidden absolute right-4 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+          <div className="lg:hidden absolute right-4 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
             {availableLanguages.map((lang) => (
               <button
                 key={lang.code}
@@ -759,7 +748,7 @@ export default function Header() {
 
         {/* Currency Dropdown for Mobile */}
         {isCurrencyOpen && (
-          <div className="lg:hidden absolute right-4 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50">
+          <div className="lg:hidden absolute right-4 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
             {availableCurrencies.map((curr) => (
               <button
                 key={curr.code}

@@ -3,8 +3,6 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { Suspense } from 'react';
 import './globals.css';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
 import GDPRConsent from '@/components/GDPRConsent';
 import PersonalizationProvider from '@/components/PersonalizationProvider';
 import SecurityInjector from '@/components/SecurityInjector';
@@ -120,8 +118,6 @@ export default function RootLayout({
         <meta httpEquiv="X-Frame-Options" content="DENY" />
         <meta httpEquiv="X-XSS-Protection" content="1;mode=block" />
         
-
-        
         {/* Preload icons with deferred loading */}
         <link 
           rel="preload"
@@ -155,7 +151,11 @@ export default function RootLayout({
               <Suspense fallback={<LoadingFallback />}>
                 <TrackingInjector />
                 <SecurityInjector />
-                {children}
+                
+                {/* Main Application Layout */}
+                <div className="min-h-screen flex flex-col">
+                  {children}
+                </div>
                 
                 {/* Lazy load non-critical components with lower priority */}
                 <Suspense fallback={null}>

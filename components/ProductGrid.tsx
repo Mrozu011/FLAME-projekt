@@ -101,14 +101,14 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
           category: product.category
         };
         favoriteItems.push(favoriteItem);
-        setFavorites(prev => [...prev, productId]);
+        setFavorites([...favorites, productId]);
       } else {
         favoriteItems = favoriteItems.filter((item: any) => item.id !== productId);
-        setFavorites(prev => prev.filter(id => id !== productId));
+        setFavorites(favorites.filter(id => id !== productId));
       }
 
       localStorage.setItem('flame-favorites', JSON.stringify(favoriteItems));
-      window.dispatchEvent(new Event('favoriteUpdated'));
+      window.dispatchEvent(new CustomEvent('favoriteUpdated'));
     } catch (error) {
       console.error('Error toggling favorite:', error);
     }
@@ -121,26 +121,28 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
     if (!isGridMounted) return;
 
     try {
-      const cartItem = {
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        quantity: 1,
-        size: product.sizes?.[0] || 'One Size',
-        color: product.colors?.[0] || 'Default'
-      };
+      const userSession = localStorage.getItem('flame-user-session');
+      if (!userSession) {
+        router.push('/login');
+        return;
+      }
 
       const savedCart = localStorage.getItem('flame-cart');
-      const cartItems = savedCart ? JSON.parse(savedCart) : [];
+      let cartItems = savedCart ? JSON.parse(savedCart) : [];
 
-      const existingItemIndex = cartItems.findIndex((item: any) => 
-        item.id === product.id && item.size === cartItem.size && item.color === cartItem.color
-      );
+      const existingItem = cartItems.find((item: any) => item.id === product.id);
 
-      if (existingItemIndex > -1) {
-        cartItems[existingItemIndex].quantity += 1;
+      if (existingItem) {
+        existingItem.quantity += 1;
       } else {
+        const cartItem = {
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          image: product.image,
+          quantity: 1,
+          category: product.category
+        };
         cartItems.push(cartItem);
       }
 
@@ -154,6 +156,9 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
   const handleQuickView = (product: Product) => {
     setQuickViewProduct(product);
     setIsQuickViewOpen(true);
+    if (onQuickView) {
+      onQuickView(product);
+    }
   };
 
   const handleCloseQuickView = () => {
@@ -161,7 +166,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
     setQuickViewProduct(null);
   };
 
-  const getStockStatusColor = (status?: string) => {
+  const getStockStatusColor = (status: string) => {
     switch (status) {
       case 'in-stock':
         return 'text-green-600';
@@ -174,7 +179,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
     }
   };
 
-  const getStockStatusText = (status?: string) => {
+  const getStockStatusText = (status: string) => {
     switch (status) {
       case 'in-stock':
         return 'In Stock';
@@ -183,7 +188,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
       case 'out-of-stock':
         return 'Out of Stock';
       default:
-        return 'Available';
+        return 'Unknown';
     }
   };
 
@@ -191,12 +196,10 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
     const colorMap: { [key: string]: string } = {
       'black': '#000000',
       'white': '#FFFFFF',
-      'red': '#DC2626',
-      'blue': '#2563EB',
-      'navy': '#1E3A8A',
-      'green': '#059669',
-      'yellow': '#EAB308',
-      'pink': '#EC4899',
+      'red': '#EF4444',
+      'blue': '#3B82F6',
+      'green': '#10B981',
+      'yellow': '#F59E0B',
       'purple': '#7C3AED',
       'gray': '#6B7280',
       'brown': '#92400E',
@@ -214,12 +217,14 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
   if (!isGridMounted) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="product-grid">
         {Array.from({ length: 8 }).map((_, index) => (
-          <div key={index} className="animate-pulse">
-            <div className="bg-gray-200 aspect-square rounded-lg mb-4"></div>
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+          <div key={index} className="product-card animate-pulse">
+            <div className="product-image bg-gray-200"></div>
+            <div className="product-content">
+              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
+              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+            </div>
           </div>
         ))}
       </div>
@@ -229,155 +234,154 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
   if (viewMode === 'list') {
     return (
       <>
-        <div className="space-y-4">
+        <div className="space-y-6">
           {products.map((product) => (
-            <Link
+            <div
               key={product.id}
-              href={`/product/${product.id}`}
-              className="flex bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow group"
+              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
             >
-              <div className="w-48 h-48 flex-shrink-0 bg-gray-100 relative overflow-hidden">
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-
-                {/* Product Labels */}
-                <div className="absolute top-2 left-2 flex flex-col space-y-1">
-                  {product.isNew && (
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      New
-                    </span>
-                  )}
-                  {product.isOnSale && (
-                    <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      Sale
-                    </span>
-                  )}
-                </div>
-
-                {/* Actions */}
-                <div className="absolute top-2 right-2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <button
-                    onClick={(e) => handleFavoriteToggle(e, product.id)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
-                      favorites.includes(product.id)
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    <i className={`${favorites.includes(product.id) ? 'ri-heart-fill' : 'ri-heart-line'} text-sm`}></i>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleQuickView(product);
-                    }}
-                    className="w-8 h-8 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
-                  >
-                    <i className="ri-eye-line text-sm"></i>
-                  </button>
-                </div>
-              </div>
-
-              <div className="flex-1 p-6">
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center space-x-2">
-                    <PriceDisplay
-                      price={product.price}
-                      originalPrice={product.originalPrice}
-                      className="text-lg font-bold"
+              <div className="flex flex-col md:flex-row">
+                <div className="md:w-64 aspect-square md:aspect-auto relative overflow-hidden bg-gray-100">
+                  <Link href={`/product/${product.id}`}>
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
+                  </Link>
+
+                  {/* Product Badges */}
+                  <div className="absolute top-4 left-4 flex flex-col gap-2">
+                    {product.isNew && (
+                      <span className="product-badge badge-new">
+                        New
+                      </span>
+                    )}
+                    {product.isOnSale && (
+                      <span className="product-badge badge-sale">
+                        Sale
+                      </span>
+                    )}
+                  </div>
+
+                  {/* Actions */}
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={(e) => handleFavoriteToggle(e, product.id)}
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+                        favorites.includes(product.id)
+                          ? 'bg-red-500 text-white'
+                          : 'bg-white text-gray-600 hover:bg-gray-100'
+                      }`}
+                    >
+                      <i className={`${favorites.includes(product.id) ? 'ri-heart-fill' : 'ri-heart-line'} text-lg`}></i>
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        handleQuickView(product);
+                      }}
+                      className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                    >
+                      <i className="ri-eye-line text-lg"></i>
+                    </button>
                   </div>
                 </div>
 
-                <div className="flex items-center space-x-2 mb-3">
+                <div className="flex-1 p-6">
+                  <div className="flex items-start justify-between mb-4">
+                    <Link href={`/product/${product.id}`}>
+                      <h3 className="product-title text-xl group-hover:text-blue-600 transition-colors">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <div className="text-right">
+                      <PriceDisplay
+                        price={product.price}
+                        originalPrice={product.originalPrice}
+                        className="text-xl font-bold"
+                      />
+                      {product.discount && (
+                        <span className="badge-sale inline-block mt-1">
+                          -{product.discount}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
                   {product.rating && (
-                    <>
+                    <div className="flex items-center gap-2 mb-4">
                       {renderStars(product.rating)}
                       <span className="text-sm text-gray-500">
                         {product.rating} ({product.reviewCount || 0} reviews)
                       </span>
-                    </>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-sm text-gray-600">Category: {product.category}</span>
-                  <span className={`text-sm font-medium ${getStockStatusColor(product.stockStatus)}`}>
-                    {getStockStatusText(product.stockStatus)}
-                  </span>
-                </div>
-
-                {/* Selectable Options */}
-                <div className="space-y-2 mb-4">
-                  {product.colors && product.colors.length > 0 && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Colors:</span>
-                      <div className="flex space-x-1">
-                        {product.colors.slice(0, 5).map((color, index) => (
-                          <div
-                            key={index}
-                            className="w-5 h-5 rounded-full border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
-                            style={{ backgroundColor: getColorStyle(color) }}
-                            title={color}
-                          />
-                        ))}
-                        {product.colors.length > 5 && (
-                          <span className="text-xs text-gray-500 ml-1">+{product.colors.length - 5}</span>
-                        )}
-                      </div>
                     </div>
                   )}
 
-                  {product.sizes && product.sizes.length > 0 && (
-                    <div className="flex items-center space-x-2">
-                      <span className="text-sm text-gray-600">Sizes:</span>
-                      <div className="flex space-x-1">
-                        {product.sizes.slice(0, 5).map((size, index) => (
-                          <span
-                            key={index}
-                            className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
-                            title={size}
-                          >
-                            {size}
-                          </span>
-                        ))}
-                        {product.sizes.length > 5 && (
-                          <span className="text-xs text-gray-500 ml-1">+{product.sizes.length - 5}</span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                </div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-sm text-gray-600">Category: {product.category}</span>
+                    <span className={`text-sm font-medium ${getStockStatusColor(product.stockStatus || 'in-stock')}`}>
+                      {getStockStatusText(product.stockStatus || 'in-stock')}
+                    </span>
+                  </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    {product.discount && (
-                      <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
-                        -{product.discount}%
-                      </span>
+                  {/* Options */}
+                  <div className="space-y-3 mb-6">
+                    {product.colors && product.colors.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600">Colors:</span>
+                        <div className="flex gap-2">
+                          {product.colors.slice(0, 5).map((color, index) => (
+                            <div
+                              key={index}
+                              className="w-6 h-6 rounded-full border border-gray-300 cursor-pointer hover:scale-110 transition-transform"
+                              style={{ backgroundColor: getColorStyle(color) }}
+                              title={color}
+                            />
+                          ))}
+                          {product.colors.length > 5 && (
+                            <span className="text-sm text-gray-500">+{product.colors.length - 5}</span>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {product.sizes && product.sizes.length > 0 && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600">Sizes:</span>
+                        <div className="flex gap-2">
+                          {product.sizes.slice(0, 5).map((size, index) => (
+                            <span
+                              key={index}
+                              className="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
+                              title={size}
+                            >
+                              {size}
+                            </span>
+                          ))}
+                          {product.sizes.length > 5 && (
+                            <span className="text-sm text-gray-500">+{product.sizes.length - 5}</span>
+                          )}
+                        </div>
+                      </div>
                     )}
                   </div>
+
                   <button
                     onClick={(e) => handleAddToCart(e, product)}
-                    disabled={product.stockStatus === 'out-of-stock'}
-                    className={`px-4 py-2 rounded-lg font-medium transition-colors whitespace-nowrap ${
-                      product.stockStatus === 'out-of-stock'
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-black text-white hover:bg-gray-800'
+                    disabled={(product.stockStatus || 'in-stock') === 'out-of-stock'}
+                    className={`btn ${
+                      (product.stockStatus || 'in-stock') === 'out-of-stock'
+                        ? 'btn-secondary opacity-50 cursor-not-allowed'
+                        : 'btn-primary'
                     }`}
                   >
-                    {product.stockStatus === 'out-of-stock' ? 'Out of Stock' : 'Add to Cart'}
+                    {(product.stockStatus || 'in-stock') === 'out-of-stock' ? 'Out of Stock' : 'Add to Cart'}
                   </button>
                 </div>
               </div>
-            </Link>
+            </div>
           ))}
         </div>
 
@@ -394,122 +398,115 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      <div className="product-grid">
         {products.map((product) => (
-          <div
-            key={product.id}
-            className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 relative"
-          >
-            <Link href={`/product/${product.id}`} className="block">
-              <div className="aspect-square bg-gray-100 relative overflow-hidden">
+          <div key={product.id} className="product-card group">
+            <div className="product-image">
+              <Link href={`/product/${product.id}`}>
                 <img
                   src={product.image}
                   alt={product.name}
-                  className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
+              </Link>
 
-                {/* Product Labels */}
-                <div className="absolute top-2 left-2 flex flex-col space-y-1 z-10">
-                  {product.isNew && (
-                    <span className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      New
-                    </span>
-                  )}
-                  {product.isOnSale && (
-                    <span className="bg-red-600 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      Sale
-                    </span>
-                  )}
-                </div>
+              {/* Product Badges */}
+              {product.isNew && (
+                <span className="product-badge badge-new">
+                  New
+                </span>
+              )}
+              {product.isOnSale && (
+                <span className="product-badge badge-sale" style={{ top: product.isNew ? '3rem' : 'var(--spacing-md)' }}>
+                  Sale
+                </span>
+              )}
 
-                {/* Hover Actions */}
-                <div className="absolute top-2 right-2 flex flex-col space-y-1 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <button
-                    onClick={(e) => handleFavoriteToggle(e, product.id)}
-                    className={`w-8 h-8 flex items-center justify-center rounded-full transition-colors ${
-                      favorites.includes(product.id)
-                        ? 'bg-red-500 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
-                    }`}
-                  >
-                    <i className={`${favorites.includes(product.id) ? 'ri-heart-fill' : 'ri-heart-line'} text-sm`}></i>
-                  </button>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleQuickView(product);
-                    }}
-                    className="w-8 h-8 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
-                    title="Quick View"
-                  >
-                    <i className="ri-eye-line text-sm"></i>
-                  </button>
-                </div>
-
-                {/* Quick View Button - Bottom Center */}
-                <div className="absolute bottom-3 left-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      handleQuickView(product);
-                    }}
-                    className="w-full py-2 px-4 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm whitespace-nowrap"
-                  >
-                    Quick View
-                  </button>
-                </div>
+              {/* Hover Actions */}
+              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => handleFavoriteToggle(e, product.id)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+                    favorites.includes(product.id)
+                      ? 'bg-red-500 text-white'
+                      : 'bg-white text-gray-600 hover:bg-gray-100'
+                  }`}
+                >
+                  <i className={`${favorites.includes(product.id) ? 'ri-heart-fill' : 'ri-heart-line'} text-lg`}></i>
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleQuickView(product);
+                  }}
+                  className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                  title="Quick View"
+                >
+                  <i className="ri-eye-line text-lg"></i>
+                </button>
               </div>
-            </Link>
 
-            <div className="p-4 space-y-3">
-                              <Link href={`/product/${product.id}`} className="block">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 transition-colors line-clamp-2">
-                    {product.name}
-                  </h3>
-                </Link>
+              {/* Quick View Button - Bottom */}
+              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleQuickView(product);
+                  }}
+                  className="btn btn-secondary w-full"
+                >
+                  Quick View
+                </button>
+              </div>
+            </div>
 
-                {/* Rating */}
-                {product.rating && (
-                  <div className="flex items-center space-x-2">
-                    {renderStars(product.rating)}
-                    <span className="text-sm text-gray-500">
-                      {product.rating} ({product.reviewCount || 0})
-                    </span>
-                  </div>
-                )}
+            <div className="product-content">
+              <Link href={`/product/${product.id}`}>
+                <h3 className="product-title group-hover:text-blue-600 transition-colors">
+                  {product.name}
+                </h3>
+              </Link>
+
+              {/* Rating */}
+              {product.rating && (
+                <div className="flex items-center gap-2 mb-2">
+                  {renderStars(product.rating)}
+                  <span className="text-xs text-gray-500">
+                    {product.rating} ({product.reviewCount || 0})
+                  </span>
+                </div>
+              )}
 
               {/* Price */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <PriceDisplay
-                    price={product.price}
-                    originalPrice={product.originalPrice}
-                    className="text-xl font-bold"
-                  />
-                </div>
+              <div className="flex items-center justify-between mb-3">
+                <PriceDisplay
+                  price={product.price}
+                  originalPrice={product.originalPrice}
+                  className="text-lg font-bold"
+                />
                 {product.discount && (
-                  <span className="bg-red-100 text-red-800 px-2 py-1 rounded text-sm font-medium">
+                  <span className="badge-sale text-xs">
                     -{product.discount}%
                   </span>
                 )}
               </div>
 
               {/* Category and Stock Status */}
-              <div className="flex items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-center justify-between text-sm text-gray-600 mb-3">
                 <span className="truncate">{product.category}</span>
-                <span className={`font-medium ${getStockStatusColor(product.stockStatus)}`}>
-                  {getStockStatusText(product.stockStatus)}
+                <span className={`font-medium ${getStockStatusColor(product.stockStatus || 'in-stock')}`}>
+                  {getStockStatusText(product.stockStatus || 'in-stock')}
                 </span>
               </div>
 
-              {/* Selectable Options */}
-              <div className="space-y-2">
+              {/* Options */}
+              <div className="space-y-2 mb-4">
                 {product.colors && product.colors.length > 0 && (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500">Colors:</span>
-                    <div className="flex space-x-1">
+                    <div className="flex gap-1">
                       {product.colors.slice(0, 4).map((color, index) => (
                         <div
                           key={index}
@@ -519,27 +516,27 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                         />
                       ))}
                       {product.colors.length > 4 && (
-                        <span className="text-xs text-gray-500 ml-1">+{product.colors.length - 4}</span>
+                        <span className="text-xs text-gray-500">+{product.colors.length - 4}</span>
                       )}
                     </div>
                   </div>
                 )}
 
                 {product.sizes && product.sizes.length > 0 && (
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center gap-2">
                     <span className="text-xs text-gray-500">Sizes:</span>
-                    <div className="flex space-x-1">
+                    <div className="flex gap-1">
                       {product.sizes.slice(0, 4).map((size, index) => (
                         <span
                           key={index}
-                          className="px-1.5 py-0.5 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
+                          className="px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 transition-colors cursor-pointer"
                           title={size}
                         >
                           {size}
                         </span>
                       ))}
                       {product.sizes.length > 4 && (
-                        <span className="text-xs text-gray-500 ml-1">+{product.sizes.length - 4}</span>
+                        <span className="text-xs text-gray-500">+{product.sizes.length - 4}</span>
                       )}
                     </div>
                   </div>
@@ -548,19 +545,15 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
               {/* Add to Cart Button */}
               <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleAddToCart(e, product);
-                }}
-                disabled={product.stockStatus === 'out-of-stock'}
-                className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 whitespace-nowrap ${
-                  product.stockStatus === 'out-of-stock'
-                    ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    : 'bg-black text-white hover:bg-gray-800 hover:scale-105 active:scale-95'
+                onClick={(e) => handleAddToCart(e, product)}
+                disabled={(product.stockStatus || 'in-stock') === 'out-of-stock'}
+                className={`btn w-full ${
+                  (product.stockStatus || 'in-stock') === 'out-of-stock'
+                    ? 'btn-secondary opacity-50 cursor-not-allowed'
+                    : 'btn-primary'
                 }`}
               >
-                {product.stockStatus === 'out-of-stock' ? 'Out of Stock' : 'Add to Cart'}
+                {(product.stockStatus || 'in-stock') === 'out-of-stock' ? 'Out of Stock' : 'Add to Cart'}
               </button>
             </div>
           </div>

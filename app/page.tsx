@@ -39,14 +39,14 @@ const SliderSkeleton = () => (
 );
 
 const ProductGridSkeleton = () => (
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+  <div className="product-grid">
     {[...Array(8)].map((_, i) => (
-      <div key={i} className="bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse">
-        <div className="aspect-square bg-gray-200 dark:bg-gray-700 rounded-t-xl"></div>
-        <div className="p-4 space-y-3">
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded"></div>
-          <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3"></div>
-          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+      <div key={i} className="product-card animate-pulse">
+        <div className="product-image bg-gray-200"></div>
+        <div className="product-content space-y-3">
+          <div className="h-4 bg-gray-200 rounded"></div>
+          <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+          <div className="h-4 bg-gray-200 rounded w-1/2"></div>
         </div>
       </div>
     ))}
@@ -211,10 +211,10 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-white dark:bg-gray-900">
+    <>
       <Header />
       
-      <main>
+      <main className="flex-1">
         {/* Hero Banner Slider */}
         <LazySection>
           <Suspense fallback={<SliderSkeleton />}>
@@ -223,11 +223,11 @@ export default function HomePage() {
         </LazySection>
 
         {/* Featured Products Section */}
-        <LazySection className="py-16 md:py-20 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <LazySection className="section bg-white dark:bg-gray-900">
+          <div className="container">
             {/* Section Header */}
-            <div className="text-center mb-12">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
                 {language === 'pl' ? 'Produkty polecane' : language === 'en' ? 'Featured Products' : 'Prodotti in evidenza'}
               </h2>
               <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
@@ -246,7 +246,7 @@ export default function HomePage() {
             </Suspense>
 
             {/* Results Footer */}
-            <div className="flex items-center justify-between mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
               <div className="text-sm text-gray-500 dark:text-gray-400">
                 {language === 'pl' 
                   ? `Wyniki: ${featuredProducts.length} produktów` 
@@ -263,14 +263,14 @@ export default function HomePage() {
         </LazySection>
 
         {/* Personalized Homepage - Lazy loaded */}
-        <LazySection className="py-16 bg-gray-50 dark:bg-gray-800">
+        <LazySection className="section bg-gray-50 dark:bg-gray-800">
           <Suspense fallback={<div className="h-64 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-lg mx-4"></div>}>
             <PersonalizedHomepage defaultProducts={featuredProducts} />
           </Suspense>
         </LazySection>
 
         {/* Recommendations - Lazy loaded */}
-        <LazySection className="py-16 bg-white dark:bg-gray-900">
+        <LazySection className="section bg-white dark:bg-gray-900">
           <Suspense fallback={<div className="h-48 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg mx-4"></div>}>
             <RecommendationSection 
               title={language === 'pl' ? 'Polecane dla Ciebie' : language === 'en' ? 'Recommended for You' : 'Consigliato per te'} 
@@ -281,57 +281,59 @@ export default function HomePage() {
         </LazySection>
 
         {/* Newsletter Section */}
-        <section className="py-16 md:py-20 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
-              {language === 'pl' ? 'Bądź na bieżąco' : language === 'en' ? 'Stay Updated' : 'Rimani aggiornato'}
-            </h2>
-            <p className="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
-              {language === 'pl' 
-                ? 'Zapisz się do naszego newslettera i otrzymuj ekskluzywne oferty oraz informacje o nowościach' 
-                : language === 'en' 
-                ? 'Subscribe to our newsletter and receive exclusive offers and news about new products'
-                : 'Iscriviti alla nostra newsletter e ricevi offerte esclusive e notizie sui nuovi prodotti'
-              }
-            </p>
+        <section className="section bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900">
+          <div className="container">
+            <div className="max-w-4xl mx-auto text-center">
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+                {language === 'pl' ? 'Bądź na bieżąco' : language === 'en' ? 'Stay Updated' : 'Rimani aggiornato'}
+              </h2>
+              <p className="text-xl text-blue-100 mb-8">
+                {language === 'pl' 
+                  ? 'Zapisz się do naszego newslettera i otrzymuj ekskluzywne oferty oraz informacje o nowościach' 
+                  : language === 'en' 
+                  ? 'Subscribe to our newsletter and receive exclusive offers and news about new products'
+                  : 'Iscriviti alla nostra newsletter e ricevi offerte esclusive e notizie sui nuovi prodotti'
+                }
+              </p>
 
-            <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
-              <div className="flex">
-                <input
-                  type="email"
-                  value={subscribeEmail}
-                  onChange={(e) => setSubscribeEmail(e.target.value)}
-                  placeholder={language === 'pl' ? 'Twój adres email' : language === 'en' ? 'Your email address' : 'Il tuo indirizzo email'}
-                  className="flex-1 px-4 py-3 rounded-l-lg border-0 focus:ring-2 focus:ring-white/50 text-gray-900"
-                  disabled={subscribeStatus === 'loading'}
-                />
-                <button
-                  type="submit"
-                  disabled={subscribeStatus === 'loading'}
-                  className="bg-white text-blue-600 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {subscribeStatus === 'loading' ? (
-                    <i className="ri-loader-4-line animate-spin"></i>
-                  ) : (
-                    language === 'pl' ? 'Zapisz się' : language === 'en' ? 'Subscribe' : 'Iscriviti'
-                  )}
-                </button>
-              </div>
-              
-              {subscribeMessage && (
-                <p className={`mt-3 text-sm ${
-                  subscribeStatus === 'success' ? 'text-green-100' : 'text-red-100'
-                }`}>
-                  {subscribeMessage}
-                </p>
-              )}
-            </form>
+              <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
+                <div className="flex">
+                  <input
+                    type="email"
+                    value={subscribeEmail}
+                    onChange={(e) => setSubscribeEmail(e.target.value)}
+                    placeholder={language === 'pl' ? 'Twój adres email' : language === 'en' ? 'Your email address' : 'Il tuo indirizzo email'}
+                    className="flex-1 px-4 py-3 rounded-l-lg border-0 focus:ring-2 focus:ring-white/50 text-gray-900"
+                    disabled={subscribeStatus === 'loading'}
+                  />
+                  <button
+                    type="submit"
+                    disabled={subscribeStatus === 'loading'}
+                    className="btn btn-secondary rounded-l-none"
+                  >
+                    {subscribeStatus === 'loading' ? (
+                      <i className="ri-loader-4-line animate-spin"></i>
+                    ) : (
+                      language === 'pl' ? 'Zapisz się' : language === 'en' ? 'Subscribe' : 'Iscriviti'
+                    )}
+                  </button>
+                </div>
+                
+                {subscribeMessage && (
+                  <p className={`mt-3 text-sm ${
+                    subscribeStatus === 'success' ? 'text-green-100' : 'text-red-100'
+                  }`}>
+                    {subscribeMessage}
+                  </p>
+                )}
+              </form>
+            </div>
           </div>
         </section>
 
         {/* Features Section */}
-        <section className="py-16 md:py-20 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <section className="section bg-gray-50 dark:bg-gray-800">
+          <div className="container">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -406,6 +408,6 @@ export default function HomePage() {
       </main>
       
       <Footer />
-    </div>
+    </>
   );
 }
