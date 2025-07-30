@@ -224,7 +224,7 @@ export default function HomePage() {
 
         {/* Featured Products Section */}
         <LazySection className="py-16 md:py-20 bg-white dark:bg-gray-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container-view">
             {/* Section Header */}
             <div className="text-center mb-12">
               <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-4">
@@ -282,7 +282,7 @@ export default function HomePage() {
 
         {/* Newsletter Section */}
         <section className="py-16 md:py-20 bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="container-view text-center">
             <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4">
               {language === 'pl' ? 'Bądź na bieżąco' : language === 'en' ? 'Stay Updated' : 'Rimani aggiornato'}
             </h2>
@@ -308,7 +308,7 @@ export default function HomePage() {
                 <button
                   type="submit"
                   disabled={subscribeStatus === 'loading'}
-                  className="bg-white text-blue-600 px-6 py-3 rounded-r-lg font-semibold hover:bg-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn-primary rounded-none rounded-r-lg disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {subscribeStatus === 'loading' ? (
                     <i className="ri-loader-4-line animate-spin"></i>
@@ -331,7 +331,7 @@ export default function HomePage() {
 
         {/* Features Section */}
         <section className="py-16 md:py-20 bg-gray-50 dark:bg-gray-800">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="container-view">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="text-center">
                 <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">

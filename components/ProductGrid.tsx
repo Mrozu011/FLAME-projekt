@@ -234,7 +234,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
             <Link
               key={product.id}
               href={`/product/${product.id}`}
-              className="flex bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow group"
+              className="flex product-card overflow-hidden hover:shadow-md transition-shadow group"
             >
               <div className="w-48 h-48 flex-shrink-0 bg-gray-100 relative overflow-hidden">
                 <img
@@ -398,7 +398,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
         {products.map((product) => (
           <div
             key={product.id}
-            className="group bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300 relative"
+            className="product-card group overflow-hidden hover:shadow-lg transition-all duration-300 relative"
           >
             <Link href={`/product/${product.id}`} className="block">
               <div className="aspect-square bg-gray-100 relative overflow-hidden">
