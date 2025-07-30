@@ -4,17 +4,72 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 
+interface SliderItem {
+  id: string;
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  imageUrl?: string;
+  videoUrl?: string;
+  type: 'image' | 'video';
+  textOverlay: {
+    enabled: boolean;
+    text: string;
+    position: string;
+    color: string;
+    backgroundColor: string;
+  };
+  active: boolean;
+  order: number;
+}
+
+interface ContentPage {
+  id: string;
+  title: string;
+  description: string;
+  content: string;
+  metaTitle: string;
+  metaDescription: string;
+}
+
+interface SliderForm {
+  title: string;
+  subtitle: string;
+  buttonText: string;
+  buttonLink: string;
+  imageUrl: string;
+  videoUrl: string;
+  type: 'image' | 'video';
+  textOverlay: {
+    enabled: boolean;
+    text: string;
+    position: string;
+    color: string;
+    backgroundColor: string;
+  };
+  active: boolean;
+  order: number;
+}
+
+interface ContentForm {
+  title: string;
+  content: string;
+  metaTitle: string;
+  metaDescription: string;
+}
+
 export default function ContentManagement() {
-  const [sliderItems, setSliderItems] = useState<any[]>([]);
+  const [sliderItems, setSliderItems] = useState<SliderItem[]>([]);
   const [activeTab, setActiveTab] = useState('slider');
   const [showSliderModal, setShowSliderModal] = useState(false);
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [showContentModal, setShowContentModal] = useState(false);
-  const [editingContent, setEditingContent] = useState(null);
-  const [uploadType, setUploadType] = useState('image');
-  const [editingSlider, setEditingSlider] = useState(null);
-  const [draggedItem, setDraggedItem] = useState(null);
-  const [sliderForm, setSliderForm] = useState({
+  const [editingContent, setEditingContent] = useState<ContentPage | null>(null);
+  const [uploadType, setUploadType] = useState<'image' | 'video'>('image');
+  const [editingSlider, setEditingSlider] = useState<SliderItem | null>(null);
+  const [draggedItem, setDraggedItem] = useState<SliderItem | null>(null);
+  const [sliderForm, setSliderForm] = useState<SliderForm>({
     title: '',
     subtitle: '',
     buttonText: '',
@@ -33,14 +88,14 @@ export default function ContentManagement() {
     order: 0
   });
 
-  const [contentForm, setContentForm] = useState({
+  const [contentForm, setContentForm] = useState<ContentForm>({
     title: '',
     content: '',
     metaTitle: '',
     metaDescription: ''
   });
 
-  const [pagesContent, setPagesContent] = useState([
+  const [pagesContent, setPagesContent] = useState<ContentPage[]>([
     {
       id: 'about',
       title: 'About Us Page',
@@ -223,9 +278,9 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
   });
 
   useEffect(() => {
-    const mockSliderItems = [
+    const mockSliderItems: SliderItem[] = [
       {
-        id: 1,
+        id: '1',
         title: 'Summer Collection 2024',
         subtitle: 'Discover the latest trends in fashion',
         buttonText: 'Shop Now',
@@ -237,7 +292,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         order: 1
       },
       {
-        id: 2,
+        id: '2',
         title: 'Tech Gadgets Sale',
         subtitle: 'Up to 50% off on electronics',
         buttonText: 'Explore Deals',
@@ -249,7 +304,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         order: 2
       },
       {
-        id: 3,
+        id: '3',
         title: 'Lifestyle Essentials',
         subtitle: 'Elevate your daily routine',
         buttonText: 'Discover',
@@ -271,44 +326,36 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
 
     const maxSize = uploadType === 'image' ? 5 * 1024 * 1024 : 50 * 1024 * 1024;
     if (file.size > maxSize) {
-      setSubmitStatus({ 
-        type: 'error', 
-        message: `File size exceeds ${uploadType === 'image' ? '5MB' : '50MB'} limit` 
-      });
+      setSubmitStatus({ type: 'error', message: `File size must be less than ${maxSize / (1024 * 1024)}MB` });
       return;
     }
 
     setIsUploading(true);
     setUploadProgress(0);
 
+    // Simulate upload progress
     const progressInterval = setInterval(() => {
       setUploadProgress(prev => {
         if (prev >= 90) {
           clearInterval(progressInterval);
-          return prev;
+          return 90;
         }
         return prev + 10;
       });
     }, 200);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
-      formData.append('type', uploadType);
-      formData.append('uploadType', 'slider');
-
+      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      const mockUrl = uploadType === 'image' 
-        ? `https://readdy.ai/api/search-image?query=uploaded%20${file.name}%20professional%20photography%20with%20clean%20background%20and%20modern%20styling&width=800&height=400&seq=upload${Date.now()}&orientation=landscape`
-        : URL.createObjectURL(file);
-
+      const mockUrl = `https://example.com/uploads/${file.name}`;
+      
       setUploadProgress(100);
       
       setSliderForm(prev => ({
         ...prev,
         [uploadType === 'image' ? 'imageUrl' : 'videoUrl']: mockUrl,
-        type: uploadType
+        type: uploadType as 'image' | 'video'
       }));
 
       setSubmitStatus({ type: 'success', message: 'File uploaded successfully!' });
@@ -325,7 +372,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: any) => {
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, item: SliderItem) => {
     setDraggedItem(item);
     e.dataTransfer.effectAllowed = 'move';
   };
@@ -335,7 +382,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     e.dataTransfer.dropEffect = 'move';
   };
 
-  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetItem: any) => {
+  const handleDrop = (e: React.DragEvent<HTMLDivElement>, targetItem: SliderItem) => {
     e.preventDefault();
     if (!draggedItem || draggedItem.id === targetItem.id) return;
 
@@ -379,10 +426,10 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
   };
 
   const handleSliderFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-          const { name, value, type } = e.target;
-      const checked = (e.target as HTMLInputElement).checked;
+    const { name, value, type } = e.target;
+    const checked = (e.target as HTMLInputElement).checked;
     if (name.startsWith('textOverlay.')) {
-      const overlayField = name.split('.').pop();
+      const overlayField = name.split('.').pop() as string;
       setSliderForm(prev => ({
         ...prev,
         textOverlay: {
@@ -393,7 +440,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     } else {
       setSliderForm(prev => ({
         ...prev,
-        [name]: type === 'checkbox' ? checked : value
+        [name]: name === 'type' ? (value as 'image' | 'video') : (type === 'checkbox' ? checked : value)
       }));
     }
   };
@@ -443,7 +490,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
       formDataToSubmit.append('formType', 'slider');
 
       if (editingSlider) {
-        formDataToSubmit.append('sliderId', editingSlider.id.toString());
+        formDataToSubmit.append('sliderId', editingSlider.id);
       }
 
       const response = await fetch('https://readdy.ai/api/form/d24787mb5t8jehpp9vsg', {
@@ -468,8 +515,8 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
               : item
           ));
         } else {
-          const newItem = {
-            id: Date.now(),
+          const newItem: SliderItem = {
+            id: Date.now().toString(),
             ...sliderForm,
             order: sliderItems.length + 1
           };
@@ -561,7 +608,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleEditSlider = (item: any) => {
+  const handleEditSlider = (item: SliderItem) => {
     setEditingSlider(item);
     setSliderForm({
       title: item.title,
@@ -598,7 +645,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     ));
   };
 
-  const openUploadModal = (type: string) => {
+  const openUploadModal = (type: 'image' | 'video') => {
     setUploadType(type);
     setShowUploadModal(true);
     setSubmitStatus({ type: '', message: '' });
@@ -649,7 +696,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
 
     try {
       const formDataToSubmit = new URLSearchParams();
-      formDataToSubmit.append('pageId', editingContent.id);
+      formDataToSubmit.append('pageId', editingContent?.id || '');
       formDataToSubmit.append('title', contentForm.title);
       formDataToSubmit.append('content', contentForm.content);
       formDataToSubmit.append('metaTitle', contentForm.metaTitle);
@@ -671,7 +718,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
         });
 
         setPagesContent(pagesContent.map(page =>
-          page.id === editingContent.id
+          page.id === editingContent?.id
             ? { 
                 ...page, 
                 content: contentForm.content,
@@ -701,7 +748,7 @@ If you have questions about this Privacy Policy, please contact us at privacy@fl
     }
   };
 
-  const handleEditContent = (page: any) => {
+  const handleEditContent = (page: ContentPage) => {
     setEditingContent(page);
     setContentForm({
       title: page.title,
