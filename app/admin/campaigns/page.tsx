@@ -126,36 +126,13 @@ export default function CampaignsPage() {
           imageUrl: 'https://readdy.ai/api/search-image?query=summer%20sale%20banner%20with%20vibrant%20colors%20and%20modern%20design%2C%20featuring%20summer%20products%20and%20promotional%20text%2C%20clean%20professional%20layout%20with%20bright%20background&width=1200&height=300&seq=banner1&orientation=landscape',
           position: 'top'
         },
-        targeting: {
-          pages: ['homepage', 'products'],
-          userTypes: ['all'],
-          categories: ['men', 'women']
-        },
-        schedule: {
-          startDate: '2024-06-01',
-          endDate: '2024-08-31',
-          timezone: 'UTC',
-          showTimes: {
-            enabled: true,
-            startTime: '09:00',
-            endTime: '21:00'
-          }
-        },
-        priority: 'high',
-        active: true,
-        displayRules: {
-          showOnce: false,
-          dismissible: true,
-          autoHide: {
-            enabled: false,
-            seconds: 10
-          }
-        },
-        stats: {
-          impressions: 15432,
-          clicks: 892,
-          conversions: 156
-        },
+        targetAudience: ['homepage', 'products'],
+        startDate: '2024-06-01',
+        endDate: '2024-08-31',
+        budget: 0,
+        impressions: 15432,
+        clicks: 892,
+        conversions: 156,
         createdAt: '2024-05-15T10:00:00Z',
         updatedAt: '2024-05-15T10:00:00Z'
       },
@@ -173,36 +150,13 @@ export default function CampaignsPage() {
           imageUrl: 'https://readdy.ai/api/search-image?query=fall%20fashion%20collection%20popup%20design%20with%20elegant%20styling%2C%20featuring%20autumn%20colors%20and%20modern%20clothing%20items%2C%20professional%20product%20photography%20with%20clean%20background&width=600&height=400&seq=popup1&orientation=landscape',
           position: 'center'
         },
-        targeting: {
-          pages: ['homepage'],
-          userTypes: ['new'],
-          categories: []
-        },
-        schedule: {
-          startDate: '2024-09-01',
-          endDate: '2024-11-30',
-          timezone: 'UTC',
-          showTimes: {
-            enabled: false,
-            startTime: '09:00',
-            endTime: '17:00'
-          }
-        },
-        priority: 'normal',
-        active: false,
-        displayRules: {
-          showOnce: true,
-          dismissible: true,
-          autoHide: {
-            enabled: true,
-            seconds: 15
-          }
-        },
-        stats: {
-          impressions: 8654,
-          clicks: 432,
-          conversions: 89
-        },
+        targetAudience: ['homepage'],
+        startDate: '2024-09-01',
+        endDate: '2024-11-30',
+        budget: 0,
+        impressions: 8654,
+        clicks: 432,
+        conversions: 89,
         createdAt: '2024-08-20T14:30:00Z',
         updatedAt: '2024-08-20T14:30:00Z'
       },
@@ -220,36 +174,13 @@ export default function CampaignsPage() {
           imageUrl: '',
           position: 'top'
         },
-        targeting: {
-          pages: ['cart', 'checkout'],
-          userTypes: ['all'],
-          categories: []
-        },
-        schedule: {
-          startDate: '2024-01-01',
-          endDate: '2024-12-31',
-          timezone: 'UTC',
-          showTimes: {
-            enabled: false,
-            startTime: '09:00',
-            endTime: '17:00'
-          }
-        },
-        priority: 'low',
-        active: true,
-        displayRules: {
-          showOnce: false,
-          dismissible: true,
-          autoHide: {
-            enabled: false,
-            seconds: 10
-          }
-        },
-        stats: {
-          impressions: 23456,
-          clicks: 1234,
-          conversions: 345
-        },
+        targetAudience: ['cart', 'checkout'],
+        startDate: '2024-01-01',
+        endDate: '2024-12-31',
+        budget: 0,
+        impressions: 23456,
+        clicks: 1234,
+        conversions: 345,
         createdAt: '2024-01-01T00:00:00Z',
         updatedAt: '2024-01-01T00:00:00Z'
       }
@@ -284,15 +215,18 @@ export default function CampaignsPage() {
   };
 
   const handleArrayChange = (section: keyof CampaignForm, field: keyof CampaignContent, value: string) => {
-    setForm(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [field]: (prev[section] as any)[field].includes(value)
-          ? (prev[section] as any)[field].filter((item: any) => item !== value)
-          : [...(prev[section] as any)[field], value]
-      }
-    }));
+    setForm(prev => {
+      const sectionValue = prev[section] as Record<string, any>;
+      return {
+        ...prev,
+        [section]: {
+          ...sectionValue,
+          [field]: sectionValue[field].includes(value)
+            ? sectionValue[field].filter((item: any) => item !== value)
+            : [...sectionValue[field], value]
+        }
+      };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -443,7 +377,7 @@ export default function CampaignsPage() {
     ));
   };
 
-  const duplicateCampaign = (campaign) => {
+  const duplicateCampaign = (campaign: Campaign) => {
     const duplicated: Campaign = {
       ...campaign,
       id: Date.now(),
@@ -462,13 +396,13 @@ export default function CampaignsPage() {
     setCampaigns([...campaigns, duplicated]);
   };
 
-  const getTypeIcon = (type) => {
+  const getTypeIcon = (type: string) => {
     const typeConfig = campaignTypes.find(t => t.id === type);
     return typeConfig ? typeConfig.icon : 'ri-layout-line';
   };
 
-  const getTypeBadge = (type) => {
-    const typeConfig = {
+  const getTypeBadge = (type: string) => {
+    const typeConfig: Record<string, string> = {
       banner: 'bg-blue-100 text-blue-800',
       popup: 'bg-purple-100 text-purple-800',
       notification: 'bg-green-100 text-green-800',
@@ -478,16 +412,16 @@ export default function CampaignsPage() {
     return typeConfig[type] || 'bg-gray-100 text-gray-800';
   };
 
-  const getPriorityBadge = (priority) => {
-    const priorityConfig = {
+  const getPriorityBadge = (priority: string) => {
+    const priorityConfig: Record<string, string> = {
       high: 'bg-red-100 text-red-800',
-      normal: 'bg-gray-100 text-gray-800',
-      low: 'bg-green-100 text-green-800'
+      normal: 'bg-blue-100 text-blue-800',
+      low: 'bg-gray-100 text-gray-800'
     };
     return priorityConfig[priority] || 'bg-gray-100 text-gray-800';
   };
 
-  const getStatusBadge = (active) => {
+  const getStatusBadge = (active: boolean) => {
     return active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
   };
 
@@ -663,33 +597,33 @@ export default function CampaignsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        <div>{campaign.targeting.pages.length} pages</div>
+                        <div>{campaign.targetAudience.length} audiences</div>
                         <div className="text-xs text-gray-500">
-                          {campaign.targeting.userTypes.join(', ')}
+                          {campaign.targetAudience.join(', ')}
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        <div>{campaign.schedule.startDate}</div>
-                        <div className="text-xs text-gray-500">to {campaign.schedule.endDate}</div>
+                        <div>{campaign.startDate}</div>
+                        <div className="text-xs text-gray-500">to {campaign.endDate}</div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-sm text-gray-900">
-                        <div>{campaign.stats.impressions.toLocaleString()} views</div>
+                        <div>{campaign.impressions.toLocaleString()} views</div>
                         <div className="text-xs text-gray-500">
-                          {campaign.stats.clicks} clicks • {campaign.stats.conversions} conversions
+                          {campaign.clicks} clicks • {campaign.conversions} conversions
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex flex-col space-y-1">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(campaign.active)}`}>
-                          {campaign.active ? 'Active' : 'Inactive'}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadge(campaign.status === 'active')}`}>
+                          {campaign.status === 'active' ? 'Active' : campaign.status === 'inactive' ? 'Inactive' : 'Draft'}
                         </span>
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge(campaign.priority)}`}>
-                          {campaign.priority}
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getPriorityBadge('normal')}`}>
+                          Normal
                         </span>
                       </div>
                     </td>
@@ -711,10 +645,10 @@ export default function CampaignsPage() {
                         </button>
                         <button
                           onClick={() => toggleActive(campaign.id)}
-                          className={`${campaign.active ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'} w-8 h-8 flex items-center justify-center`}
-                          title={campaign.active ? 'Deactivate' : 'Activate'}
+                          className={`${campaign.status === 'active' ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900'} w-8 h-8 flex items-center justify-center`}
+                          title={campaign.status === 'active' ? 'Deactivate' : 'Activate'}
                         >
-                          <i className={`ri-${campaign.active ? 'pause' : 'play'}-circle-line`}></i>
+                          <i className={`ri-${campaign.status === 'active' ? 'pause' : 'play'}-circle-line`}></i>
                         </button>
                         <button
                           onClick={() => handleDelete(campaign.id)}
@@ -913,7 +847,14 @@ export default function CampaignsPage() {
                           <input
                             type="checkbox"
                             checked={form.targetAudience.includes(page.id)}
-                            onChange={() => handleArrayChange('targetAudience', 'pages', page.id)}
+                            onChange={() => {
+                              setForm(prev => ({
+                                ...prev,
+                                targetAudience: prev.targetAudience.includes(page.id)
+                                  ? prev.targetAudience.filter(item => item !== page.id)
+                                  : [...prev.targetAudience, page.id]
+                              }));
+                            }}
                             className="mr-2"
                           />
                           <span className="text-sm text-gray-700">{page.name}</span>
@@ -929,7 +870,14 @@ export default function CampaignsPage() {
                           <input
                             type="checkbox"
                             checked={form.targetAudience.includes(userType.id)}
-                            onChange={() => handleArrayChange('targetAudience', 'userTypes', userType.id)}
+                            onChange={() => {
+                              setForm(prev => ({
+                                ...prev,
+                                targetAudience: prev.targetAudience.includes(userType.id)
+                                  ? prev.targetAudience.filter(item => item !== userType.id)
+                                  : [...prev.targetAudience, userType.id]
+                              }));
+                            }}
                             className="mr-2"
                           />
                           <span className="text-sm text-gray-700">{userType.name}</span>
@@ -945,7 +893,14 @@ export default function CampaignsPage() {
                           <input
                             type="checkbox"
                             checked={form.targetAudience.includes(category.id)}
-                            onChange={() => handleArrayChange('targetAudience', 'categories', category.id)}
+                            onChange={() => {
+                              setForm(prev => ({
+                                ...prev,
+                                targetAudience: prev.targetAudience.includes(category.id)
+                                  ? prev.targetAudience.filter(item => item !== category.id)
+                                  : [...prev.targetAudience, category.id]
+                              }));
+                            }}
                             className="mr-2"
                           />
                           <span className="text-sm text-gray-700">{category.name}</span>
