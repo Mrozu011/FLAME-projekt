@@ -26,12 +26,10 @@ const initializeAdvancedPerformance = () => {
 // Lazy load non-critical components
 const MainSlider = lazy(() => import('@/components/MainSlider'));
 const ProductGrid = lazy(() => import('@/components/ProductGrid'));
-const RecommendationSection = lazy(() => import('@/components/RecommendationSection'));
-const PersonalizedHomepage = lazy(() => import('@/components/PersonalizedHomepage'));
 
 // Loading skeletons
 const SliderSkeleton = () => (
-  <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 dark:bg-gray-800 animate-pulse">
+  <div className="relative h-[380px] md:h-[480px] lg:h-[560px] bg-gray-100 dark:bg-gray-800 animate-pulse">
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
@@ -40,7 +38,7 @@ const SliderSkeleton = () => (
 
 const ProductGridSkeleton = () => (
   <div className="product-grid">
-    {[...Array(8)].map((_, i) => (
+    {[...Array(4)].map((_, i) => (
       <div key={i} className="product-card animate-pulse">
         <div className="product-image bg-gray-200"></div>
         <div className="product-content space-y-3">
