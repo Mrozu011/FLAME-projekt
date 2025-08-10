@@ -257,6 +257,42 @@ export default function Header() {
 
   return (
     <header className="header">
+      {/* Top Bar */}
+      <div className="top-bar hidden md:block">
+        <div className="top-bar-container">
+          <div className="flex items-center gap-6 text-xs">
+            <Link href="/faq" className="hover:underline">
+              {language === 'pl' ? 'Pomoc' : language === 'it' ? 'Aiuto' : 'Help'}
+            </Link>
+            <Link href="/about" className="hover:underline">
+              {language === 'pl' ? 'O nas' : language === 'it' ? 'Chi siamo' : 'About'}
+            </Link>
+            <Link href="/contact" className="hover:underline">
+              {language === 'pl' ? 'Kontakt' : language === 'it' ? 'Contatto' : 'Contact'}
+            </Link>
+          </div>
+          <div className="flex items-center gap-4">
+            <button
+              onClick={() => setIsLanguageOpen(!isLanguageOpen)}
+              className="flex items-center gap-2 text-xs text-gray-600 hover:text-gray-900"
+              aria-label="Language"
+            >
+              <i className="ri-global-line" />
+              <span className="uppercase">{language}</span>
+              <i className="ri-arrow-down-s-line" />
+            </button>
+            <button
+              onClick={() => setIsCurrencyOpen(!isCurrencyOpen)}
+              className="flex items-center gap-2 text-xs text-gray-600 hover:text-gray-900"
+              aria-label="Currency"
+            >
+              <span className="font-medium">{currency}</span>
+              <i className="ri-arrow-down-s-line" />
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div className="header-container">
         {/* Left Side - Logo & Menu Cube */}
         <div className="header-left">
@@ -298,7 +334,7 @@ export default function Header() {
               </button>
               
               {isSearchOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
                   <form onSubmit={handleSearchSubmit}>
                     <input
                       ref={searchInputRef}
@@ -334,7 +370,7 @@ export default function Header() {
               </button>
               
               {isLanguageOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+                <div className="absolute right-0 top-full mt-2 w-48 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
                   {availableLanguages.map((lang) => (
                     <button
                       key={lang.code}
@@ -365,7 +401,7 @@ export default function Header() {
               </button>
               
               {isCurrencyOpen && (
-                <div className="absolute right-0 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+                <div className="absolute right-0 top-full mt-2 w-32 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
                   {availableCurrencies.map((curr) => (
                     <button
                       key={curr.code}
@@ -689,7 +725,7 @@ export default function Header() {
         {/* Mega Menu */}
         {isMegaMenuOpen && (
           <div
-            className="absolute top-full left-0 right-0 bg-white dark:bg-gray-900 shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
+            className="absolute top-full left-0 right-0 bg-white/90 dark:bg-gray-900/85 backdrop-blur-md shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
             onMouseEnter={handleMegaMenuEnter}
             onMouseLeave={handleMegaMenuLeave}
           >
@@ -726,7 +762,7 @@ export default function Header() {
 
         {/* Language Dropdown for Mobile */}
         {isLanguageOpen && (
-          <div className="lg:hidden absolute right-4 top-full mt-2 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+          <div className="lg:hidden absolute right-4 top-full mt-2 w-48 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
             {availableLanguages.map((lang) => (
               <button
                 key={lang.code}
@@ -748,7 +784,7 @@ export default function Header() {
 
         {/* Currency Dropdown for Mobile */}
         {isCurrencyOpen && (
-          <div className="lg:hidden absolute right-4 top-full mt-2 w-32 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
+          <div className="lg:hidden absolute right-4 top-full mt-2 w-32 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-2 z-50 slide-up">
             {availableCurrencies.map((curr) => (
               <button
                 key={curr.code}

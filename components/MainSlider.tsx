@@ -236,7 +236,7 @@ export default function MainSlider() {
           sizes="100vw"
         />
         {/* Overlay */}
-        <div className="absolute inset-0 bg-black/40"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-transparent"></div>
       </div>
 
       {/* Content */}
@@ -258,7 +258,7 @@ export default function MainSlider() {
             {/* CTA Button */}
             <button
               onClick={() => handleButtonClick(currentSlideData.buttonLink)}
-              className="inline-flex items-center px-8 py-4 md:px-10 md:py-5 bg-white text-gray-900 font-semibold text-lg md:text-xl rounded-full hover:bg-gray-100 transition-all duration-300 hover:scale-105 hover:shadow-xl transform"
+              className="inline-flex items-center px-8 py-4 md:px-10 md:py-5 bg-white/90 backdrop-blur text-gray-900 font-semibold text-lg md:text-xl rounded-full hover:bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl"
             >
               {currentSlideData.buttonText}
               <i className="ri-arrow-right-line ml-2 text-xl"></i>

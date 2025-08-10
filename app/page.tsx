@@ -245,6 +245,62 @@ export default function HomePage() {
               <ProductGrid products={featuredProducts} />
             </Suspense>
 
+            {/* Info Tiles (Nike-like) */}
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <i className="ri-truck-line text-xl text-blue-600 dark:text-blue-400"></i>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {language === 'pl' ? 'Darmowa dostawa' : language === 'en' ? 'Free Shipping' : 'Spedizione gratuita'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {language === 'pl' ? 'Przy zamówieniach od 199 zł' : language === 'en' ? 'On orders over $50' : 'Per ordini oltre €45'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <i className="ri-star-smile-line text-xl text-amber-600 dark:text-amber-400"></i>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {language === 'pl' ? 'Polecane' : language === 'en' ? 'Recommended' : 'Consigliati'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {language === 'pl' ? 'Top wybory klientów' : language === 'en' ? 'Top picks by customers' : 'Scelte migliori dei clienti'}
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <i className="ri-shield-check-line text-xl text-emerald-600 dark:text-emerald-400"></i>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {language === 'pl' ? 'Najlepsza jakość' : language === 'en' ? 'Best Quality' : 'Qualità migliore'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {language === 'pl' ? 'Sprawdzone materiały i wykonanie' : language === 'en' ? 'Trusted materials and craft' : 'Materiali e fattura affidabili'}
+                  </div>
+                </div>
+              </div>
+              <div className="hidden lg:flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                  <i className="ri-customer-service-2-line text-xl text-purple-600 dark:text-purple-400"></i>
+                </div>
+                <div>
+                  <div className="font-semibold text-gray-900 dark:text-white">
+                    {language === 'pl' ? 'Wsparcie 24/7' : language === 'en' ? '24/7 Support' : 'Supporto 24/7'}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                    {language === 'pl' ? 'Szybka pomoc zawsze' : language === 'en' ? 'Fast help, anytime' : 'Assistenza rapida, sempre'}
+                  </div>
+                </div>
+              </div>
+            </div>
+
             {/* Results Footer */}
             <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
               <div className="text-sm text-gray-500 dark:text-gray-400">
