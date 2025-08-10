@@ -8,6 +8,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useCurrency } from '@/hooks/useCurrency';
 import { categoryMapping, getAvailableLanguages, getAvailableCurrencies } from '@/lib/translations';
 import Image from 'next/image';
+import { motion, AnimatePresence } from 'framer-motion';
 
 // Dynamic imports for performance with optimized loading
 const UserDropdown = dynamic(() => import('./UserDropdown'), { 
@@ -133,6 +134,7 @@ export default function Header() {
   const megaMenuTimeoutRef = useRef<NodeJS.Timeout>();
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
+  const megaMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -245,7 +247,7 @@ export default function Header() {
   const handleMegaMenuLeave = useCallback(() => {
     megaMenuTimeoutRef.current = setTimeout(() => {
       setIsMegaMenuOpen(false);
-    }, 100);
+    }, 120);
   }, []);
 
   // Cart functions
@@ -274,7 +276,7 @@ export default function Header() {
   const availableCurrencies = getAvailableCurrencies();
 
   return (
-    <header className="header">
+    <header className="header relative">
       {/* Top Bar */}
       <div className="top-bar hidden md:block">
         <div className="top-bar-container">
@@ -315,7 +317,11 @@ export default function Header() {
         {/* Left Side - Logo & Menu Cube */}
         <div className="header-left">
           {/* Logo */}
-          <Link href="/" className="logo" onMouseEnter={handleMegaMenuEnter} onMouseLeave={handleMegaMenuLeave}>
+          <Link href="/" className="logo" onMouseEnter={handleMegaMenuEnter} onMouseLeave={handleMegaMenuLeave} onFocus={handleMegaMenuEnter} onBlur={(e) => {
+            if (!megaMenuRef.current?.contains(e.relatedTarget as Node)) {
+              handleMegaMenuLeave();
+            }
+          }} aria-haspopup="true" aria-expanded={isMegaMenuOpen} aria-controls="mega-menu-panel">
             FLAME
           </Link>
           
@@ -324,7 +330,16 @@ export default function Header() {
             className="menu-toggle"
             onMouseEnter={handleMegaMenuEnter}
             onMouseLeave={handleMegaMenuLeave}
+            onFocus={handleMegaMenuEnter}
+            onBlur={(e) => {
+              if (!megaMenuRef.current?.contains(e.relatedTarget as Node)) {
+                handleMegaMenuLeave();
+              }
+            }}
             aria-label="Menu"
+            aria-haspopup="true"
+            aria-expanded={isMegaMenuOpen}
+            aria-controls="mega-menu-panel"
           >
             <div className="grid grid-cols-3 gap-0.5 w-4 h-4">
               {[...Array(9)].map((_, i) => (
@@ -358,7 +373,7 @@ export default function Header() {
               >
                 <i className="ri-search-line text-lg"></i>
               </button>
-              <div className={`absolute right-0 top-1/2 -translate-y-1/2 origin-right overflow-hidden ${isSearchOpen ? 'opacity-100 w-72' : 'opacity-0 w-0'} transition-all`}> 
+              <div className={`absolute right-full mr-2 top-1/2 -translate-y-1/2 origin-right overflow-hidden ${isSearchOpen ? 'opacity-100 w-64' : 'opacity-0 w-0'} transition-all duration-200`}> 
                 <form onSubmit={handleSearchSubmit} className="flex items-center" id="desktop-search">
                   <input
                     ref={searchInputRef}
@@ -366,8 +381,9 @@ export default function Header() {
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
                     placeholder={t('search.placeholder')}
-                    className={`w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-black focus:border-transparent dark:bg-gray-700 dark:text-white`}
+                    className={`w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-black focus:border-transparent dark:bg-gray-700 dark:text-white`}
                     onFocus={() => setIsSearchOpen(true)}
+                    aria-label="Szukaj"
                   />
                 </form>
               </div>
@@ -615,42 +631,57 @@ export default function Header() {
       )}
 
       {/* Mega Menu */}
-      {isMegaMenuOpen && (
-        <div
-          className="absolute top-full left-0 right-0 bg-white/85 dark:bg-gray-900/85 backdrop-blur-md shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
-          onMouseEnter={handleMegaMenuEnter}
-          onMouseLeave={handleMegaMenuLeave}
-        >
-          <div className="max-w-none px-6 lg:px-10 py-6">
-            <div className="grid grid-cols-4 gap-8">
-              {localizedMegaMenuCategories.map((category) => (
-                <div key={category.id} className="space-y-3">
-                  <Link
-                    href={category.href}
-                    className="block text-base font-semibold text-gray-900 dark:text-white hover:text-black dark:hover:text-white transition-colors"
-                    onClick={() => setIsMegaMenuOpen(false)}
-                  >
-                    {category.displayTitle}
-                  </Link>
-                  <ul className="space-y-1.5">
-                    {category.subcategories.map((sub) => (
-                      <li key={sub.href}>
-                        <Link
-                          href={sub.href}
-                          className="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
-                          onClick={() => setIsMegaMenuOpen(false)}
-                        >
-                          {sub.displayName}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
+      <AnimatePresence>
+        {isMegaMenuOpen && (
+          <motion.div
+            id="mega-menu-panel"
+            ref={megaMenuRef}
+            role="menu"
+            aria-label="Główne kategorie"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.18, ease: 'easeOut' }}
+            className="absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50"
+            onMouseEnter={handleMegaMenuEnter}
+            onMouseLeave={handleMegaMenuLeave}
+            onBlur={(e) => {
+              if (!megaMenuRef.current?.contains(e.relatedTarget as Node)) {
+                handleMegaMenuLeave();
+              }
+            }}
+          >
+            <div className="max-w-6xl w-[90vw] bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 px-6 lg:px-8 py-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+                {localizedMegaMenuCategories.map((category) => (
+                  <div key={category.id} className="space-y-3">
+                    <Link
+                      href={category.href}
+                      className="block text-base font-semibold text-gray-900 dark:text-white hover:text-black dark:hover:text-white transition-colors focus:outline-none focus:underline"
+                      onClick={() => setIsMegaMenuOpen(false)}
+                    >
+                      {category.displayTitle}
+                    </Link>
+                    <ul className="space-y-1.5">
+                      {category.subcategories.map((sub) => (
+                        <li key={sub.href}>
+                          <Link
+                            href={sub.href}
+                            className="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none focus:underline"
+                            onClick={() => setIsMegaMenuOpen(false)}
+                          >
+                            {sub.displayName}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+              </div>
             </div>
-          </div>
-        </div>
-      )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Language Dropdown for Mobile */}
       {isLanguageOpen && (

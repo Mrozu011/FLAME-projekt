@@ -285,22 +285,28 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          <ProductImageGallery
-            images={product.images}
-            productName={productName}
-          />
+        <div className="grid grid-cols-1 lg:grid-cols-[120px_minmax(0,1fr)_420px] gap-8 lg:gap-10 mb-16 items-start">
+          {/* Gallery: thumbnails + main image (left + center) */}
+          <div className="lg:col-span-2">
+            <ProductImageGallery
+              images={product.images}
+              productName={productName}
+            />
+          </div>
 
-          <ProductInfo
-            product={product}
-            selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            productName={productName}
-          />
+          {/* Info: right column */}
+          <div className="lg:col-span-1">
+            <ProductInfo
+              product={product}
+              selectedSize={selectedSize}
+              setSelectedSize={setSelectedSize}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
+              quantity={quantity}
+              setQuantity={setQuantity}
+              productName={productName}
+            />
+          </div>
         </div>
 
         <div className="space-y-8">

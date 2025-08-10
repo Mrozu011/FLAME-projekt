@@ -206,7 +206,7 @@ export default function MainSlider() {
   // Loading state
   if (!isClient || !currentSlideData) {
     return (
-      <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 dark:bg-gray-800 animate-pulse">
+      <div className="relative aspect-[16/9] md:aspect-[16/9] lg:aspect-[16/9] bg-gray-100 dark:bg-gray-800 animate-pulse">
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
         </div>
@@ -216,12 +216,14 @@ export default function MainSlider() {
 
   return (
     <section 
-      className="relative h-[400px] md:h-[500px] lg:h-[600px] overflow-hidden bg-gray-100 dark:bg-gray-800"
+      className="relative aspect-[4/3] sm:aspect-[4/3] md:aspect-[16/9] lg:aspect-[16/9] overflow-hidden bg-gray-100 dark:bg-gray-800"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      aria-roledescription="carousel"
+      aria-label="Slider hero"
     >
       {/* Background Image */}
       <div className="absolute inset-0">
@@ -246,7 +248,7 @@ export default function MainSlider() {
             isTransitioning ? 'translate-y-4 opacity-0' : 'translate-y-0 opacity-100'
           }`}>
             {/* Title */}
-            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-white mb-4 md:mb-6 leading-tight">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-semibold text-white mb-4 md:mb-6 leading-tight">
               {currentSlideData.title}
             </h1>
             
@@ -258,7 +260,8 @@ export default function MainSlider() {
             {/* CTA Button */}
             <button
               onClick={() => handleButtonClick(currentSlideData.buttonLink)}
-              className="inline-flex items-center px-8 py-4 md:px-10 md:py-5 bg-white/90 backdrop-blur text-gray-900 font-semibold text-lg md:text-xl rounded-full hover:bg-white transition-all duration-300 hover:scale-105 hover:shadow-2xl"
+              className="inline-flex items-center px-8 py-3 md:px-10 md:py-4 bg-white/90 backdrop-blur text-gray-900 font-medium text-base md:text-lg rounded-2xl hover:bg-white transition-all duration-200 hover:shadow-md"
+              aria-label="Przejdź do sekcji"
             >
               {currentSlideData.buttonText}
               <i className="ri-arrow-right-line ml-2 text-xl"></i>
@@ -274,8 +277,8 @@ export default function MainSlider() {
           <button
             onClick={handlePrevSlide}
             disabled={isTransitioning}
-            className="absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Previous slide"
+            className="absolute left-4 md:left-6 lg:left-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/60"
+            aria-label="Poprzedni slajd"
           >
             <i className="ri-arrow-left-line text-xl md:text-2xl"></i>
           </button>
@@ -284,8 +287,8 @@ export default function MainSlider() {
           <button
             onClick={handleNextSlide}
             disabled={isTransitioning}
-            className="absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-12 h-12 md:w-14 md:h-14 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            aria-label="Next slide"
+            className="absolute right-4 md:right-6 lg:right-8 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/60"
+            aria-label="Następny slajd"
           >
             <i className="ri-arrow-right-line text-xl md:text-2xl"></i>
           </button>
@@ -294,18 +297,19 @@ export default function MainSlider() {
 
       {/* Slide Indicators */}
       {activeSlides.length > 1 && (
-        <div className="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 z-20 flex space-x-3">
+        <div className="absolute bottom-4 md:bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
           {activeSlides.map((_, index) => (
             <button
               key={index}
               onClick={() => goToSlide(index)}
               disabled={isTransitioning}
-              className={`w-3 h-3 md:w-4 md:h-4 rounded-full transition-all duration-300 ${
+              className={`w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-all duration-200 ${
                 index === currentSlide
                   ? 'bg-white scale-125'
-                  : 'bg-white/50 hover:bg-white/70'
-              } disabled:cursor-not-allowed`}
-              aria-label={`Go to slide ${index + 1}`}
+                  : 'bg-white/60 hover:bg-white/80'
+              } disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-white/60`}
+              aria-label={`Przejdź do slajdu ${index + 1}`}
+              aria-current={index === currentSlide}
             />
           ))}
         </div>
@@ -314,8 +318,8 @@ export default function MainSlider() {
       {/* Auto-play Toggle */}
       <button
         onClick={() => setIsAutoPlaying(!isAutoPlaying)}
-        className="absolute top-4 md:top-6 right-4 md:right-6 z-20 w-10 h-10 md:w-12 md:h-12 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-300"
-        aria-label={isAutoPlaying ? 'Pause autoplay' : 'Start autoplay'}
+        className="absolute top-3 md:top-4 right-3 md:right-4 z-20 w-9 h-9 md:w-10 md:h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center text-white hover:bg-white/30 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-white/60"
+        aria-label={isAutoPlaying ? 'Wstrzymaj automatyczne przewijanie' : 'Wznów automatyczne przewijanie'}
       >
         <i className={`${isAutoPlaying ? 'ri-pause-line' : 'ri-play-line'} text-lg md:text-xl`}></i>
       </button>

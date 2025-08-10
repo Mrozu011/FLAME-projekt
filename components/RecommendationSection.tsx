@@ -6,6 +6,15 @@ import Link from 'next/link';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useTranslation } from '@/hooks/useTranslation';
 
+function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
 interface Recommendation {
   productId: string;
   score: number;
@@ -271,9 +280,9 @@ export default function RecommendationSection({
       <div className="py-8">
         <div className="animate-pulse">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-64 mb-6"></div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {Array.from({ length: limit }).map((_, i) => (
-              <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-lg h-80"></div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {Array.from({ length: Math.min(limit, 4) }).map((_, i) => (
+              <div key={i} className="bg-gray-200 dark:bg-gray-700 rounded-2xl h-80"></div>
             ))}
           </div>
         </div>
@@ -288,48 +297,50 @@ export default function RecommendationSection({
   return (
     <div className="py-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-theme-primary">{title}</h2>
+        <h2 className="text-2xl font-semibold text-theme-primary">{title}</h2>
         <div className="flex items-center space-x-2 text-sm text-theme-secondary">
           <i className="ri-robot-line"></i>
           <span>AI Powered</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {recommendations.map((recommendation) => {
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {recommendations.slice(0, 4).map((recommendation) => {
           const product = mockRecommendationEngine.getProduct(recommendation.productId);
           if (!product) return null;
 
           return (
             <div
               key={recommendation.productId}
-              className="group card-theme rounded-lg overflow-hidden hover:shadow-lg transition-all duration-300"
+              className="group bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200"
             >
               <div className="relative">
-                <Link href={`/product/${product.id}`} onClick={() => handleProductClick(product.id)}>
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-48 object-cover object-top group-hover:scale-105 transition-transform duration-300"
-                  />
+                <Link href={`/product/${product.id}/${toSlug(product.name)}`} onClick={() => handleProductClick(product.id)}>
+                  <div className="aspect-square">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover object-top group-hover:scale-[1.03] transition-transform duration-200"
+                    />
+                  </div>
                 </Link>
                 
                 {/* Recommendation Type Badge */}
-                <div className="absolute top-2 left-2">
+                <div className="absolute top-2 left-2 pointer-events-none">
                   <div className={`w-6 h-6 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-md ${getTypeColor(recommendation.type)}`}>
                     <i className={`${getTypeIcon(recommendation.type)} text-sm`}></i>
                   </div>
                 </div>
 
                 {/* Confidence Score */}
-                <div className="absolute top-2 right-2">
+                <div className="absolute top-2 right-2 pointer-events-none">
                   <div className="bg-black/70 text-white px-2 py-1 rounded text-xs">
                     {Math.round(recommendation.confidence * 100)}%
                   </div>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="absolute bottom-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none">
                   <div className="flex space-x-2">
                     <button
                       onClick={(e) => {
@@ -337,7 +348,8 @@ export default function RecommendationSection({
                         e.stopPropagation();
                         handleAddToWishlist(product.id);
                       }}
-                      className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer pointer-events-auto"
+                      aria-label="Dodaj do ulubionych"
                     >
                       <i className="ri-heart-line text-sm text-theme-primary"></i>
                     </button>
@@ -347,7 +359,8 @@ export default function RecommendationSection({
                         e.stopPropagation();
                         handleAddToCart(product.id);
                       }}
-                      className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                      className="w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors cursor-pointer pointer-events-auto"
+                      aria-label="Dodaj do koszyka"
                     >
                       <i className="ri-shopping-cart-line text-sm text-theme-primary"></i>
                     </button>
@@ -356,38 +369,20 @@ export default function RecommendationSection({
               </div>
 
               <div className="p-4">
-                <Link href={`/product/${product.id}`} onClick={() => handleProductClick(product.id)}>
-                  <h3 className="font-semibold text-theme-primary group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
+                <Link href={`/product/${product.id}/${toSlug(product.name)}`} onClick={() => handleProductClick(product.id)}>
+                  <h3 className="font-medium text-theme-primary group-hover:text-blue-600 transition-colors mb-2 line-clamp-2">
                     {product.name}
                   </h3>
                 </Link>
                 
                 <p className="text-sm text-theme-secondary mb-2">{product.category}</p>
                 
-                <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center justify-between mb-1">
                   <span className="text-lg font-bold text-theme-primary">{format(product.price)}</span>
                   <div className="flex items-center space-x-1">
                     <i className="ri-star-fill text-yellow-400 text-sm"></i>
                     <span className="text-sm text-theme-secondary">{product.rating}</span>
                   </div>
-                </div>
-
-                {/* Recommendation Reasons */}
-                {showReasons && recommendation.reasons.length > 0 && (
-                  <div className="mb-3">
-                    <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded p-2">
-                      <p className="text-xs text-blue-800 dark:text-blue-200">
-                        <i className="ri-lightbulb-line mr-1"></i>
-                        {recommendation.reasons[0]}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                {/* Recommendation Score */}
-                <div className="flex items-center justify-between text-xs text-theme-tertiary">
-                  <span className="capitalize">{recommendation.type} match</span>
-                  <span>{Math.round(recommendation.score * 100)}% score</span>
                 </div>
               </div>
             </div>
@@ -395,14 +390,7 @@ export default function RecommendationSection({
         })}
       </div>
 
-      {/* Show More Button */}
-      {recommendations.length === limit && (
-        <div className="text-center mt-8">
-          <button className="btn-secondary px-6 py-2 rounded-lg transition-colors cursor-pointer">
-            Show More Recommendations
-          </button>
-        </div>
-      )}
+      {/* No "Show More" on homepage four-up row to keep exactly 4 items visible */}
     </div>
   );
 }
