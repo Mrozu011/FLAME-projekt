@@ -7,6 +7,7 @@ import { useTranslation } from '@/hooks/useTranslation';
 import { useCurrency } from '@/hooks/useCurrency';
 import { useOptimizedState, useRoutePrefetch } from '@/hooks/usePerformanceOptimization';
 import { getAvailableLanguages, getAvailableCurrencies } from '@/lib/translations';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface UserSession {
   user: {
@@ -95,6 +96,7 @@ const UserDropdown = memo(function UserDropdown() {
   const [activeDropdown, setActiveDropdown] = useOptimizedState<string | null>(null);
 
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   // Performance-optimized initialization
   useEffect(() => {
@@ -269,12 +271,24 @@ const UserDropdown = memo(function UserDropdown() {
   }
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative" ref={dropdownRef} onMouseLeave={() => { setIsDropdownOpen(false); setActiveDropdown(null); }}>
       {/* Main User Button */}
       <button
+        ref={triggerRef}
         onClick={handleDropdownToggle}
-        className="flex items-center space-x-3 p-2 rounded-lg transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
+        onMouseEnter={() => setIsDropdownOpen(true)}
+        onFocus={() => setIsDropdownOpen(true)}
+        onBlur={(e) => {
+          if (!dropdownRef.current?.contains(e.relatedTarget as Node)) {
+            setIsDropdownOpen(false);
+            setActiveDropdown(null);
+          }
+        }}
+        className="flex items-center space-x-3 p-2 rounded-lg transition-all hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-black"
         aria-label="User menu"
+        aria-haspopup="true"
+        aria-expanded={isDropdownOpen}
+        aria-controls="user-menu-panel"
       >
         {/* User Avatar */}
         <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -311,232 +325,240 @@ const UserDropdown = memo(function UserDropdown() {
       </button>
 
       {/* Dropdown Menu */}
-      {isDropdownOpen && (
-        <div 
-          className="absolute right-0 mt-2 w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50"
-          style={{ willChange: 'opacity, transform' }}
-        >
-          <div className="py-2">
-            {/* User Info Section */}
-            {userSession ? (
-              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
-                    <span className="text-white font-medium">
-                      {userSession.user.name.charAt(0).toUpperCase()}
-                    </span>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {userSession.user.name}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {userSession.user.email}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center">
-                    <i className="ri-user-line text-gray-600 dark:text-gray-400"></i>
-                  </div>
-                  <div>
-                    <p className="font-medium text-gray-900 dark:text-white">
-                      {t('guest')}
-                    </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      {t('notLoggedIn')}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Quick Stats */}
-            <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-600 dark:text-gray-400">{t('cartItems')}</span>
-                <span className="font-medium text-gray-900 dark:text-white">{cartItemCount}</span>
-              </div>
-              <div className="flex justify-between text-sm mt-1">
-                <span className="text-gray-600 dark:text-gray-400">{t('favorites')}</span>
-                <span className="font-medium text-gray-900 dark:text-white">{favoriteCount}</span>
-              </div>
-            </div>
-
-            {/* Compact Quick Settings */}
-            <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
-              <div className="grid grid-cols-3 gap-2">
-                <button
-                  onClick={handleThemeQuickToggle}
-                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label="Theme"
-                >
-                  <i className="ri-contrast-2-line text-gray-700 dark:text-gray-200"></i>
-                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Theme</span>
-                </button>
-                <button
-                  onClick={() => handleLanguageChange('pl')}
-                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label="Language"
-                >
-                  <i className="ri-translate-2 text-gray-700 dark:text-gray-200"></i>
-                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Polish</span>
-                </button>
-                <button
-                  onClick={() => handleCurrencyChange('EUR')}
-                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  aria-label="Currency"
-                >
-                  <i className="ri-money-euro-circle-line text-gray-700 dark:text-gray-200"></i>
-                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">EUR</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Main Menu Items */}
-            <div className="border-b border-gray-200 dark:border-gray-700">
+      <AnimatePresence>
+        {isDropdownOpen && (
+          <motion.div 
+            id="user-menu-panel"
+            role="menu"
+            initial={{ opacity: 0, scale: 0.98, y: -4 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: -4 }}
+            transition={{ duration: 0.16, ease: 'easeOut' }}
+            className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl shadow-xl z-50 focus:outline-none"
+            onMouseEnter={() => setIsDropdownOpen(true)}
+          >
+            <div className="py-2">
+              {/* User Info Section */}
               {userSession ? (
-                <>
-                  <DropdownItem href="/profile" icon="ri-user-line">
-                    {t('profile')}
-                  </DropdownItem>
-                  <DropdownItem href="/order-history" icon="ri-file-list-line">
-                    {t('orderHistory')}
-                  </DropdownItem>
-                </>
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                      <span className="text-white font-medium">
+                        {userSession.user.name.charAt(0).toUpperCase()}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {userSession.user.name}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {userSession.user.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
               ) : (
-                <>
-                  <DropdownItem href="/login" icon="ri-login-box-line">
-                    {t('login')}
-                  </DropdownItem>
-                  <DropdownItem href="/register" icon="ri-user-add-line">
-                    {t('register')}
-                  </DropdownItem>
-                </>
-              )}
-              
-              <DropdownItem href="/cart" icon="ri-shopping-cart-line">
-                {t('cart')} {cartItemCount > 0 && <span className="ml-2 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">{cartItemCount}</span>}
-              </DropdownItem>
-              
-              <DropdownItem href="/favorites" icon="ri-heart-line">
-                {t('favorites')} {favoriteCount > 0 && <span className="ml-2 bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs">{favoriteCount}</span>}
-              </DropdownItem>
-            </div>
-
-            {/* Language Selector */}
-            <div>
-              <button
-                onClick={() => handleSubDropdownToggle('language')}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <i className="ri-global-line text-gray-500 dark:text-gray-400"></i>
-                  <span className="text-gray-700 dark:text-gray-300">{t('language')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
-                    {language}
-                  </span>
-                  <i className={`ri-arrow-right-s-line text-gray-400 transition-transform ${activeDropdown === 'language' ? 'rotate-90' : ''}`}></i>
-                </div>
-              </button>
-              
-              {activeDropdown === 'language' && (
-                <div className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                  {languages.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`w-full flex items-center justify-between px-8 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        language === lang.code
-                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      <span>{lang.name}</span>
-                      {language === lang.code && (
-                        <i className="ri-check-line text-blue-600 dark:text-blue-400"></i>
-                      )}
-                    </button>
-                  ))}
+                <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center">
+                      <i className="ri-user-line text-gray-600 dark:text-gray-400"></i>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 dark:text-white">
+                        {t('guest')}
+                      </p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">
+                        {t('notLoggedIn')}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               )}
-            </div>
 
-            {/* Currency Selector */}
-            <div>
-              <button
-                onClick={() => handleSubDropdownToggle('currency')}
-                className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
-              >
-                <div className="flex items-center space-x-3">
-                  <i className="ri-money-dollar-circle-line text-gray-500 dark:text-gray-400"></i>
-                  <span className="text-gray-700 dark:text-gray-300">{t('currency')}</span>
+              {/* Quick Stats */}
+              <div className="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600 dark:text-gray-400">{t('cartItems')}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{cartItemCount}</span>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
-                    {currency}
-                  </span>
-                  <i className={`ri-arrow-right-s-line text-gray-400 transition-transform ${activeDropdown === 'currency' ? 'rotate-90' : ''}`}></i>
+                <div className="flex justify-between text-sm mt-1">
+                  <span className="text-gray-600 dark:text-gray-400">{t('favorites')}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">{favoriteCount}</span>
                 </div>
-              </button>
-              
-              {activeDropdown === 'currency' && (
-                <div className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-                  {currencies.map((curr) => (
-                    <button
-                      key={curr.code}
-                      onClick={() => handleCurrencyChange(curr.code)}
-                      className={`w-full flex items-center justify-between px-8 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 ${
-                        currency === curr.code
-                          ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
-                          : 'text-gray-700 dark:text-gray-300'
-                      }`}
-                    >
-                      <div className="flex items-center space-x-2">
-                        <span>{curr.name}</span>
-                        <span className="text-xs text-gray-400">({curr.symbol})</span>
-                      </div>
-                      {currency === curr.code && (
-                        <i className="ri-check-line text-blue-600 dark:text-blue-400"></i>
-                      )}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+              </div>
 
-            {/* Support & Settings */}
-            <div className="border-t border-gray-200 dark:border-gray-700">
-              <DropdownItem href="/support" icon="ri-customer-service-line">
-                {t('support')}
-              </DropdownItem>
-              
-              <DropdownItem href="/faq" icon="ri-question-line">
-                {t('help')}
-              </DropdownItem>
-            </div>
+              {/* Compact Quick Settings */}
+              <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={handleThemeQuickToggle}
+                    className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Theme"
+                  >
+                    <i className="ri-contrast-2-line text-gray-700 dark:text-gray-200"></i>
+                    <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Theme</span>
+                  </button>
+                  <button
+                    onClick={() => handleLanguageChange('pl')}
+                    className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Language"
+                  >
+                    <i className="ri-translate-2 text-gray-700 dark:text-gray-200"></i>
+                    <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Polish</span>
+                  </button>
+                  <button
+                    onClick={() => handleCurrencyChange('EUR')}
+                    className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    aria-label="Currency"
+                  >
+                    <i className="ri-money-euro-circle-line text-gray-700 dark:text-gray-200"></i>
+                    <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">EUR</span>
+                  </button>
+                </div>
+              </div>
 
-            {/* Logout */}
-            {userSession && (
-              <div className="border-t border-gray-200 dark:border-gray-700">
-                <DropdownItem 
-                  icon="ri-logout-box-line" 
-                  onClick={handleLogout}
-                  prefetch={false}
-                  className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
-                >
-                  {t('logout')}
+              {/* Main Menu Items */}
+              <div className="border-b border-gray-200 dark:border-gray-700">
+                {userSession ? (
+                  <>
+                    <DropdownItem href="/profile" icon="ri-user-line">
+                      {t('profile')}
+                    </DropdownItem>
+                    <DropdownItem href="/order-history" icon="ri-file-list-line">
+                      {t('orderHistory')}
+                    </DropdownItem>
+                  </>
+                ) : (
+                  <>
+                    <DropdownItem href="/login" icon="ri-login-box-line">
+                      {t('login')}
+                    </DropdownItem>
+                    <DropdownItem href="/register" icon="ri-user-add-line">
+                      {t('register')}
+                    </DropdownItem>
+                  </>
+                )}
+                
+                <DropdownItem href="/cart" icon="ri-shopping-cart-line">
+                  {t('cart')} {cartItemCount > 0 && <span className="ml-2 bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs">{cartItemCount}</span>}
+                </DropdownItem>
+                
+                <DropdownItem href="/favorites" icon="ri-heart-line">
+                  {t('favorites')} {favoriteCount > 0 && <span className="ml-2 bg-pink-100 text-pink-800 px-2 py-1 rounded-full text-xs">{favoriteCount}</span>}
                 </DropdownItem>
               </div>
-            )}
-          </div>
-        </div>
-      )}
+
+              {/* Language Selector */}
+              <div>
+                <button
+                  onClick={() => handleSubDropdownToggle('language')}
+                  className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                >
+                  <div className="flex items-center space-x-3">
+                    <i className="ri-global-line text-gray-500 dark:text-gray-400"></i>
+                    <span className="text-gray-700 dark:text-gray-300">{t('language')}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                      {language}
+                    </span>
+                    <i className={`ri-arrow-right-s-line text-gray-400 transition-transform ${activeDropdown === 'language' ? 'rotate-90' : ''}`}></i>
+                  </div>
+                </button>
+                
+                {activeDropdown === 'language' && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={`w-full flex items-center justify-between px-8 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none ${
+                          language === lang.code
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                            : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <span>{lang.name}</span>
+                        {language === lang.code && (
+                          <i className="ri-check-line text-blue-600 dark:text-blue-400"></i>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Currency Selector */}
+              <div>
+                <button
+                  onClick={() => handleSubDropdownToggle('currency')}
+                  className="w-full flex items-center justify-between px-4 py-3 text-sm hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors focus:outline-none"
+                >
+                  <div className="flex items-center space-x-3">
+                    <i className="ri-money-dollar-circle-line text-gray-500 dark:text-gray-400"></i>
+                    <span className="text-gray-700 dark:text-gray-300">{t('currency')}</span>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                      {currency}
+                    </span>
+                    <i className={`ri-arrow-right-s-line text-gray-400 transition-transform ${activeDropdown === 'currency' ? 'rotate-90' : ''}`}></i>
+                  </div>
+                </button>
+                
+                {activeDropdown === 'currency' && (
+                  <div className="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                    {currencies.map((curr) => (
+                      <button
+                        key={curr.code}
+                        onClick={() => handleCurrencyChange(curr.code)}
+                        className={`w-full flex items-center justify-between px-8 py-2 text-sm transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none ${
+                          currency === curr.code
+                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300'
+                            : 'text-gray-700 dark:text-gray-300'
+                        }`}
+                      >
+                        <div className="flex items-center space-x-2">
+                          <span>{curr.name}</span>
+                          <span className="text-xs text-gray-400">({curr.symbol})</span>
+                        </div>
+                        {currency === curr.code && (
+                          <i className="ri-check-line text-blue-600 dark:text-blue-400"></i>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* Support & Settings */}
+              <div className="border-t border-gray-200 dark:border-gray-700">
+                <DropdownItem href="/support" icon="ri-customer-service-line">
+                  {t('support')}
+                </DropdownItem>
+                
+                <DropdownItem href="/faq" icon="ri-question-line">
+                  {t('help')}
+                </DropdownItem>
+              </div>
+
+              {/* Logout */}
+              {userSession && (
+                <div className="border-t border-gray-200 dark:border-gray-700">
+                  <DropdownItem 
+                    icon="ri-logout-box-line" 
+                    onClick={handleLogout}
+                    prefetch={false}
+                    className="text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  >
+                    {t('logout')}
+                  </DropdownItem>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 });

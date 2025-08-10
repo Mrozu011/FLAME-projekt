@@ -229,12 +229,12 @@ export default function HomePage() {
             </Suspense>
 
             {/* Info Tiles - single row */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                   <i className="ri-truck-line text-lg text-blue-600 dark:text-blue-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Darmowa dostawa' : language === 'en' ? 'Free Shipping' : 'Spedizione gratuita'}
                   </div>
@@ -243,11 +243,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                   <i className="ri-star-smile-line text-lg text-amber-600 dark:text-amber-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Polecane' : language === 'en' ? 'Recommended' : 'Consigliati'}
                   </div>
@@ -256,11 +256,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                   <i className="ri-shield-check-line text-lg text-emerald-600 dark:text-emerald-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Najlepsza jakość' : language === 'en' ? 'Best Quality' : 'Qualità migliore'}
                   </div>
@@ -269,11 +269,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                   <i className="ri-customer-service-2-line text-lg text-purple-600 dark:text-purple-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Wsparcie 24/7' : language === 'en' ? '24/7 Support' : 'Supporto 24/7'}
                   </div>

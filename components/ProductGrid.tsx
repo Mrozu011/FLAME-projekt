@@ -8,6 +8,15 @@ import QuickViewModal from './QuickViewModal';
 import PriceDisplay from './PriceDisplay';
 import type { Product } from '@/lib/types';
 
+function toSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
 interface ProductGridProps {
   products: Product[];
   onQuickView?: (product: Product) => void;
@@ -238,37 +247,33 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
           {products.map((product) => (
             <div
               key={product.id}
-              className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition-all duration-300 group"
+              className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 group"
             >
               <div className="flex flex-col md:flex-row">
                 <div className="md:w-64 aspect-square md:aspect-auto relative overflow-hidden bg-gray-100">
-                  <Link href={`/product/${product.id}`}>
+                  <Link href={`/product/${product.id}/${toSlug(product.name)}`}>
                     <img
                       src={product.image}
                       alt={product.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-200"
                     />
                   </Link>
 
                   {/* Product Badges */}
-                  <div className="absolute top-4 left-4 flex flex-col gap-2">
+                  <div className="absolute top-4 left-4 flex flex-col gap-2 pointer-events-none">
                     {product.isNew && (
-                      <span className="product-badge badge-new">
-                        New
-                      </span>
+                      <span className="product-badge badge-new">New</span>
                     )}
                     {product.isOnSale && (
-                      <span className="product-badge badge-sale">
-                        Sale
-                      </span>
+                      <span className="product-badge badge-sale">Sale</span>
                     )}
                   </div>
 
                   {/* Actions */}
-                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                     <button
                       onClick={(e) => handleFavoriteToggle(e, product.id)}
-                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+                      className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors pointer-events-auto ${
                         favorites.includes(product.id)
                           ? 'bg-red-500 text-white'
                           : 'bg-white text-gray-600 hover:bg-gray-100'
@@ -282,7 +287,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                         e.stopPropagation();
                         handleQuickView(product);
                       }}
-                      className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                      className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors pointer-events-auto"
                     >
                       <i className="ri-eye-line text-lg"></i>
                     </button>
@@ -291,7 +296,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
                 <div className="flex-1 p-6">
                   <div className="flex items-start justify-between mb-4">
-                    <Link href={`/product/${product.id}`}>
+                    <Link href={`/product/${product.id}/${toSlug(product.name)}`}>
                       <h3 className="product-title text-xl group-hover:text-blue-600 transition-colors">
                         {product.name}
                       </h3>
@@ -303,9 +308,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                         className="text-xl font-bold"
                       />
                       {product.discount && (
-                        <span className="badge-sale inline-block mt-1">
-                          -{product.discount}%
-                        </span>
+                        <span className="badge-sale inline-block mt-1">-{product.discount}%</span>
                       )}
                     </div>
                   </div>
@@ -398,39 +401,40 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
 
   return (
     <>
-      <div className="product-grid">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          <div key={product.id} className="product-card group">
-            <div className="product-image">
-              <Link href={`/product/${product.id}`}>
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
+          <div key={product.id} className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-2xl overflow-hidden hover:shadow-md transition-all duration-200 group">
+            <div className="relative">
+              <Link href={`/product/${product.id}/${toSlug(product.name)}`}>
+                <div className="aspect-square overflow-hidden bg-gray-100">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-200"
+                  />
+                </div>
               </Link>
 
               {/* Product Badges */}
               {product.isNew && (
-                <span className="product-badge badge-new">
-                  New
-                </span>
+                <span className="product-badge badge-new pointer-events-none">New</span>
               )}
               {product.isOnSale && (
-                <span className="product-badge badge-sale" style={{ top: product.isNew ? '3rem' : 'var(--spacing-md)' }}>
+                <span className="product-badge badge-sale pointer-events-none" style={{ top: product.isNew ? '3rem' : 'var(--spacing-md)' }}>
                   Sale
                 </span>
               )}
 
               {/* Hover Actions */}
-              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-4 right-4 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <button
                   onClick={(e) => handleFavoriteToggle(e, product.id)}
-                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors ${
+                  className={`w-10 h-10 flex items-center justify-center rounded-full transition-colors pointer-events-auto ${
                     favorites.includes(product.id)
                       ? 'bg-red-500 text-white'
                       : 'bg-white text-gray-600 hover:bg-gray-100'
                   }`}
+                  aria-label="Dodaj do ulubionych"
                 >
                   <i className={`${favorites.includes(product.id) ? 'ri-heart-fill' : 'ri-heart-line'} text-lg`}></i>
                 </button>
@@ -440,38 +444,38 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                     e.stopPropagation();
                     handleQuickView(product);
                   }}
-                  className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
-                  title="Quick View"
+                  className="w-10 h-10 flex items-center justify-center bg-white text-gray-600 rounded-full hover:bg-gray-100 transition-colors pointer-events-auto"
+                  title="Podgląd"
                 >
                   <i className="ri-eye-line text-lg"></i>
                 </button>
               </div>
 
               {/* Quick View Button - Bottom */}
-              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute bottom-4 left-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                 <button
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     handleQuickView(product);
                   }}
-                  className="btn btn-secondary w-full"
+                  className="btn btn-secondary w-full pointer-events-auto"
                 >
                   Quick View
                 </button>
               </div>
             </div>
 
-            <div className="product-content">
-              <Link href={`/product/${product.id}`}>
-                <h3 className="product-title group-hover:text-blue-600 transition-colors">
+            <div className="p-4">
+              <Link href={`/product/${product.id}/${toSlug(product.name)}`}>
+                <h3 className="text-base font-medium text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 transition-colors">
                   {product.name}
                 </h3>
               </Link>
 
               {/* Rating */}
               {product.rating && (
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex items-center gap-2 mt-1 mb-2">
                   {renderStars(product.rating)}
                   <span className="text-xs text-gray-500">
                     {product.rating} ({product.reviewCount || 0})
@@ -487,9 +491,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
                   className="text-lg font-bold"
                 />
                 {product.discount && (
-                  <span className="badge-sale text-xs">
-                    -{product.discount}%
-                  </span>
+                  <span className="badge-sale text-xs">-{product.discount}%</span>
                 )}
               </div>
 
@@ -547,7 +549,7 @@ export default function ProductGrid({ products, onQuickView, viewMode = 'grid' }
               <button
                 onClick={(e) => handleAddToCart(e, product)}
                 disabled={(product.stockStatus || 'in-stock') === 'out-of-stock'}
-                className={`btn w-full ${
+                className={`btn w-full rounded-2xl ${
                   (product.stockStatus || 'in-stock') === 'out-of-stock'
                     ? 'btn-secondary opacity-50 cursor-not-allowed'
                     : 'btn-primary'
