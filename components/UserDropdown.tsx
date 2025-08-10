@@ -298,7 +298,7 @@ const UserDropdown = memo(function UserDropdown() {
       {/* Dropdown Menu */}
       {isDropdownOpen && (
         <div 
-          className="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50"
+          className="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50"
           style={{ willChange: 'opacity, transform' }}
         >
           <div className="py-2">
