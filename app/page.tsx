@@ -223,244 +223,70 @@ export default function HomePage() {
         </LazySection>
 
         {/* Featured Products Section */}
-        <LazySection className="section bg-white dark:bg-gray-900">
+        <LazySection className="section pt-10 pb-12 bg-white dark:bg-gray-900">
           <div className="container">
-            {/* Section Header */}
-            <div className="text-center mb-16">
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
-                {language === 'pl' ? 'Produkty polecane' : language === 'en' ? 'Featured Products' : 'Prodotti in evidenza'}
-              </h2>
-              <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-                {language === 'pl' 
-                  ? 'Odkryj nasze najlepsze produkty wybrane specjalnie dla Ciebie' 
-                  : language === 'en' 
-                  ? 'Discover our best products selected especially for you' 
-                  : 'Scopri i nostri migliori prodotti selezionati appositamente per te'
-                }
-              </p>
-            </div>
-            
-            {/* Products Grid */}
+            {/* Products Grid (exactly 4 tiles on desktop) */}
             <Suspense fallback={<ProductGridSkeleton />}>
               <ProductGrid products={featuredProducts} />
             </Suspense>
 
-            {/* Info Tiles (Nike-like) */}
-            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <i className="ri-truck-line text-xl text-blue-600 dark:text-blue-400"></i>
+            {/* Info Tiles - single row */}
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <i className="ri-truck-line text-lg text-blue-600 dark:text-blue-400"></i>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Darmowa dostawa' : language === 'en' ? 'Free Shipping' : 'Spedizione gratuita'}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <div className="text-xs text-gray-600 dark:text-gray-300">
                     {language === 'pl' ? 'Przy zamówieniach od 199 zł' : language === 'en' ? 'On orders over $50' : 'Per ordini oltre €45'}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <div className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
-                  <i className="ri-star-smile-line text-xl text-amber-600 dark:text-amber-400"></i>
+              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
+                  <i className="ri-star-smile-line text-lg text-amber-600 dark:text-amber-400"></i>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Polecane' : language === 'en' ? 'Recommended' : 'Consigliati'}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <div className="text-xs text-gray-600 dark:text-gray-300">
                     {language === 'pl' ? 'Top wybory klientów' : language === 'en' ? 'Top picks by customers' : 'Scelte migliori dei clienti'}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <div className="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
-                  <i className="ri-shield-check-line text-xl text-emerald-600 dark:text-emerald-400"></i>
+              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+                  <i className="ri-shield-check-line text-lg text-emerald-600 dark:text-emerald-400"></i>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Najlepsza jakość' : language === 'en' ? 'Best Quality' : 'Qualità migliore'}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <div className="text-xs text-gray-600 dark:text-gray-300">
                     {language === 'pl' ? 'Sprawdzone materiały i wykonanie' : language === 'en' ? 'Trusted materials and craft' : 'Materiali e fattura affidabili'}
                   </div>
                 </div>
               </div>
-              <div className="hidden lg:flex items-center gap-4 p-6 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
-                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                  <i className="ri-customer-service-2-line text-xl text-purple-600 dark:text-purple-400"></i>
+              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                  <i className="ri-customer-service-2-line text-lg text-purple-600 dark:text-purple-400"></i>
                 </div>
                 <div>
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Wsparcie 24/7' : language === 'en' ? '24/7 Support' : 'Supporto 24/7'}
                   </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-300">
+                  <div className="text-xs text-gray-600 dark:text-gray-300">
                     {language === 'pl' ? 'Szybka pomoc zawsze' : language === 'en' ? 'Fast help, anytime' : 'Assistenza rapida, sempre'}
                   </div>
                 </div>
               </div>
             </div>
-
-            {/* Results Footer */}
-            <div className="flex items-center justify-between mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {language === 'pl' 
-                  ? `Wyniki: ${featuredProducts.length} produktów` 
-                  : language === 'en' 
-                  ? `Results: ${featuredProducts.length} products` 
-                  : `Risultati: ${featuredProducts.length} prodotti`
-                }
-              </div>
-              <div className="text-sm text-gray-500 dark:text-gray-400">
-                {language === 'pl' ? 'Strona 1 z 1' : language === 'en' ? 'Page 1 of 1' : 'Pagina 1 di 1'}
-              </div>
-            </div>
           </div>
         </LazySection>
-
-        {/* Personalized Homepage - Lazy loaded */}
-        <LazySection className="section bg-gray-50 dark:bg-gray-800">
-          <Suspense fallback={<div className="h-64 bg-gray-100 dark:bg-gray-700 animate-pulse rounded-lg mx-4"></div>}>
-            <PersonalizedHomepage defaultProducts={featuredProducts} />
-          </Suspense>
-        </LazySection>
-
-        {/* Recommendations - Lazy loaded */}
-        <LazySection className="section bg-white dark:bg-gray-900">
-          <Suspense fallback={<div className="h-48 bg-gray-100 dark:bg-gray-800 animate-pulse rounded-lg mx-4"></div>}>
-            <RecommendationSection 
-              title={language === 'pl' ? 'Polecane dla Ciebie' : language === 'en' ? 'Recommended for You' : 'Consigliato per te'} 
-              userId="guest" 
-              context={{ type: 'homepage' }} 
-            />
-          </Suspense>
-        </LazySection>
-
-        {/* Newsletter Section */}
-        <section className="section bg-gradient-to-r from-blue-600 to-blue-700 dark:from-blue-800 dark:to-blue-900">
-          <div className="container">
-            <div className="max-w-4xl mx-auto text-center">
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-                {language === 'pl' ? 'Bądź na bieżąco' : language === 'en' ? 'Stay Updated' : 'Rimani aggiornato'}
-              </h2>
-              <p className="text-xl text-blue-100 mb-8">
-                {language === 'pl' 
-                  ? 'Zapisz się do naszego newslettera i otrzymuj ekskluzywne oferty oraz informacje o nowościach' 
-                  : language === 'en' 
-                  ? 'Subscribe to our newsletter and receive exclusive offers and news about new products'
-                  : 'Iscriviti alla nostra newsletter e ricevi offerte esclusive e notizie sui nuovi prodotti'
-                }
-              </p>
-
-              <form onSubmit={handleSubscribe} className="max-w-md mx-auto">
-                <div className="flex">
-                  <input
-                    type="email"
-                    value={subscribeEmail}
-                    onChange={(e) => setSubscribeEmail(e.target.value)}
-                    placeholder={language === 'pl' ? 'Twój adres email' : language === 'en' ? 'Your email address' : 'Il tuo indirizzo email'}
-                    className="flex-1 px-4 py-3 rounded-l-lg border-0 focus:ring-2 focus:ring-white/50 text-gray-900"
-                    disabled={subscribeStatus === 'loading'}
-                  />
-                  <button
-                    type="submit"
-                    disabled={subscribeStatus === 'loading'}
-                    className="btn btn-secondary rounded-l-none"
-                  >
-                    {subscribeStatus === 'loading' ? (
-                      <i className="ri-loader-4-line animate-spin"></i>
-                    ) : (
-                      language === 'pl' ? 'Zapisz się' : language === 'en' ? 'Subscribe' : 'Iscriviti'
-                    )}
-                  </button>
-                </div>
-                
-                {subscribeMessage && (
-                  <p className={`mt-3 text-sm ${
-                    subscribeStatus === 'success' ? 'text-green-100' : 'text-red-100'
-                  }`}>
-                    {subscribeMessage}
-                  </p>
-                )}
-              </form>
-            </div>
-          </div>
-        </section>
-
-        {/* Features Section */}
-        <section className="section bg-gray-50 dark:bg-gray-800">
-          <div className="container">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="ri-truck-line text-2xl text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'pl' ? 'Darmowa Dostawa' : language === 'en' ? 'Free Shipping' : 'Spedizione Gratuita'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {language === 'pl' 
-                    ? 'Od 199 zł' 
-                    : language === 'en' 
-                    ? 'From $50+' 
-                    : 'Da €45+'
-                  }
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="ri-award-line text-2xl text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'pl' ? 'Gwarancja Jakości' : language === 'en' ? 'Quality Guarantee' : 'Garanzia di Qualità'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {language === 'pl' 
-                    ? '100% zadowolenia' 
-                    : language === 'en' 
-                    ? '100% satisfaction' 
-                    : '100% soddisfazione'
-                  }
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="ri-customer-service-line text-2xl text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'pl' ? 'Wsparcie 24/7' : language === 'en' ? '24/7 Support' : 'Supporto 24/7'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {language === 'pl' 
-                    ? 'Zawsze dostępni' 
-                    : language === 'en' 
-                    ? 'Always available' 
-                    : 'Sempre disponibile'
-                  }
-                </p>
-              </div>
-
-              <div className="text-center">
-                <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i className="ri-arrow-go-back-line text-2xl text-blue-600 dark:text-blue-400"></i>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  {language === 'pl' ? 'Łatwe Zwroty' : language === 'en' ? 'Easy Returns' : 'Resi Facili'}
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  {language === 'pl' 
-                    ? '30 dni na zwrot' 
-                    : language === 'en' 
-                    ? '30-day returns' 
-                    : 'Resi entro 30 giorni'
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
       </main>
       
       <Footer />

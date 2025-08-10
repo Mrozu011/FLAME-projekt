@@ -246,6 +246,21 @@ const UserDropdown = memo(function UserDropdown() {
     router.push(path);
   }, [setIsDropdownOpen, router]);
 
+  // Quick theme toggle for compact panel
+  const handleThemeQuickToggle = useCallback(() => {
+    try {
+      const html = document.documentElement;
+      const isCurrentlyDark = html.classList.contains('dark');
+      const newTheme = isCurrentlyDark ? 'light' : 'dark';
+      html.classList.toggle('dark', !isCurrentlyDark);
+      html.setAttribute('data-theme', newTheme);
+      localStorage.setItem('theme', newTheme);
+      window.dispatchEvent(new CustomEvent('themeChanged', { detail: { theme: newTheme } }));
+    } catch (e) {
+      // no-op
+    }
+  }, []);
+
   // Performance-optimized rendering condition
   if (!isMounted || !isHydrated) {
     return (
@@ -298,7 +313,7 @@ const UserDropdown = memo(function UserDropdown() {
       {/* Dropdown Menu */}
       {isDropdownOpen && (
         <div 
-          className="absolute right-0 mt-2 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50"
+          className="absolute right-0 mt-2 w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border border-gray-200 dark:border-gray-700 rounded-lg shadow-xl z-50"
           style={{ willChange: 'opacity, transform' }}
         >
           <div className="py-2">
@@ -348,6 +363,36 @@ const UserDropdown = memo(function UserDropdown() {
               <div className="flex justify-between text-sm mt-1">
                 <span className="text-gray-600 dark:text-gray-400">{t('favorites')}</span>
                 <span className="font-medium text-gray-900 dark:text-white">{favoriteCount}</span>
+              </div>
+            </div>
+
+            {/* Compact Quick Settings */}
+            <div className="px-3 py-2 border-b border-gray-200 dark:border-gray-700">
+              <div className="grid grid-cols-3 gap-2">
+                <button
+                  onClick={handleThemeQuickToggle}
+                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Theme"
+                >
+                  <i className="ri-contrast-2-line text-gray-700 dark:text-gray-200"></i>
+                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Theme</span>
+                </button>
+                <button
+                  onClick={() => handleLanguageChange('pl')}
+                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Language"
+                >
+                  <i className="ri-translate-2 text-gray-700 dark:text-gray-200"></i>
+                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">Polish</span>
+                </button>
+                <button
+                  onClick={() => handleCurrencyChange('EUR')}
+                  className="flex flex-col items-center justify-center p-2 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  aria-label="Currency"
+                >
+                  <i className="ri-money-euro-circle-line text-gray-700 dark:text-gray-200"></i>
+                  <span className="mt-1 text-[11px] text-gray-600 dark:text-gray-300">EUR</span>
+                </button>
               </div>
             </div>
 

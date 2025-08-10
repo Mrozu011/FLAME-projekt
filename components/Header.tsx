@@ -297,7 +297,7 @@ export default function Header() {
         {/* Left Side - Logo & Menu Cube */}
         <div className="header-left">
           {/* Logo */}
-          <Link href="/" className="logo">
+          <Link href="/" className="logo" onMouseEnter={handleMegaMenuEnter} onMouseLeave={handleMegaMenuLeave}>
             FLAME
           </Link>
           
@@ -322,19 +322,19 @@ export default function Header() {
         {/* Right Side - Utility Icons */}
         <div className="header-right">
           {/* Desktop Icons */}
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-1.5">
             {/* Search */}
-            <div className="relative">
-              <button
-                onClick={() => setIsSearchOpen(!isSearchOpen)}
-                className="header-icon"
-                aria-label="Search"
-              >
-                <i className="ri-search-line text-lg"></i>
-              </button>
+                      <div className="relative">
+            <button
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+              className="header-icon focus:outline-none focus:ring-2 focus:ring-black"
+              aria-label="Search"
+            >
+              <i className="ri-search-line text-lg"></i>
+            </button>
               
               {isSearchOpen && (
-                <div className="absolute right-0 top-full mt-2 w-80 bg-white/95 dark:bg-gray-900/95 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-50 slide-up">
+                <div className="absolute right-0 top-full mt-2 w-80 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 z-50 slide-up">
                   <form onSubmit={handleSearchSubmit}>
                     <input
                       ref={searchInputRef}
@@ -342,7 +342,7 @@ export default function Header() {
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
                       placeholder={t('search.placeholder')}
-                      className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
+                      className="w-full px-4 py-2 border border-gray-200 dark:border-gray-600 rounded-full focus:ring-2 focus:ring-black focus:border-transparent dark:bg-gray-700 dark:text-white"
                       autoFocus
                     />
                   </form>
@@ -725,27 +725,27 @@ export default function Header() {
         {/* Mega Menu */}
         {isMegaMenuOpen && (
           <div
-            className="absolute top-full left-0 right-0 bg-white/90 dark:bg-gray-900/85 backdrop-blur-md shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
+            className="absolute top-full left-0 right-0 bg-white/85 dark:bg-gray-900/85 backdrop-blur-md shadow-lg border-t border-gray-200 dark:border-gray-700 z-40 slide-up"
             onMouseEnter={handleMegaMenuEnter}
             onMouseLeave={handleMegaMenuLeave}
           >
-            <div className="container py-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <div className="container py-6">
+              <div className="grid grid-cols-4 gap-8">
                 {localizedMegaMenuCategories.map((category) => (
-                  <div key={category.id} className="space-y-4">
+                  <div key={category.id} className="space-y-3">
                     <Link
                       href={category.href}
-                      className="block text-lg font-semibold text-gray-900 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
+                      className="block text-base font-semibold text-gray-900 dark:text-white hover:text-black dark:hover:text-white transition-colors"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
                       {category.displayTitle}
                     </Link>
-                    <ul className="space-y-2">
+                    <ul className="space-y-1.5">
                       {category.subcategories.map((sub) => (
                         <li key={sub.href}>
                           <Link
                             href={sub.href}
-                            className="block text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            className="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors"
                             onClick={() => setIsMegaMenuOpen(false)}
                           >
                             {sub.displayName}
