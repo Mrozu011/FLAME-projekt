@@ -135,6 +135,10 @@ export default function Header() {
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchWrapperRef = useRef<HTMLDivElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
+  const firstMegaFocusableRef = useRef<HTMLAnchorElement>(null);
+  const lastMegaFocusableRef = useRef<HTMLAnchorElement>(null);
+  const [scrolled, setScrolled] = useState(false);
+  const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -152,6 +156,38 @@ export default function Header() {
       searchInputRef.current?.focus();
     }
   }, [isSearchOpen]);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 4);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Focus trap for mega menu
+  useEffect(() => {
+    if (!isMegaMenuOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setIsMegaMenuOpen(false);
+        (document.querySelector('[aria-label="Menu"]') as HTMLButtonElement | null)?.focus?.();
+      }
+      if (e.key === 'Tab') {
+        const first = firstMegaFocusableRef.current;
+        const last = lastMegaFocusableRef.current;
+        if (!first || !last) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [isMegaMenuOpen]);
 
   // Initialize client-side state
   useEffect(() => {
@@ -276,7 +312,7 @@ export default function Header() {
   const availableCurrencies = getAvailableCurrencies();
 
   return (
-    <header className="header relative">
+    <header className={`header relative ${scrolled ? 'scrolled' : ''}`}>
       {/* Top Bar */}
       <div className="top-bar hidden md:block">
         <div className="top-bar-container">
@@ -324,7 +360,10 @@ export default function Header() {
           }} aria-haspopup="true" aria-expanded={isMegaMenuOpen} aria-controls="mega-menu-panel">
             FLAME
           </Link>
-          
+        </div>
+
+        {/* Center - primary nav trigger */}
+        <div className="hidden lg:flex items-center justify-center flex-1">
           {/* 3x3 Cube Menu Toggle */}
           <button
             className="menu-toggle"
@@ -653,22 +692,24 @@ export default function Header() {
           >
             <div className="max-w-6xl w-[90vw] bg-white dark:bg-gray-900 rounded-2xl shadow-xl border border-gray-200 dark:border-gray-700 px-6 lg:px-8 py-6">
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
-                {localizedMegaMenuCategories.map((category) => (
+                {localizedMegaMenuCategories.map((category, idx) => (
                   <div key={category.id} className="space-y-3">
                     <Link
                       href={category.href}
+                      ref={idx === 0 ? firstMegaFocusableRef : undefined}
                       className="block text-base font-semibold text-gray-900 dark:text-white hover:text-black dark:hover:text-white transition-colors focus:outline-none focus:underline"
                       onClick={() => setIsMegaMenuOpen(false)}
                     >
                       {category.displayTitle}
                     </Link>
                     <ul className="space-y-1.5">
-                      {category.subcategories.map((sub) => (
+                      {category.subcategories.map((sub, sIdx) => (
                         <li key={sub.href}>
                           <Link
                             href={sub.href}
                             className="block text-sm text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors focus:outline-none focus:underline"
                             onClick={() => setIsMegaMenuOpen(false)}
+                            ref={idx === localizedMegaMenuCategories.length - 1 && sIdx === category.subcategories.length - 1 ? lastMegaFocusableRef : undefined}
                           >
                             {sub.displayName}
                           </Link>
@@ -679,6 +720,70 @@ export default function Header() {
                 ))}
               </div>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Mobile off-canvas nav trigger (center grid icon on mobile) */}
+      <div className="lg:hidden absolute inset-y-0 left-4 flex items-center">
+        <button
+          className="menu-toggle"
+          aria-label="Open navigation"
+          aria-expanded={isMobileNavOpen}
+          onClick={() => setIsMobileNavOpen(true)}
+        >
+          <div className="grid grid-cols-3 gap-0.5 w-4 h-4">
+            {[...Array(9)].map((_, i) => (
+              <div key={i} className="w-1 h-1 bg-current rounded-sm" />
+            ))}
+          </div>
+        </button>
+      </div>
+
+      {/* Mobile off-canvas nav panel */}
+      <AnimatePresence>
+        {isMobileNavOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 bg-black/40"
+            aria-hidden
+            onClick={() => setIsMobileNavOpen(false)}
+          >
+            <motion.nav
+              role="dialog"
+              aria-label="Mobile navigation"
+              initial={{ x: '-100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '-100%' }}
+              transition={{ duration: 0.18, ease: 'easeOut' }}
+              className="absolute left-0 top-0 bottom-0 w-80 max-w-[85vw] bg-white dark:bg-gray-900 shadow-xl p-6 overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <span className="font-extrabold text-xl">FLAME</span>
+                <button className="header-icon" aria-label="Close" onClick={() => setIsMobileNavOpen(false)}>
+                  <i className="ri-close-line text-lg"></i>
+                </button>
+              </div>
+              <div className="grid grid-cols-1 gap-4">
+                {localizedMegaMenuCategories.map((category) => (
+                  <div key={category.id}>
+                    <Link href={category.href} className="font-semibold block py-2" onClick={() => setIsMobileNavOpen(false)}>
+                      {category.displayTitle}
+                    </Link>
+                    <div className="pl-3 space-y-1">
+                      {category.subcategories.map((sub) => (
+                        <Link key={sub.href} href={sub.href} className="block text-sm text-gray-600 dark:text-gray-300 py-1" onClick={() => setIsMobileNavOpen(false)}>
+                          {sub.displayName}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </motion.nav>
           </motion.div>
         )}
       </AnimatePresence>
