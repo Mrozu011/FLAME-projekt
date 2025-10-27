@@ -26,12 +26,10 @@ const initializeAdvancedPerformance = () => {
 // Lazy load non-critical components
 const MainSlider = lazy(() => import('@/components/MainSlider'));
 const ProductGrid = lazy(() => import('@/components/ProductGrid'));
-const RecommendationSection = lazy(() => import('@/components/RecommendationSection'));
-const PersonalizedHomepage = lazy(() => import('@/components/PersonalizedHomepage'));
 
 // Loading skeletons
 const SliderSkeleton = () => (
-  <div className="relative h-[400px] md:h-[500px] lg:h-[600px] bg-gray-100 dark:bg-gray-800 animate-pulse">
+  <div className="relative h-[380px] md:h-[480px] lg:h-[560px] bg-gray-100 dark:bg-gray-800 animate-pulse">
     <div className="absolute inset-0 flex items-center justify-center">
       <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
     </div>
@@ -40,7 +38,7 @@ const SliderSkeleton = () => (
 
 const ProductGridSkeleton = () => (
   <div className="product-grid">
-    {[...Array(8)].map((_, i) => (
+    {[...Array(4)].map((_, i) => (
       <div key={i} className="product-card animate-pulse">
         <div className="product-image bg-gray-200"></div>
         <div className="product-content space-y-3">
@@ -231,12 +229,12 @@ export default function HomePage() {
             </Suspense>
 
             {/* Info Tiles - single row */}
-            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                   <i className="ri-truck-line text-lg text-blue-600 dark:text-blue-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Darmowa dostawa' : language === 'en' ? 'Free Shipping' : 'Spedizione gratuita'}
                   </div>
@@ -245,11 +243,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center">
                   <i className="ri-star-smile-line text-lg text-amber-600 dark:text-amber-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Polecane' : language === 'en' ? 'Recommended' : 'Consigliati'}
                   </div>
@@ -258,11 +256,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                   <i className="ri-shield-check-line text-lg text-emerald-600 dark:text-emerald-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Najlepsza jakość' : language === 'en' ? 'Best Quality' : 'Qualità migliore'}
                   </div>
@@ -271,11 +269,11 @@ export default function HomePage() {
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3 p-5 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+              <div className="flex items-start gap-3 p-5 rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
                 <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
                   <i className="ri-customer-service-2-line text-lg text-purple-600 dark:text-purple-400"></i>
                 </div>
-                <div>
+                <div className="space-y-0.5">
                   <div className="font-semibold text-gray-900 dark:text-white">
                     {language === 'pl' ? 'Wsparcie 24/7' : language === 'en' ? '24/7 Support' : 'Supporto 24/7'}
                   </div>

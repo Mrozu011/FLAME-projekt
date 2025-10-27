@@ -404,7 +404,7 @@ export default function CartPage() {
                           <img 
                             src={item.image} 
                             alt={item.name}
-                            className="w-20 h-24 md:w-24 md:h-32 object-cover rounded-lg object-top"
+                            className="w-16 h-20 md:w-20 md:h-24 object-cover rounded-lg object-top"
                           />
                         </div>
 

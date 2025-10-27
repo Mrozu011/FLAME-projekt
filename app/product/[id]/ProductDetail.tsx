@@ -246,10 +246,10 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
   const productName = typeof translatedName === 'string' ? translatedName : translatedName.name ?? '';
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-950">
       <Header />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-[1200px]:max-w-[1200px] xl:max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <nav className="flex items-center space-x-2 mb-8 text-sm">
           {getBreadcrumbs().map((crumb, index) => (
             <div key={index} className="flex items-center">
@@ -285,23 +285,30 @@ function ProductDetailContent({ productId }: ProductDetailProps) {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
-          <ProductImageGallery
-            images={product.images}
-            productName={productName}
-          />
+        <section className="grid grid-cols-1 lg:grid-cols-[140px_minmax(0,1fr)_420px] gap-8 lg:gap-10 mb-16 items-start" aria-labelledby="product-overview">
+          <h2 id="product-overview" className="sr-only">Product gallery and purchase options</h2>
+          {/* Gallery: thumbnails + main image (left + center) */}
+          <div className="lg:col-span-2">
+            <ProductImageGallery
+              images={product.images}
+              productName={productName}
+            />
+          </div>
 
-          <ProductInfo
-            product={product}
-            selectedSize={selectedSize}
-            setSelectedSize={setSelectedSize}
-            selectedColor={selectedColor}
-            setSelectedColor={setSelectedColor}
-            quantity={quantity}
-            setQuantity={setQuantity}
-            productName={productName}
-          />
-        </div>
+          {/* Info: right column */}
+          <aside className="lg:col-span-1 lg:sticky lg:top-24 self-start">
+            <ProductInfo
+              product={product}
+              selectedSize={selectedSize}
+              setSelectedSize={setSelectedSize}
+              selectedColor={selectedColor}
+              setSelectedColor={setSelectedColor}
+              quantity={quantity}
+              setQuantity={setQuantity}
+              productName={productName}
+            />
+          </aside>
+        </section>
 
         <div className="space-y-8">
           <ExpandableSection

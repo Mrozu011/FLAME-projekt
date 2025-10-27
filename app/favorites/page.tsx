@@ -385,7 +385,7 @@ export default function FavoritesPage() {
                         src={item.image}
                         alt={item.name}
                         className={`w-full object-cover object-top transition-transform duration-300 group-hover:scale-105 ${
-                          viewMode === 'list' ? 'h-48' : 'h-64'
+                          viewMode === 'list' ? 'h-40' : 'h-56'
                         }`}
                       />
                     </Link>
